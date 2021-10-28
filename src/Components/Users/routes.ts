@@ -9,7 +9,22 @@ import { addPets, deletePet, getPetById, getPets, updatePet } from "./controller
 import { getItems, getItemById, addToWishList, getWishList, removeFromWishList } from "./controller/UserItems";
 import { paymentSchema } from "./middleware/userPaymentsValidation";
 import { payItem, getPayments, getPaymentById } from "./controller/UserPayments";
+import { addAppointment, getAppointments, deleteAppointments, getAppointmentsById } from "./controller/UserAppointments";
 const router = Router();
+
+// Appointment routes
+router.post("/appointments", verifyUser, addAppointment);
+router.get("/appointments", verifyUser, getAppointments);
+router.get("/appointments/:id", verifyUser, getAppointmentsById);
+router.delete("/appointments/:id", verifyUser, deleteAppointments);
+
+
+//items
+router.get("/items", verifyUser, getItems);
+router.get("/items/:id", verifyUser, getItemById);
+router.post("/items/:id/like", verifyUser, addToWishList);
+router.delete("/items/:id/like", verifyUser, removeFromWishList);
+router.get("/items/:id/like", verifyUser, getWishList);
 
 //Auth
 router.post("/auth/register", validate(registerSchema), register);
@@ -22,13 +37,6 @@ router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 router.post("/items/pay", verifyUser, validate(paymentSchema), payItem);
 router.get("/items/pay", verifyUser, getPayments);
 router.get("/items/pay/:id", verifyUser, getPaymentById);
-
-//items
-router.get("/items", verifyUser, getItems);
-router.get("/items/:id", verifyUser, getItemById);
-router.post("/items/:id/like", verifyUser, addToWishList);
-router.delete("/items/:id/like", verifyUser, removeFromWishList);
-router.get("/items/:id/like", verifyUser, getWishList);
 
 
 
