@@ -10,7 +10,7 @@ export interface AppointmentsInterface extends mongoose.Document {
     service: ObjectId | ServicesInterface,
     appointmentDate: Date,
     reason: string,
-    doctorId: ObjectId | StafInterface,
+    doctor: ObjectId | StafInterface,
     user: ObjectId | UserInterface,
     status: string,
     paymentStatus: string,
@@ -20,10 +20,10 @@ export interface AppointmentsInterface extends mongoose.Document {
 
 const appointmentSchema = new Schema({
     petId: { type: mongoose.Types.ObjectId, ref: "pets" },
-    serviceId: { type: mongoose.Types.ObjectId, ref: "services" },
+    service: { type: mongoose.Types.ObjectId, ref: "services" },
     appointmentDate: { type: Date },
     reason: { type: String },
-    doctorId: { type: mongoose.Types.ObjectId, ref: "staff" },
+    doctor: { type: mongoose.Types.ObjectId, ref: "staff" },
     user: { type: mongoose.Types.ObjectId, ref: "users" },
     status: { type: String },
     paymentStatus: { type: String },
