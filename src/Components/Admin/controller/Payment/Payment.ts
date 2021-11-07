@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 
 export const addPayment = async (req: Request, res: Response, next: NextFunction) => {
     let { totalAmount, discount, paymentAmmount, exchange, paymentType, userId } = req.body;
-    const isUserExist: UserInterface = await User.findById(userId);
+    const isUserExist: UserInterface | null = await User.findById(userId);
     if (!isUserExist) return res.status(400).json({ status: 400, msg: `user with userId ${userId} not found` });
     let newPayment: PaymentInterFace = await Payment.create({ totalAmount, discount, paymentAmmount, exchange, paymentType, user: userId })
     return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
@@ -13,7 +13,7 @@ export const addPayment = async (req: Request, res: Response, next: NextFunction
 export const updatePayment = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params;
     let { totalAmount, discount, paymentAmmount, exchange, paymentType, userId } = req.body;
-    const isUserExist: UserInterface = await User.findById(userId);
+    const isUserExist: UserInterface | null = await User.findById(userId);
     if (!isUserExist) return res.status(400).json({ status: 400, msg: `user with userId ${userId} not found` });
     let newPayment: PaymentInterFace = await Payment.findByIdAndUpdate(id, { totalAmount, discount, paymentAmmount, exchange, paymentType, user: userId })
     return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
