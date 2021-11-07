@@ -9,19 +9,19 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
 
 
 export const addPets = async (req: Request, res: Response, next: NextFunction) => {
-    const { name, serialNumber, age, typeId, breedId, genderId } = req.body;
+    const { name, serialNumber, age, typeId, breedId, gender } = req.body;
     let user = req.user;
-    let pet = await Pets.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender: genderId });
+    let pet = await Pets.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender });
     user.pets = [...user.pets, pet._id];
     await user.save();
     return res.status(201).json({ status: 201, data: { pet } });
 }
 
 export const updatePet = async (req: Request, res: Response, next: NextFunction) => {
-    const { name, serialNumber, age, typeId, breedId, genderId } = req.body;
+    const { name, serialNumber, age, typeId, breedId, gender } = req.body;
     const petId = req.params.id;
     let user = req.user;
-    let pet = await Pets.findOneAndUpdate({ user: user._id, _id: petId }, { name, serialNumber, age, typeId, breedId, genderId });
+    let pet = await Pets.findOneAndUpdate({ user: user._id, _id: petId }, { name, serialNumber, age, typeId, breedId, gender });
     return res.status(201).json({ status: 201, data: { pet } });
 }
 

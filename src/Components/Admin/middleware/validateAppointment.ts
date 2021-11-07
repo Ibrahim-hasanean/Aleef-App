@@ -6,6 +6,6 @@ export const AppointmentSchema = {
         serviceId: Joi.string().required(),
         appointmentDate: Joi.date().required(),
         reason: Joi.string().required(),
-        // doctorId: Joi.string().required(),
+        doctorId: Joi.string().required(),
     })
 }

@@ -11,7 +11,7 @@ export interface PetsInterface extends mongoose.Document {
     imageUrl: string
     user: ObjectId | UserInterface
     breed: ObjectId | BreedInterface
-    gender: ObjectId
+    gender: string
     microshipNumber: number
     weight: number
     notes: string
@@ -26,7 +26,7 @@ const petsSchema = new Schema({
     imageUrl: { type: String },
     user: { type: mongoose.Types.ObjectId, ref: "users" },
     breed: { type: mongoose.Types.ObjectId, ref: "breeds" },
-    gender: { type: mongoose.Types.ObjectId, ref: "gender" },
+    gender: { type: String },
     microshipNumber: { type: Number },
     weight: { type: Number },
     notes: { type: String },

@@ -55,9 +55,16 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
 }
 
 export const getItems = async (req: Request, res: Response, next: NextFunction) => {
-    let items = await Item.find({}).populate("category");
+    const { page, limit, categoryId, text } = req.query;
+    let query: any = {};
+    if (categoryId) query.category = categoryId;
+    if (text) {
+        query.$or = [{ name: { $regex: text, $options: "i" } }, { description: { $regex: text, $options: "i" } }];
+    }
+    const limitNumber = Number(limit) || 10;
+    const skip = (Number(page || 1) - 1) * limitNumber;
+    const items = await Item.find(query).skip(skip).limit(limitNumber);
     return res.status(200).json({ status: 200, data: { items } });
-
 }
 
 export const getItemById = async (req: Request, res: Response, next: NextFunction) => {
