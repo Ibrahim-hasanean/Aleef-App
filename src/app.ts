@@ -3,7 +3,7 @@ import { errors } from "celebrate";
 import userRoutes from "./Components/Users/routes";
 import adminRoutes from "./Components/Admin/routes";
 const app = express();
-const port = process.env.Port || 3000;
+const port = process.env.PORT || 3000;
 require("./config/mongoose");
 
 app.use(express.json());

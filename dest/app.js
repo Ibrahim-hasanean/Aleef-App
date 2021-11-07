@@ -8,7 +8,7 @@ const celebrate_1 = require("celebrate");
 const routes_1 = __importDefault(require("./Components/Users/routes"));
 const routes_2 = __importDefault(require("./Components/Admin/routes"));
 const app = (0, express_1.default)();
-const port = process.env.Port || 3000;
+const port = process.env.PORT || 3000;
 require("./config/mongoose");
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
