@@ -86,7 +86,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.updateAppointment = updateAppointment;
 const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, pageSize, service, doctorId, paymentStatus } = req.query;
+    let { page, pageSize, service, doctorId, paymentStatus, petId } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
@@ -97,8 +97,11 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         query.doctor = doctorId;
     if (paymentStatus)
         query.paymentStatus = paymentStatus;
+    if (petId)
+        query.pet = petId;
     const appointments = yield Appointments_1.default.find(query)
         .populate("doctor")
+        .populate("pet")
         .sort({ appointmentDate: "desc" })
         .skip(skip)
         .limit(numberPageSize);

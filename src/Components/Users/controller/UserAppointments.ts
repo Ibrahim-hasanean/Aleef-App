@@ -70,7 +70,7 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
 }
 
 export const getAppointments = async (req: Request, res: Response, next: NextFunction) => {
-    let { page, pageSize, service, doctorId, paymentStatus } = req.query;
+    let { page, pageSize, service, doctorId, paymentStatus, petId } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
@@ -78,8 +78,10 @@ export const getAppointments = async (req: Request, res: Response, next: NextFun
     if (service) query.service = service;
     if (doctorId) query.doctor = doctorId;
     if (paymentStatus) query.paymentStatus = paymentStatus;
+    if (petId) query.pet = petId;
     const appointments = await Appointments.find(query)
         .populate("doctor")
+        .populate("pet")
         .sort({ appointmentDate: "desc" })
         .skip(skip)
         .limit(numberPageSize);

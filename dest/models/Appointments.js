@@ -21,7 +21,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const appointmentSchema = new mongoose_1.Schema({
-    petId: { type: mongoose_1.default.Types.ObjectId, ref: "pets" },
+    pet: { type: mongoose_1.default.Types.ObjectId, ref: "pets" },
     service: { type: String },
     appointmentDate: { type: Date },
     reason: { type: String },

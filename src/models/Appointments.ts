@@ -19,7 +19,7 @@ export interface AppointmentsInterface extends mongoose.Document {
 }
 
 const appointmentSchema = new Schema({
-    petId: { type: mongoose.Types.ObjectId, ref: "pets" },
+    pet: { type: mongoose.Types.ObjectId, ref: "pets" },
     service: { type: String },
     appointmentDate: { type: Date },
     reason: { type: String },
