@@ -1,6 +1,7 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
 import { AddressInterface } from "./Address";
 import { OrdersItemsInterface } from "./OrderItems";
+import { PaymentInterFace } from "./Payment";
 import { UserInterface } from "./User";
 
 
@@ -13,7 +14,8 @@ export interface OrderInterface extends mongoose.Document {
     cardNumber: string,
     user: ObjectId | UserInterface,
     status: string,
-    paymentId: string
+    // paymentId: string,
+    payment: ObjectId | PaymentInterFace
 }
 
 const orderSchema = new Schema({
@@ -25,8 +27,10 @@ const orderSchema = new Schema({
     cardNumber: { type: String },
     user: { type: mongoose.Types.ObjectId, ref: "users", required: true },
     status: { type: String },
-    paymentId: { type: String }
-})
+    // paymentId: { type: String },
+    payment: { type: mongoose.Types.ObjectId, ref: "payments" },
+
+}, { timestamps: true })
 
 const Order = mongoose.model("orders", orderSchema);
 

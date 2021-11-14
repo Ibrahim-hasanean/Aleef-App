@@ -29,7 +29,8 @@ const orderSchema = new mongoose_1.Schema({
     cardNumber: { type: String },
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users", required: true },
     status: { type: String },
-    paymentId: { type: String }
-});
+    // paymentId: { type: String },
+    payment: { type: mongoose_1.default.Types.ObjectId, ref: "payments" },
+}, { timestamps: true });
 const Order = mongoose_1.default.model("orders", orderSchema);
 exports.default = Order;

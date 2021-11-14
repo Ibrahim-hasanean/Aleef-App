@@ -6,7 +6,7 @@ export const addItem = async (req: Request, res: Response, next: NextFunction) =
         name,
         description,
         price,
-        categoryId,
+        category,
         serialNumber,
         avaliableQuantity,
         allowed,
@@ -17,7 +17,7 @@ export const addItem = async (req: Request, res: Response, next: NextFunction) =
         name,
         description,
         price,
-        category: categoryId,
+        category,
         serialNumber,
         avaliableQuantity,
         allowed,
@@ -33,7 +33,7 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
         name,
         description,
         price,
-        categoryId,
+        category,
         serialNumber,
         avaliableQuantity,
         allowed,
@@ -44,7 +44,7 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
         name,
         description,
         price,
-        category: categoryId,
+        category,
         serialNumber,
         avaliableQuantity,
         allowed,
@@ -55,9 +55,9 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
 }
 
 export const getItems = async (req: Request, res: Response, next: NextFunction) => {
-    const { page, limit, categoryId, text } = req.query;
+    const { page, limit, category, text } = req.query;
     let query: any = {};
-    if (categoryId) query.category = categoryId;
+    if (category) query.category = category;
     if (text) {
         query.$or = [{ name: { $regex: text, $options: "i" } }, { description: { $regex: text, $options: "i" } }];
     }

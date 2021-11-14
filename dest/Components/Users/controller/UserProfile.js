@@ -102,3 +102,8 @@ const deleteAddress = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     });
 });
 exports.deleteAddress = deleteAddress;
+// export const setLanguage = async (req: Request, res: Response, next: NextFunction) => {
+//     let user = req.user;
+//     req.headers.
+//     let {} = req.body;
+// }

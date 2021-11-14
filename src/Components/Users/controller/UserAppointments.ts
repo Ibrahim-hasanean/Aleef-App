@@ -4,9 +4,11 @@ import { StafInterface } from "../../../models/Staff";
 import getFreeTimes from "../../utils/getFreeTimes";
 import getFreeDoctors from "../../utils/getFreeDoctors";
 import isDateOutWorkTime from "../../utils/isDateOutWorkTime";
+import Payment, { PaymentInterFace } from "../../../models/Payment";
+import mongoose from "mongoose";
 
 export const addAppointment = async (req: Request, res: Response, next: NextFunction) => {
-    const { petId, serviceId, appointmentDate, reason } = req.body;
+    const { petId, service, appointmentDate, reason } = req.body;
     const user = req.user;
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
@@ -17,7 +19,7 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
     if (freeDoctors.length === 0) return res.status(409).json({ status: 409, msg: "there is no free doctors" });
     const newAppontment = await Appointments.create({
         pet: petId,
-        service: serviceId,
+        service,
         appointmentDate: handleAppointmentDate,
         reason,
         doctor: freeDoctors[0]._id,
@@ -30,9 +32,12 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
 }
 
 export const updateAppointment = async (req: Request, res: Response, next: NextFunction) => {
-    const { petId, serviceId, appointmentDate, reason, doctorId } = req.body;
+    const { petId, service, appointmentDate, reason, doctorId } = req.body;
     const user = req.user;
     let appointmentId = req.params.id;
+    if (!mongoose.isValidObjectId(appointmentId)) {
+        return res.status(400).json({ status: 400, msg: "appointment not  found" });
+    }
     const appointment = await Appointments.findById(appointmentId);
     if (!appointment) return res.status(400).json({ status: 400, msg: "apppointment not found" });
     const handleAppointmentDate = new Date(appointmentDate);
@@ -50,12 +55,13 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
     if (freeDoctors.length === 0) return res.status(409).json({ status: 409, msg: "there is no free doctors" });
     const newAppontment = await Appointments.findByIdAndUpdate(appointmentId, {
         pet: petId,
-        service: serviceId,
+        service,
         appointmentDate: handleAppointmentDate,
         reason,
         doctor: freeDoctors[0]._id,
         user: user._id,
     });
+
     return res.status(201).json({
         status: 201, msg: "appointment updated successfully", data: {
             appontment: newAppontment
@@ -64,21 +70,28 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
 }
 
 export const getAppointments = async (req: Request, res: Response, next: NextFunction) => {
-    let { page, pageSize, serviceId, doctorId, paymentStatus } = req.query;
+    let { page, pageSize, service, doctorId, paymentStatus } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
     let query: any = { user: user._id };
-    if (serviceId) query.service = serviceId;
+    if (service) query.service = service;
     if (doctorId) query.doctor = doctorId;
     if (paymentStatus) query.paymentStatus = paymentStatus;
-    const appointments = await Appointments.find(query).populate("doctor").sort({ appointmentDate: "desc" }).skip(skip).limit(numberPageSize);
+    const appointments = await Appointments.find(query)
+        .populate("doctor")
+        .sort({ appointmentDate: "desc" })
+        .skip(skip)
+        .limit(numberPageSize);
     return res.status(200).json({ status: 200, data: { appointments } });
 }
 
 export const getAppointmentsById = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
     let user = req.user;
+    if (!mongoose.isValidObjectId(id)) {
+        return res.status(200).json({ status: 200, data: { appointment: null } });
+    }
     const appointment = await Appointments.findOne({ _id: id, user: user._id });
     return res.status(200).json({ status: 200, data: { appointment } });
 }
@@ -86,6 +99,9 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
 export const deleteAppointments = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
     let user = req.user;
+    if (!mongoose.isValidObjectId(id)) {
+        return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
+    }
     const appointment = await Appointments.findOneAndDelete({ _id: id, user: user._id });
     return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
 }
@@ -98,4 +114,38 @@ export const getAvaliableTime = async (req: Request, res: Response, next: NextFu
     handleAppointmentDate.setMilliseconds(0);
     const appointmentDates = await getFreeTimes(handleAppointmentDate);
     return res.status(200).json({ status: 200, data: { appointmentDates } });
+}
+
+export const payAppointment = async (req: Request, res: Response, next: NextFunction) => {
+    let { totalAmount, discount, paymentAmmount, exchange, appointmentId } = req.body;
+    let user = req.user;
+    const isAppointmentExist: AppointmentsInterface | null = await Appointments.findById(appointmentId);
+    if (!isAppointmentExist) return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` })
+    let newPayment: PaymentInterFace = await Payment.create({
+        totalAmount,
+        discount,
+        paymentAmmount,
+        exchange,
+        paymentType: "visa",
+        user: user._id,
+        appointment: appointmentId
+    })
+    isAppointmentExist.payment = newPayment._id;
+    await isAppointmentExist.save();
+    return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
+}
+
+export const getAppointmentPayments = async (req: Request, res: Response, next: NextFunction) => {
+    let user = req.user;
+    let query = { user: user._id };
+    let payments: PaymentInterFace[] = await Payment.find(query);
+    return res.status(200).json({ status: 200, data: { payments } });
+}
+
+export const getAppointmentPaymentById = async (req: Request, res: Response, next: NextFunction) => {
+    let user = req.user;
+    let id = req.params.id;
+    let query = { user: user._id, _id: id };
+    let payment: PaymentInterFace | null = await Payment.findOne(query);
+    return res.status(200).json({ status: 200, data: { payment } });
 }

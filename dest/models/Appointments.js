@@ -22,14 +22,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const appointmentSchema = new mongoose_1.Schema({
     petId: { type: mongoose_1.default.Types.ObjectId, ref: "pets" },
-    service: { type: mongoose_1.default.Types.ObjectId, ref: "services" },
+    service: { type: String },
     appointmentDate: { type: Date },
     reason: { type: String },
     doctor: { type: mongoose_1.default.Types.ObjectId, ref: "staff" },
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
     status: { type: String },
     paymentStatus: { type: String },
-    payment: { type: mongoose_1.default.Types.ObjectId, ref: "orders" },
+    payment: { type: mongoose_1.default.Types.ObjectId, ref: "payments" },
     paymentType: { type: String }
 }, { timestamps: true });
 const Appointments = mongoose_1.default.model("appointments", appointmentSchema);

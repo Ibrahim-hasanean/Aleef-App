@@ -15,12 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteItem = exports.getItemById = exports.getItems = exports.updateItem = exports.addItem = void 0;
 const Item_1 = __importDefault(require("../../../../models/Item"));
 const addItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { name, description, price, categoryId, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
+    let { name, description, price, category, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
     let newItem = yield Item_1.default.create({
         name,
         description,
         price,
-        category: categoryId,
+        category,
         serialNumber,
         avaliableQuantity,
         allowed,
@@ -32,12 +32,12 @@ const addItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 exports.addItem = addItem;
 const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let itemId = req.params.id;
-    let { name, description, price, categoryId, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
+    let { name, description, price, category, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
     let newItem = yield Item_1.default.findByIdAndUpdate(itemId, {
         name,
         description,
         price,
-        category: categoryId,
+        category,
         serialNumber,
         avaliableQuantity,
         allowed,
@@ -48,10 +48,10 @@ const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.updateItem = updateItem;
 const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { page, limit, categoryId, text } = req.query;
+    const { page, limit, category, text } = req.query;
     let query = {};
-    if (categoryId)
-        query.category = categoryId;
+    if (category)
+        query.category = category;
     if (text) {
         query.$or = [{ name: { $regex: text, $options: "i" } }, { description: { $regex: text, $options: "i" } }];
     }

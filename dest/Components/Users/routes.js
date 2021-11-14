@@ -13,7 +13,7 @@ const PetsValidation_1 = require("./middleware/PetsValidation");
 const UserPets_1 = require("./controller/UserPets");
 const UserItems_1 = require("./controller/UserItems");
 const userPaymentsValidation_1 = require("./middleware/userPaymentsValidation");
-const UserPayments_1 = require("./controller/UserPayments");
+const UserOrders_1 = require("./controller/UserOrders");
 const UserAppointments_1 = require("./controller/UserAppointments");
 const appointmentsValidation_1 = require("./middleware/appointmentsValidation");
 const router = (0, express_1.Router)();
@@ -27,6 +27,10 @@ router.post("/auth/verify", (0, userAuthValidate_1.validate)(userAuthValidate_1.
 router.patch("/profile", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.updateProfileSchema), UserProfile_1.updateProfile);
 router.post("/profile/changePassword", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.changePasswordSchema), UserProfile_1.changePassword);
 router.post("/notifications", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.notificationSettingsSchema), UserProfile_1.notificationSettings);
+// Appontment Payments
+router.post("/appointments/payments", verifyUser_1.default, (0, userAuthValidate_1.validate)(appointmentsValidation_1.appointmentPaymentSchema), UserAppointments_1.payAppointment);
+router.get("/appointments/payments", verifyUser_1.default, UserAppointments_1.getAppointmentPayments);
+router.get("/appointments/payments/:id", verifyUser_1.default, UserAppointments_1.getAppointmentPaymentById);
 // Appointment routes
 router.post("/appointments", verifyUser_1.default, (0, userAuthValidate_1.validate)(appointmentsValidation_1.AppointmentSchema), UserAppointments_1.addAppointment);
 router.get("/appointments", verifyUser_1.default, UserAppointments_1.getAppointments);
@@ -34,16 +38,18 @@ router.get("/appointments/avaliable", verifyUser_1.default, UserAppointments_1.g
 router.patch("/appointments/:id", verifyUser_1.default, (0, userAuthValidate_1.validate)(appointmentsValidation_1.AppointmentSchema), UserAppointments_1.updateAppointment);
 router.get("/appointments/:id", verifyUser_1.default, UserAppointments_1.getAppointmentsById);
 router.delete("/appointments/:id", verifyUser_1.default, UserAppointments_1.deleteAppointments);
+//items payment
+router.post("/orders", verifyUser_1.default, (0, userAuthValidate_1.validate)(userPaymentsValidation_1.paymentSchema), UserOrders_1.payItem);
+router.get("/orders", verifyUser_1.default, UserOrders_1.getPayments);
+router.get("/orders/:id", verifyUser_1.default, UserOrders_1.getPaymentById);
+router.delete("/orders/:id", verifyUser_1.default, UserOrders_1.cancelOrder);
 //items
 router.get("/items", verifyUser_1.default, UserItems_1.getItems);
 router.get("/items/:id", verifyUser_1.default, UserItems_1.getItemById);
 router.post("/items/:id/like", verifyUser_1.default, UserItems_1.addToWishList);
 router.delete("/items/:id/like", verifyUser_1.default, UserItems_1.removeFromWishList);
+router.post("/items/:id/review", verifyUser_1.default, UserItems_1.reviewItem);
 router.get("/items/:id/like", verifyUser_1.default, UserItems_1.getWishList);
-//items payment
-router.post("/items/pay", verifyUser_1.default, (0, userAuthValidate_1.validate)(userPaymentsValidation_1.paymentSchema), UserPayments_1.payItem);
-router.get("/items/pay", verifyUser_1.default, UserPayments_1.getPayments);
-router.get("/items/pay/:id", verifyUser_1.default, UserPayments_1.getPaymentById);
 //user Address
 router.post("/addresses", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.addAddressSchema), UserProfile_1.addAddress);
 router.get("/addresses", verifyUser_1.default, UserProfile_1.getAddresses);

@@ -12,13 +12,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
+exports.getAppointmentPaymentById = exports.getAppointmentPayments = exports.payAppointment = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
 const Appointments_1 = __importDefault(require("../../../models/Appointments"));
 const getFreeTimes_1 = __importDefault(require("../../utils/getFreeTimes"));
 const getFreeDoctors_1 = __importDefault(require("../../utils/getFreeDoctors"));
 const isDateOutWorkTime_1 = __importDefault(require("../../utils/isDateOutWorkTime"));
+const Payment_1 = __importDefault(require("../../../models/Payment"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { petId, serviceId, appointmentDate, reason } = req.body;
+    const { petId, service, appointmentDate, reason } = req.body;
     const user = req.user;
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
@@ -31,7 +33,7 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         return res.status(409).json({ status: 409, msg: "there is no free doctors" });
     const newAppontment = yield Appointments_1.default.create({
         pet: petId,
-        service: serviceId,
+        service,
         appointmentDate: handleAppointmentDate,
         reason,
         doctor: freeDoctors[0]._id,
@@ -44,9 +46,12 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.addAppointment = addAppointment;
 const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { petId, serviceId, appointmentDate, reason, doctorId } = req.body;
+    const { petId, service, appointmentDate, reason, doctorId } = req.body;
     const user = req.user;
     let appointmentId = req.params.id;
+    if (!mongoose_1.default.isValidObjectId(appointmentId)) {
+        return res.status(400).json({ status: 400, msg: "appointment not  found" });
+    }
     const appointment = yield Appointments_1.default.findById(appointmentId);
     if (!appointment)
         return res.status(400).json({ status: 400, msg: "apppointment not found" });
@@ -67,7 +72,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         return res.status(409).json({ status: 409, msg: "there is no free doctors" });
     const newAppontment = yield Appointments_1.default.findByIdAndUpdate(appointmentId, {
         pet: petId,
-        service: serviceId,
+        service,
         appointmentDate: handleAppointmentDate,
         reason,
         doctor: freeDoctors[0]._id,
@@ -81,24 +86,31 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.updateAppointment = updateAppointment;
 const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, pageSize, serviceId, doctorId, paymentStatus } = req.query;
+    let { page, pageSize, service, doctorId, paymentStatus } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
     let query = { user: user._id };
-    if (serviceId)
-        query.service = serviceId;
+    if (service)
+        query.service = service;
     if (doctorId)
         query.doctor = doctorId;
     if (paymentStatus)
         query.paymentStatus = paymentStatus;
-    const appointments = yield Appointments_1.default.find(query).populate("doctor").sort({ appointmentDate: "desc" }).skip(skip).limit(numberPageSize);
+    const appointments = yield Appointments_1.default.find(query)
+        .populate("doctor")
+        .sort({ appointmentDate: "desc" })
+        .skip(skip)
+        .limit(numberPageSize);
     return res.status(200).json({ status: 200, data: { appointments } });
 });
 exports.getAppointments = getAppointments;
 const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
     let user = req.user;
+    if (!mongoose_1.default.isValidObjectId(id)) {
+        return res.status(200).json({ status: 200, data: { appointment: null } });
+    }
     const appointment = yield Appointments_1.default.findOne({ _id: id, user: user._id });
     return res.status(200).json({ status: 200, data: { appointment } });
 });
@@ -106,6 +118,9 @@ exports.getAppointmentsById = getAppointmentsById;
 const deleteAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
     let user = req.user;
+    if (!mongoose_1.default.isValidObjectId(id)) {
+        return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
+    }
     const appointment = yield Appointments_1.default.findOneAndDelete({ _id: id, user: user._id });
     return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
 });
@@ -120,3 +135,38 @@ const getAvaliableTime = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     return res.status(200).json({ status: 200, data: { appointmentDates } });
 });
 exports.getAvaliableTime = getAvaliableTime;
+const payAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let { totalAmount, discount, paymentAmmount, exchange, appointmentId } = req.body;
+    let user = req.user;
+    const isAppointmentExist = yield Appointments_1.default.findById(appointmentId);
+    if (!isAppointmentExist)
+        return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
+    let newPayment = yield Payment_1.default.create({
+        totalAmount,
+        discount,
+        paymentAmmount,
+        exchange,
+        paymentType: "visa",
+        user: user._id,
+        appointment: appointmentId
+    });
+    isAppointmentExist.payment = newPayment._id;
+    yield isAppointmentExist.save();
+    return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
+});
+exports.payAppointment = payAppointment;
+const getAppointmentPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let user = req.user;
+    let query = { user: user._id };
+    let payments = yield Payment_1.default.find(query);
+    return res.status(200).json({ status: 200, data: { payments } });
+});
+exports.getAppointmentPayments = getAppointmentPayments;
+const getAppointmentPaymentById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let user = req.user;
+    let id = req.params.id;
+    let query = { user: user._id, _id: id };
+    let payment = yield Payment_1.default.findOne(query);
+    return res.status(200).json({ status: 200, data: { payment } });
+});
+exports.getAppointmentPaymentById = getAppointmentPaymentById;

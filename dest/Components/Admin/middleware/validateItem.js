@@ -7,7 +7,7 @@ exports.itemSchema = {
         name: celebrate_1.Joi.string().required(),
         description: celebrate_1.Joi.string().required(),
         price: celebrate_1.Joi.number().required(),
-        categoryId: celebrate_1.Joi.string().required(),
+        category: celebrate_1.Joi.string().required().valid("toys", "food", "accessories"),
         serialNumber: celebrate_1.Joi.string().required(),
         avaliableQuantity: celebrate_1.Joi.number().required(),
         allowed: celebrate_1.Joi.boolean().required(),

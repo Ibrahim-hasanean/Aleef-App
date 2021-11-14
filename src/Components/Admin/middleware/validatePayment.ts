@@ -8,5 +8,6 @@ export const paymentSchema = {
         exchange: Joi.number().required(),
         paymentType: Joi.string().required().valid("cash", "visa"),
         userId: Joi.string().required(),
+        appointmentId: Joi.string().required(),
     })
 }

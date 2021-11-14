@@ -18,7 +18,7 @@ const getFreeTimes_1 = __importDefault(require("../../../utils/getFreeTimes"));
 const getFreeDoctors_1 = __importDefault(require("../../../utils/getFreeDoctors"));
 const isDateOutWorkTime_1 = __importDefault(require("../../../utils/isDateOutWorkTime"));
 const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { petId, serviceId, appointmentDate, reason, userId, doctorId } = req.body;
+    const { petId, service, appointmentDate, reason, userId, doctorId } = req.body;
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
@@ -30,7 +30,7 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         return res.status(409).json({ status: 409, msg: "there is no free doctors" });
     const newAppontment = yield Appointments_1.default.create({
         pet: petId,
-        service: serviceId,
+        service,
         appointmentDate: handleAppointmentDate,
         reason,
         doctor: doctorId || freeDoctors[0]._id,
@@ -43,7 +43,7 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.addAppointment = addAppointment;
 const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { petId, serviceId, appointmentDate, reason, doctorId, userId } = req.body;
+    const { petId, service, appointmentDate, reason, doctorId, userId } = req.body;
     let appointmentId = req.params.id;
     const appointment = yield Appointments_1.default.findById(appointmentId);
     if (!appointment)
@@ -59,7 +59,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         return res.status(409).json({ status: 409, msg: "there is no free doctors" });
     const newAppontment = yield Appointments_1.default.findByIdAndUpdate(appointmentId, {
         pet: petId,
-        service: serviceId,
+        service,
         appointmentDate: handleAppointmentDate,
         reason,
         doctor: doctorId || freeDoctors[0]._id,
@@ -73,12 +73,12 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.updateAppointment = updateAppointment;
 const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, pageSize, serviceId, doctorId, userId, paymentStatus } = req.query;
+    let { page, pageSize, service, doctorId, userId, paymentStatus } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let query = {};
-    if (serviceId)
-        query.service = serviceId;
+    if (service)
+        query.service = service;
     if (userId)
         query.user = userId;
     if (doctorId)

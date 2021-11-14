@@ -4,8 +4,10 @@ export interface ItemInterface extends mongoose.Document {
     name: string
     description: string
     price: number
-    reviews: number
-    category: ObjectId
+    review: number
+    numberOfReviews: number
+    sumOfReviews: number
+    category: string
     serialNumber: number
     avaliableQuantity: number
     allowed: boolean
@@ -20,8 +22,10 @@ const itemSchema = new Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
     price: { type: Number },
-    reviews: { type: Number },
-    category: { type: mongoose.Types.ObjectId, ref: "itemsCategory" },
+    review: { type: Number, default: 0 },
+    numberOfReviews: { type: Number, default: 0 },
+    sumOfReviews: { type: Number, default: 0 },
+    category: { type: String },
     usersLiked: [{ type: mongoose.Types.ObjectId, ref: "users" }],
     serialNumber: { type: Number },
     avaliableQuantity: { type: Number },

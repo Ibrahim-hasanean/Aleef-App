@@ -10,5 +10,6 @@ exports.paymentSchema = {
         exchange: celebrate_1.Joi.number().required(),
         paymentType: celebrate_1.Joi.string().required().valid("cash", "visa"),
         userId: celebrate_1.Joi.string().required(),
+        appointmentId: celebrate_1.Joi.string().required(),
     })
 };

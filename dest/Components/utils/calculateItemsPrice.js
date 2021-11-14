@@ -21,20 +21,14 @@ function caculateItemsPrice(orderItems) {
             const orderItem = orderItems[i];
             let itemId = orderItem.item;
             const item = yield Item_1.default.findById(itemId);
+            if (!item)
+                throw new Error(`can not pay items, item with id  ${itemId} not found`);
             let itemShippingCost = Number(item.shippingPrice) * Number(orderItem.count);
             let itemCost = Number(item.price) * Number(orderItem.count);
             shippingCost = itemShippingCost + shippingCost;
             itemsCost = itemCost + itemsCost;
         }
         ;
-        // orderItems.forEach(async orderItem => {
-        //     let itemId = orderItem.item as ObjectId;
-        //     const item = await Item.findById(itemId);
-        //     let itemShippingCost = Number(item.shippingPrice) * Number(orderItem.count);
-        //     let itemCost = Number(item.price) * Number(orderItem.count);
-        //     shippingCost = itemShippingCost + shippingCost;
-        //     itemsCost = itemCost + itemsCost;
-        // });
         return { shippingCost, itemsCost, totalCost: itemsCost + shippingCost };
     });
 }

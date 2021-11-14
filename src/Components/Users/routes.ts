@@ -6,11 +6,21 @@ import { addAddress, getAddresses, deleteAddress, updateProfile, changePassword,
 import verifyUser from "./middleware/verifyUser";
 import { petSchema } from "./middleware/PetsValidation";
 import { addPets, deletePet, getPetById, getPets, updatePet } from "./controller/UserPets";
-import { getItems, getItemById, addToWishList, getWishList, removeFromWishList } from "./controller/UserItems";
+import { getItems, getItemById, addToWishList, getWishList, removeFromWishList, reviewItem } from "./controller/UserItems";
 import { paymentSchema } from "./middleware/userPaymentsValidation";
-import { payItem, getPayments, getPaymentById } from "./controller/UserPayments";
-import { addAppointment, getAppointments, deleteAppointments, getAppointmentsById, updateAppointment, getAvaliableTime } from "./controller/UserAppointments";
-import { AppointmentSchema } from "./middleware/appointmentsValidation";
+import { payItem, getPayments, getPaymentById, cancelOrder } from "./controller/UserOrders";
+import {
+    addAppointment,
+    getAppointments,
+    deleteAppointments,
+    getAppointmentsById,
+    updateAppointment,
+    getAvaliableTime,
+    getAppointmentPaymentById,
+    getAppointmentPayments,
+    payAppointment
+} from "./controller/UserAppointments";
+import { AppointmentSchema, appointmentPaymentSchema } from "./middleware/appointmentsValidation";
 const router = Router();
 
 //Auth
@@ -25,6 +35,12 @@ router.patch("/profile", verifyUser, validate(updateProfileSchema), updateProfil
 router.post("/profile/changePassword", verifyUser, validate(changePasswordSchema), changePassword);
 router.post("/notifications", verifyUser, validate(notificationSettingsSchema), notificationSettings);
 
+
+// Appontment Payments
+router.post("/appointments/payments", verifyUser, validate(appointmentPaymentSchema), payAppointment);
+router.get("/appointments/payments", verifyUser, getAppointmentPayments);
+router.get("/appointments/payments/:id", verifyUser, getAppointmentPaymentById);
+
 // Appointment routes
 router.post("/appointments", verifyUser, validate(AppointmentSchema), addAppointment);
 router.get("/appointments", verifyUser, getAppointments);
@@ -34,18 +50,20 @@ router.get("/appointments/:id", verifyUser, getAppointmentsById);
 router.delete("/appointments/:id", verifyUser, deleteAppointments);
 
 
+//items payment
+router.post("/orders", verifyUser, validate(paymentSchema), payItem);
+router.get("/orders", verifyUser, getPayments);
+router.get("/orders/:id", verifyUser, getPaymentById);
+router.delete("/orders/:id", verifyUser, cancelOrder);
+
 //items
 router.get("/items", verifyUser, getItems);
 router.get("/items/:id", verifyUser, getItemById);
 router.post("/items/:id/like", verifyUser, addToWishList);
 router.delete("/items/:id/like", verifyUser, removeFromWishList);
+router.post("/items/:id/review", verifyUser, reviewItem);
 router.get("/items/:id/like", verifyUser, getWishList);
 
-
-//items payment
-router.post("/items/pay", verifyUser, validate(paymentSchema), payItem);
-router.get("/items/pay", verifyUser, getPayments);
-router.get("/items/pay/:id", verifyUser, getPaymentById);
 
 
 //user Address

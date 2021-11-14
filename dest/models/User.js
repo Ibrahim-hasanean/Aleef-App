@@ -36,9 +36,10 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const userSchema = new mongoose_1.Schema({
     fullName: { type: String, required: true },
     phoneNumber: { type: String, required: true, unique: true },
-    email: { type: String, unique: true },
+    email: { type: String, default: "" },
     password: { type: String, required: true },
     code: { type: String },
+    language: { type: String },
     isVerify: { type: Boolean, default: false },
     socialMediaLoggedIn: { type: Boolean },
     imageUrl: { type: String },

@@ -11,6 +11,9 @@ const items_1 = require("./controller/Items/items");
 const services_1 = require("./controller/services/services");
 const staff_1 = require("./controller/staff/staff");
 const appointments_1 = require("./controller/appointments/appointments");
+const AppointmentsPayment_1 = require("./controller/AppointmentsPayment/AppointmentsPayment");
+const Payments_1 = require("./controller/Payments/Payments");
+const Orders_1 = require("./controller/Orders/Orders");
 const auth_1 = require("./controller/auth/auth");
 const validateAuth_1 = require("./middleware/validateAuth");
 const validateStaff_1 = require("./middleware/validateStaff");
@@ -20,9 +23,25 @@ const verifyStoreManagement_1 = __importDefault(require("./middleware/verifyStor
 const validateItem_1 = require("./middleware/validateItem");
 const validateName_1 = require("./middleware/validateName");
 const validateAppointment_1 = require("./middleware/validateAppointment");
+const validatePayment_1 = require("./middleware/validatePayment");
+const validateOrdres_1 = require("./middleware/validateOrdres");
 const router = (0, express_1.Router)();
 // auth routers
 router.post("/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
+// payments 
+router.get("/payments", Payments_1.getPayments);
+router.get("/payments/:id", Payments_1.getPaymentById);
+//orders 
+router.post("/orders", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateOrdres_1.orderSchema), Orders_1.addOrder);
+router.get("/orders", verifyStoreManagement_1.default, Orders_1.getOrders);
+router.post("/orders/:id/status", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateOrdres_1.orderStatusSchema), Orders_1.setStatus);
+router.get("/orders/:id", verifyStoreManagement_1.default, Orders_1.getOrderById);
+// Appointments Payments
+router.post("/appointments/payments", verifyRecieption_1.default, (0, validateAuth_1.validate)(validatePayment_1.paymentSchema), AppointmentsPayment_1.addAppointmentsPayment);
+router.patch("/appointments/payments/:id", verifyRecieption_1.default, (0, validateAuth_1.validate)(validatePayment_1.paymentSchema), AppointmentsPayment_1.updateAppointmentsPayment);
+router.get("/appointments/payments", verifyRecieption_1.default, AppointmentsPayment_1.getAppointmentsPayments);
+router.get("/appointments/payments/:id", verifyRecieption_1.default, AppointmentsPayment_1.getAppointmentsPaymentById);
+router.delete("/appointments/payments/:id", verifyRecieption_1.default, AppointmentsPayment_1.deleteAppointmentsPayment);
 // appointments routes 
 router.get("/appointments", verifyRecieption_1.default, appointments_1.getAppointments);
 router.post("/appointments", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.addAppointment);

@@ -6,7 +6,6 @@ export interface OrdersItemsInterface extends mongoose.Document {
     count: number
 }
 
-
 const orderItemsSchema = new Schema({
     item: { type: mongoose.Types.ObjectId, ref: "items" },
     count: { type: Number }

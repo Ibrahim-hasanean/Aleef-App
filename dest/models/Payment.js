@@ -26,7 +26,9 @@ const payemntSchema = new mongoose_1.Schema({
     paymentAmmount: { type: Number, required: true },
     exchange: { type: Number },
     paymentType: { type: String, required: true },
-    user: { type: mongoose_1.default.Types.ObjectId, ref: "users" }
-});
+    user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
+    appointment: { type: mongoose_1.default.Types.ObjectId, ref: "appointments" },
+    order: { type: mongoose_1.default.Types.ObjectId, ref: "orders" }
+}, { timestamps: true });
 const Payment = mongoose_1.default.model("payments", payemntSchema);
 exports.default = Payment;

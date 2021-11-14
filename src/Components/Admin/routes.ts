@@ -6,7 +6,15 @@ import { addItem, deleteItem, getItemById, getItems, updateItem } from "./contro
 import { addService, deleteService, getServiceById, getServices } from "./controller/services/services";
 import { addStaff, defaultAdmin, deleteStaffMember, getStaffMemeberById, getStaffMemebers, updateStaff } from "./controller/staff/staff";
 import { addAppointment, deleteAppointments, getAppointments, getAppointmentsById, getAvaliableTime, updateAppointment, getAvaliableDoctrs } from "./controller/appointments/appointments";
-import { addPayment } from "./controller/Payment/Payment";
+import {
+    addAppointmentsPayment,
+    deleteAppointmentsPayment,
+    getAppointmentsPaymentById,
+    getAppointmentsPayments,
+    updateAppointmentsPayment
+} from "./controller/AppointmentsPayment/AppointmentsPayment";
+import { getPaymentById, getPayments } from "./controller/Payments/Payments";
+import { addOrder, getOrderById, getOrders, setStatus } from "./controller/Orders/Orders";
 import { login } from "./controller/auth/auth";
 import { loginSchema, validate } from "./middleware/validateAuth";
 import { addStaffSchema } from "./middleware/validateStaff";
@@ -17,11 +25,30 @@ import { itemSchema } from "./middleware/validateItem";
 import { nameSchema, nameTypeSchema } from "./middleware/validateName";
 import { AppointmentSchema } from "./middleware/validateAppointment";
 import { paymentSchema } from "./middleware/validatePayment";
+import { orderSchema, orderStatusSchema } from "./middleware/validateOrdres";
 
 const router = Router();
 
 // auth routers
 router.post("/login", validate(loginSchema), login);
+
+// payments 
+router.get("/payments", getPayments);
+router.get("/payments/:id", getPaymentById);
+
+//orders 
+router.post("/orders", verifyStoreManagement, validate(orderSchema), addOrder);
+router.get("/orders", verifyStoreManagement, getOrders);
+router.post("/orders/:id/status", verifyStoreManagement, validate(orderStatusSchema), setStatus);
+router.get("/orders/:id", verifyStoreManagement, getOrderById);
+
+
+// Appointments Payments
+router.post("/appointments/payments", verifyRecieption, validate(paymentSchema), addAppointmentsPayment);
+router.patch("/appointments/payments/:id", verifyRecieption, validate(paymentSchema), updateAppointmentsPayment);
+router.get("/appointments/payments", verifyRecieption, getAppointmentsPayments);
+router.get("/appointments/payments/:id", verifyRecieption, getAppointmentsPaymentById);
+router.delete("/appointments/payments/:id", verifyRecieption, deleteAppointmentsPayment);
 
 // appointments routes 
 router.get("/appointments", verifyRecieption, getAppointments);

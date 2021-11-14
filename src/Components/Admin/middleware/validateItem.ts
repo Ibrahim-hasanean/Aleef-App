@@ -5,7 +5,7 @@ export const itemSchema = {
         name: Joi.string().required(),
         description: Joi.string().required(),
         price: Joi.number().required(),
-        categoryId: Joi.string().required(),
+        category: Joi.string().required().valid("toys", "food", "accessories"),
         serialNumber: Joi.string().required(),
         avaliableQuantity: Joi.number().required(),
         allowed: Joi.boolean().required(),

@@ -6,7 +6,7 @@ import getFreeDoctors from "../../../utils/getFreeDoctors";
 import isDateOutWorkTime from "../../../utils/isDateOutWorkTime";
 
 export const addAppointment = async (req: Request, res: Response, next: NextFunction) => {
-    const { petId, serviceId, appointmentDate, reason, userId, doctorId } = req.body;
+    const { petId, service, appointmentDate, reason, userId, doctorId } = req.body;
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
@@ -16,7 +16,7 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
     if (freeDoctors.length === 0) return res.status(409).json({ status: 409, msg: "there is no free doctors" });
     const newAppontment = await Appointments.create({
         pet: petId,
-        service: serviceId,
+        service,
         appointmentDate: handleAppointmentDate,
         reason,
         doctor: doctorId || freeDoctors[0]._id,
@@ -29,7 +29,7 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
 }
 
 export const updateAppointment = async (req: Request, res: Response, next: NextFunction) => {
-    const { petId, serviceId, appointmentDate, reason, doctorId, userId } = req.body;
+    const { petId, service, appointmentDate, reason, doctorId, userId } = req.body;
     let appointmentId = req.params.id;
     const appointment = await Appointments.findById(appointmentId);
     if (!appointment) return res.status(400).json({ status: 400, msg: "apppointment not found" });
@@ -42,7 +42,7 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
     if (freeDoctors.length === 0) return res.status(409).json({ status: 409, msg: "there is no free doctors" });
     const newAppontment = await Appointments.findByIdAndUpdate(appointmentId, {
         pet: petId,
-        service: serviceId,
+        service,
         appointmentDate: handleAppointmentDate,
         reason,
         doctor: doctorId || freeDoctors[0]._id,
@@ -56,11 +56,11 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
 }
 
 export const getAppointments = async (req: Request, res: Response, next: NextFunction) => {
-    let { page, pageSize, serviceId, doctorId, userId, paymentStatus } = req.query;
+    let { page, pageSize, service, doctorId, userId, paymentStatus } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let query: any = {};
-    if (serviceId) query.service = serviceId;
+    if (service) query.service = service;
     if (userId) query.user = userId;
     if (doctorId) query.doctor = doctorId;
     if (paymentStatus) query.paymentStatus = paymentStatus;
@@ -73,7 +73,6 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
     let id = req.params.id;
     const appointment = await Appointments.findById(id);
     return res.status(200).json({ status: 200, data: { appointment } });
-
 }
 
 export const deleteAppointments = async (req: Request, res: Response, next: NextFunction) => {
