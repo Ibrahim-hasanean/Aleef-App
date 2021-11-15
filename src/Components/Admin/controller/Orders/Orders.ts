@@ -43,6 +43,7 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
     }
     let orders = await Order
         .find(query)
+        .sort({ createdAt: "desc" })
         .populate({
             path: "items",
             populate: {
@@ -50,9 +51,10 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
                 // match: { name: { "$regex": text || "", "$options": "i" } } 
             }
         })
-        .populate("user")
+        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] })
         .skip(skip)
-        .limit(limitNumber).exec();
+        .limit(limitNumber)
+        .exec();
     return res.status(200).json({ status: 200, data: { orders } });
 }
 

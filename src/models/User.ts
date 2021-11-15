@@ -20,6 +20,7 @@ export interface UserInterface extends mongoose.Document {
     vaccinationReminder: boolean,
     medacinReminder: boolean,
     appointmentReminder: boolean,
+    isSuspend: boolean,
     payments: ObjectId[],
     pets: ObjectId[] | PetsInterface[],
     orders: ObjectId[],
@@ -38,6 +39,7 @@ const userSchema = new Schema({
     language: { type: String },
     isVerify: { type: Boolean, default: false },
     socialMediaLoggedIn: { type: Boolean },
+    isSuspend: { type: Boolean, default: false },
     imageUrl: { type: String },
     muteAllNotification: { type: Boolean, default: false },
     muteChat: { type: Boolean, default: false },
@@ -68,6 +70,7 @@ userSchema.methods.comaprePassword = async function (password: string): Promise<
 
 
 const User = mongoose.model<UserInterface>("users", userSchema);
+
 
 export default User;
 

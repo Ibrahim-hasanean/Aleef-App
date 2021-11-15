@@ -56,22 +56,32 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
 }
 
 export const getAppointments = async (req: Request, res: Response, next: NextFunction) => {
-    let { page, pageSize, service, doctorId, userId, paymentStatus } = req.query;
+    let { page, pageSize, service, doctorId, userId, paymentStatus, petId } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let query: any = {};
     if (service) query.service = service;
     if (userId) query.user = userId;
     if (doctorId) query.doctor = doctorId;
+    if (petId) query.pet = petId;
     if (paymentStatus) query.paymentStatus = paymentStatus;
-    const appointments = await Appointments.find(query).populate("doctor").sort({ appointmentDate: "desc" }).skip(skip).limit(numberPageSize);
+    const appointments = await Appointments.find(query)
+        .sort({ appointmentDate: "desc" })
+        .skip(skip)
+        .limit(numberPageSize)
+        .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
+        .populate({ path: "pet" })
+        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { appointments } });
 }
 
 
 export const getAppointmentsById = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
-    const appointment = await Appointments.findById(id);
+    const appointment = await Appointments.findById(id)
+        .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
+        .populate({ path: "pet" })
+        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { appointment } });
 }
 

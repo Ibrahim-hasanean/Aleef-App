@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Staff, { StafInterface } from "../../../../models/Staff";
-
+import mongoose from "mongoose";
 export const addStaff = async (req: Request, res: Response, next: NextFunction) => {
     const { name, cardNumber, phoneNumber, email, role, staffMemberId, password } = req.body;
     const isPhoneNumberExist = await Staff.findOne({ phoneNumber });
@@ -43,12 +43,21 @@ export const updateStaff = async (req: Request, res: Response, next: NextFunctio
 }
 
 export const getStaffMemebers = async (req: Request, res: Response, next: NextFunction) => {
-    const staffMembers = await Staff.find({});
+    let { text, cardNumber, phoneNumber } = req.query;
+    let query: any = {};
+    if (text) {
+        query = { ...query, $or: [{ name: { $regex: text, $options: "i" } }, { email: { $regex: text, $options: "i" } }] }
+    };
+    if (cardNumber) query.cardNumber = cardNumber;
+    if (phoneNumber) query.phoneNumber = phoneNumber;
+    const staffMembers = await Staff.find(query);
     return res.status(200).json({ status: 200, data: { staffMembers } });
 }
 
 export const getStaffMemeberById = async (req: Request, res: Response, next: NextFunction) => {
     const staffId = req.params.id;
+    if (!mongoose.isValidObjectId(staffId))
+        return res.status(200).json({ status: 200, data: { staffMember: null } });
     const staffMember = await Staff.findById(staffId);
     return res.status(200).json({ status: 200, data: { staffMember } });
 }

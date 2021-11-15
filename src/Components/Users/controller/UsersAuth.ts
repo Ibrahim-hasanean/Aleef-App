@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import generateCode from "../../utils/GenerateCode";
 require("dotenv").config();
 
-
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     const { fullName, phoneNumber, password } = req.body;
     const isExist: UserInterface | null = await User.findOne({ phoneNumber });

@@ -32,12 +32,22 @@ export const getPayments = async (req: Request, res: Response, next: NextFunctio
         handleToDate.setHours(23);
         query = { ...query, createdAt: { ...query.createdAt, $lte: handleToDate } };
     }
-    let payments: PaymentInterFace[] = await Payment.find(query).skip(skip).limit(limitNumber).populate("user");
+    let payments: PaymentInterFace[] = await Payment
+        .find(query)
+        .sort({ createdAt: "descending" })
+        .skip(skip)
+        .limit(limitNumber)
+        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
+        .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
+        .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
     return res.status(200).json({ status: 200, data: { payments } });
 }
 
 export const getPaymentById = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
-    let payment: PaymentInterFace | null = await Payment.findById(id);
+    let payment: PaymentInterFace | null = await Payment.findById(id)
+        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
+        .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
+        .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
     return res.status(200).json({ status: 200, data: { payment } });
 }

@@ -133,6 +133,7 @@ export const payAppointment = async (req: Request, res: Response, next: NextFunc
         appointment: appointmentId
     })
     isAppointmentExist.payment = newPayment._id;
+    isAppointmentExist.paymentStatus = "Completed";
     await isAppointmentExist.save();
     return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
 }

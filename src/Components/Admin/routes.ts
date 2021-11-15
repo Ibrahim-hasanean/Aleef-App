@@ -15,26 +15,42 @@ import {
 } from "./controller/AppointmentsPayment/AppointmentsPayment";
 import { getPaymentById, getPayments } from "./controller/Payments/Payments";
 import { addOrder, getOrderById, getOrders, setStatus } from "./controller/Orders/Orders";
+import { getUsers, getUserById, addNewUser, updateUser, suspendUser } from "./controller/Users/Users";
+import { getPets } from "./controller/Pets/Pet";
 import { login } from "./controller/auth/auth";
 import { loginSchema, validate } from "./middleware/validateAuth";
 import { addStaffSchema } from "./middleware/validateStaff";
 import verifyAdmin from "./middleware/verifyAdmin";
 import verifyRecieption from "./middleware/verifyRecieption";
 import verifyStoreManagement from "./middleware/verifyStoreManagement";
+import verifyStaffMember from "./middleware/verifyStaffMember";
 import { itemSchema } from "./middleware/validateItem";
 import { nameSchema, nameTypeSchema } from "./middleware/validateName";
 import { AppointmentSchema } from "./middleware/validateAppointment";
 import { paymentSchema } from "./middleware/validatePayment";
 import { orderSchema, orderStatusSchema } from "./middleware/validateOrdres";
+import { addClientSchema } from "./middleware/validateClient";
 
 const router = Router();
 
 // auth routers
 router.post("/login", validate(loginSchema), login);
 
+
+//pets 
+router.get("/pets", verifyStaffMember, getPets);
+
+
+// clients 
+router.post("/clients", verifyStaffMember, validate(addClientSchema), addNewUser);
+router.patch("/clients/:id", verifyStaffMember, validate(addClientSchema), updateUser);
+router.get("/clients", verifyStaffMember, getUsers);
+router.post("/clients/:id/suspend", verifyStaffMember, suspendUser);
+router.get("/clients/:id", verifyStaffMember, getUserById);
+
 // payments 
-router.get("/payments", getPayments);
-router.get("/payments/:id", getPaymentById);
+router.get("/payments", verifyRecieption, getPayments);
+router.get("/payments/:id", verifyRecieption, getPaymentById);
 
 //orders 
 router.post("/orders", verifyStoreManagement, validate(orderSchema), addOrder);
@@ -51,13 +67,13 @@ router.get("/appointments/payments/:id", verifyRecieption, getAppointmentsPaymen
 router.delete("/appointments/payments/:id", verifyRecieption, deleteAppointmentsPayment);
 
 // appointments routes 
-router.get("/appointments", verifyRecieption, getAppointments);
-router.post("/appointments", verifyRecieption, validate(AppointmentSchema), addAppointment);
-router.patch("/appointments", verifyRecieption, validate(AppointmentSchema), updateAppointment);
-router.get("/appointments/avaliable", verifyRecieption, getAvaliableTime);
-router.get("/appointments/doctors", verifyRecieption, getAvaliableDoctrs);
-router.get("/appointments/:id", verifyRecieption, getAppointmentsById);
-router.delete("/appointments/:id", verifyRecieption, deleteAppointments);
+router.get("/appointments", verifyStaffMember, getAppointments);
+router.post("/appointments", verifyStaffMember, validate(AppointmentSchema), addAppointment);
+router.patch("/appointments", verifyStaffMember, validate(AppointmentSchema), updateAppointment);
+router.get("/appointments/avaliable", verifyStaffMember, getAvaliableTime);
+router.get("/appointments/doctors", verifyStaffMember, getAvaliableDoctrs);
+router.get("/appointments/:id", verifyStaffMember, getAppointmentsById);
+router.delete("/appointments/:id", verifyStaffMember, deleteAppointments);
 
 // Staff routes
 router.post("/defaultAdmin", defaultAdmin);

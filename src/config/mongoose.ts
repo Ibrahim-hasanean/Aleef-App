@@ -8,3 +8,5 @@ mongoose.connect(databaseUrl).then(() => {
 }).catch(e => {
     console.log(e);
 })
+
+export default mongoose;
