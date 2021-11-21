@@ -73,7 +73,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.updateAppointment = updateAppointment;
 const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, pageSize, service, doctorId, userId, paymentStatus } = req.query;
+    let { page, pageSize, service, doctorId, userId, paymentStatus, petId } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let query = {};
@@ -83,15 +83,26 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         query.user = userId;
     if (doctorId)
         query.doctor = doctorId;
+    if (petId)
+        query.pet = petId;
     if (paymentStatus)
         query.paymentStatus = paymentStatus;
-    const appointments = yield Appointments_1.default.find(query).populate("doctor").sort({ appointmentDate: "desc" }).skip(skip).limit(numberPageSize);
+    const appointments = yield Appointments_1.default.find(query)
+        .sort({ appointmentDate: "desc" })
+        .skip(skip)
+        .limit(numberPageSize)
+        .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
+        .populate({ path: "pet" })
+        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { appointments } });
 });
 exports.getAppointments = getAppointments;
 const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
-    const appointment = yield Appointments_1.default.findById(id);
+    const appointment = yield Appointments_1.default.findById(id)
+        .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
+        .populate({ path: "pet" })
+        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { appointment } });
 });
 exports.getAppointmentsById = getAppointmentsById;

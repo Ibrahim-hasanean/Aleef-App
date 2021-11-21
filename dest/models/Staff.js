@@ -31,8 +31,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.dayHoures = exports.WorkHoures = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const dayHouresSchema = new mongoose_1.Schema({
+    from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
+    to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
+    isActive: { type: Boolean, default: true }
+});
+const weekenDayHouresSchema = new mongoose_1.Schema({
+    from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
+    to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
+    isActive: { type: Boolean, default: false }
+});
+const workHouresSchema = new mongoose_1.Schema({
+    saturday: { type: weekenDayHouresSchema, default: () => ({}) },
+    sunday: { type: dayHouresSchema, default: () => ({}) },
+    monday: { type: dayHouresSchema, default: () => ({}) },
+    tuesday: { type: dayHouresSchema, default: () => ({}) },
+    wednesday: { type: dayHouresSchema, default: () => ({}) },
+    thursday: { type: dayHouresSchema, default: () => ({}) },
+    friday: { type: weekenDayHouresSchema, default: () => ({}) },
+});
 const staffSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     password: { type: String, required: true },
@@ -41,12 +61,16 @@ const staffSchema = new mongoose_1.Schema({
     phoneNumber: { type: String, required: true },
     email: { type: String, required: true },
     role: { type: String, required: true },
-    muteChat: { type: Boolean },
-    allowReceivingMessagesOutOfWorksHours: { type: Boolean },
-    newOrdersNotifications: { type: Boolean },
-    canceledOrdersNotifications: { type: Boolean },
-    newReviewsNotifications: { type: Boolean },
-    itemsAlmostOutOfStockNotification: { type: Boolean },
+    muteChat: { type: Boolean, default: false },
+    allowReceivingMessagesOutOfWorksHours: { type: Boolean, default: false },
+    newOrdersNotifications: { type: Boolean, default: false },
+    canceledOrdersNotifications: { type: Boolean, default: false },
+    newReviewsNotifications: { type: Boolean, default: false },
+    itemsAlmostOutOfStockNotification: { type: Boolean, default: false },
+    workHoures: {
+        type: workHouresSchema,
+        default: () => ({})
+    }
 }, { timestamps: true });
 staffSchema.pre("validate", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -66,4 +90,6 @@ staffSchema.methods.comaprePassword = function (password) {
     });
 };
 const Staff = mongoose_1.default.model("staff", staffSchema);
+exports.WorkHoures = mongoose_1.default.model("workHoures", workHouresSchema);
+exports.dayHoures = mongoose_1.default.model("dayHoures", dayHouresSchema);
 exports.default = Staff;

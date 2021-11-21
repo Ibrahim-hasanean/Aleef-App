@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import Staff, { StafInterface } from "../../../../models/Staff";
+import Staff, { StafInterface, dayHoures, WorkHoures } from "../../../../models/Staff";
 import mongoose from "mongoose";
 export const addStaff = async (req: Request, res: Response, next: NextFunction) => {
     const { name, cardNumber, phoneNumber, email, role, staffMemberId, password } = req.body;
@@ -68,6 +68,35 @@ export const deleteStaffMember = async (req: Request, res: Response, next: NextF
     return res.status(200).json({ status: 200, msg: "staff member deleted sucessfully" });
 }
 
+export const getWorkHoures = async (req: Request, res: Response, next: NextFunction) => {
+    let id = req.params.id;
+    if (!mongoose.isValidObjectId(id))
+        return res.status(200).json({ status: 200, data: { staffMember: null } });
+    let staff: StafInterface | null = await Staff.findById(id);
+    return res.status(200).json({ status: 200, data: { workHoures: staff ? staff.workHoures : null } });
+}
+
+
+export const setWorkHoures = async (req: Request, res: Response, next: NextFunction) => {
+    let id = req.params.id;
+    let { saturday, sunday, monday, tuesday, wednesday, thursday, friday } = req.body;
+    if (!mongoose.isValidObjectId(id))
+        return res.status(200).json({ status: 200, data: { staffMember: null } });
+    let staff: StafInterface | null = await Staff.findById(id) as StafInterface;
+    if (!staff) return res.status(400).json({ status: 400, msg: "staff memeber not found" });
+    let workHoures = staff?.workHoures
+    workHoures.saturday = { isActive: saturday.isActive, from: saturday.from, to: saturday.to };
+    workHoures.sunday = { isActive: sunday.isActive, from: sunday.from, to: sunday.to };
+    workHoures.monday = { isActive: monday.isActive, from: monday.from, to: monday.to };
+    workHoures.tuesday = { isActive: tuesday.isActive, from: tuesday.from, to: tuesday.to };
+    workHoures.wednesday = { isActive: wednesday.isActive, from: wednesday.from, to: wednesday.to };
+    workHoures.thursday = { isActive: thursday.isActive, from: thursday.from, to: thursday.to };
+    workHoures.friday = { isActive: friday.isActive, from: friday.from, to: friday.to };
+    staff.workHoures = workHoures;
+    await staff?.save();
+    return res.status(200).json({ status: 200, data: { workHoures: staff.workHoures } });
+}
+
 
 export const defaultAdmin = async (req: Request, res: Response, next: NextFunction) => {
     const newStaff = await Staff.create({ name: "ibrahim", password: "123456789", cardNumber: 123456789, phoneNumber: "0597801611", email: "ibrahim@gmail.com", role: "admin", staffMemberId: "748596" });
@@ -77,3 +106,4 @@ export const defaultAdmin = async (req: Request, res: Response, next: NextFuncti
         }
     });
 }
+

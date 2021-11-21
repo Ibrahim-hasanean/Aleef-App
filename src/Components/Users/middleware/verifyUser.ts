@@ -15,6 +15,7 @@ export default async function verifyUser(req: Request, res: Response, next: Next
         req.user = user;
         next()
     } catch (error) {
+        console.log(error)
         return res.status(401).json({ status: 401, msg: "unauthorized" });
     }
 

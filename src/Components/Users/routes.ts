@@ -5,8 +5,8 @@ import { register, login, forgetPassword, verifyCode, resetPassword } from "./co
 import { addAddress, getAddresses, deleteAddress, updateProfile, changePassword, notificationSettings } from "./controller/UserProfile";
 import verifyUser from "./middleware/verifyUser";
 import { petSchema } from "./middleware/PetsValidation";
-import { addPets, deletePet, getPetById, getPets, updatePet } from "./controller/UserPets";
-import { getItems, getItemById, addToWishList, getWishList, removeFromWishList, reviewItem } from "./controller/UserItems";
+import { addPets, deletePet, getPetById, getPets, updatePet, getBreeds, getPetsTypes } from "./controller/UserPets";
+import { getItems, getItemById, addToWishList, getWishList, removeFromWishList, reviewItem, removeAllFromWishList } from "./controller/UserItems";
 import { paymentSchema } from "./middleware/userPaymentsValidation";
 import { payItem, getPayments, getPaymentById, cancelOrder } from "./controller/UserOrders";
 import {
@@ -18,7 +18,8 @@ import {
     getAvaliableTime,
     getAppointmentPaymentById,
     getAppointmentPayments,
-    payAppointment
+    payAppointment,
+    getReminder
 } from "./controller/UserAppointments";
 import { AppointmentSchema, appointmentPaymentSchema } from "./middleware/appointmentsValidation";
 const router = Router();
@@ -43,6 +44,7 @@ router.get("/appointments/payments/:id", verifyUser, getAppointmentPaymentById);
 
 // Appointment routes
 router.post("/appointments", verifyUser, validate(AppointmentSchema), addAppointment);
+router.get("/appointments/reminders", verifyUser, getReminder);
 router.get("/appointments", verifyUser, getAppointments);
 router.get("/appointments/avaliable", verifyUser, getAvaliableTime);
 router.patch("/appointments/:id", verifyUser, validate(AppointmentSchema), updateAppointment);
@@ -58,11 +60,12 @@ router.delete("/orders/:id", verifyUser, cancelOrder);
 
 //items
 router.get("/items", verifyUser, getItems);
-router.get("/items/:id", verifyUser, getItemById);
 router.post("/items/:id/like", verifyUser, addToWishList);
 router.delete("/items/:id/like", verifyUser, removeFromWishList);
 router.post("/items/:id/review", verifyUser, reviewItem);
-router.get("/items/:id/like", verifyUser, getWishList);
+router.delete("/items/like", verifyUser, removeAllFromWishList);
+router.get("/items/wishlist", verifyUser, getWishList);
+router.get("/items/:id", verifyUser, getItemById);
 
 
 
@@ -73,6 +76,8 @@ router.delete("/addresses/:id", verifyUser, deleteAddress);
 
 //pets routes
 router.post("/pets", verifyUser, validate(petSchema), addPets);
+router.get("/pets/breeds", verifyUser, getBreeds);
+router.get("/pets/types", verifyUser, getPetsTypes);
 router.get("/pets", verifyUser, getPets);
 router.get("/pets/:id", verifyUser, getPetById);
 router.delete("/pets/:id", verifyUser, deletePet);

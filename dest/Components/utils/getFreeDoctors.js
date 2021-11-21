@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Appointments_1 = __importDefault(require("../../models/Appointments"));
+const moment_1 = __importDefault(require("moment"));
 const Staff_1 = __importDefault(require("../../models/Staff"));
 function getFreeDoctors(appointmentDate, handleAppointmentDate) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -24,6 +25,9 @@ function getFreeDoctors(appointmentDate, handleAppointmentDate) {
         after15MinAppointment.setMinutes(handleAppointmentDate.getMinutes() + 15);
         after15MinAppointment.setSeconds(0);
         after15MinAppointment.setMilliseconds(0);
+        let time = (0, moment_1.default)(appointmentDate);
+        let day = String(time.format("dddd")).toLowerCase();
+        console.log(day);
         const isAppointmentDateHold = yield Appointments_1.default
             .find({
             $or: [
@@ -35,7 +39,8 @@ function getFreeDoctors(appointmentDate, handleAppointmentDate) {
         const freeDoctors = yield Staff_1.default.find({
             _id: { $nin: busyDoctors }, role: "doctor"
         });
-        return freeDoctors;
+        const filterFreeDoctors = freeDoctors.filter((doctor) => doctor.workHoures.get(day).isActive);
+        return filterFreeDoctors;
     });
 }
 exports.default = getFreeDoctors;

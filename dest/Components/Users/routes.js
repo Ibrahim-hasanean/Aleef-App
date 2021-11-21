@@ -33,6 +33,7 @@ router.get("/appointments/payments", verifyUser_1.default, UserAppointments_1.ge
 router.get("/appointments/payments/:id", verifyUser_1.default, UserAppointments_1.getAppointmentPaymentById);
 // Appointment routes
 router.post("/appointments", verifyUser_1.default, (0, userAuthValidate_1.validate)(appointmentsValidation_1.AppointmentSchema), UserAppointments_1.addAppointment);
+router.get("/appointments/reminders", verifyUser_1.default, UserAppointments_1.getReminder);
 router.get("/appointments", verifyUser_1.default, UserAppointments_1.getAppointments);
 router.get("/appointments/avaliable", verifyUser_1.default, UserAppointments_1.getAvaliableTime);
 router.patch("/appointments/:id", verifyUser_1.default, (0, userAuthValidate_1.validate)(appointmentsValidation_1.AppointmentSchema), UserAppointments_1.updateAppointment);
@@ -45,17 +46,20 @@ router.get("/orders/:id", verifyUser_1.default, UserOrders_1.getPaymentById);
 router.delete("/orders/:id", verifyUser_1.default, UserOrders_1.cancelOrder);
 //items
 router.get("/items", verifyUser_1.default, UserItems_1.getItems);
-router.get("/items/:id", verifyUser_1.default, UserItems_1.getItemById);
 router.post("/items/:id/like", verifyUser_1.default, UserItems_1.addToWishList);
 router.delete("/items/:id/like", verifyUser_1.default, UserItems_1.removeFromWishList);
 router.post("/items/:id/review", verifyUser_1.default, UserItems_1.reviewItem);
-router.get("/items/:id/like", verifyUser_1.default, UserItems_1.getWishList);
+router.delete("/items/like", verifyUser_1.default, UserItems_1.removeAllFromWishList);
+router.get("/items/wishlist", verifyUser_1.default, UserItems_1.getWishList);
+router.get("/items/:id", verifyUser_1.default, UserItems_1.getItemById);
 //user Address
 router.post("/addresses", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.addAddressSchema), UserProfile_1.addAddress);
 router.get("/addresses", verifyUser_1.default, UserProfile_1.getAddresses);
 router.delete("/addresses/:id", verifyUser_1.default, UserProfile_1.deleteAddress);
 //pets routes
 router.post("/pets", verifyUser_1.default, (0, userAuthValidate_1.validate)(PetsValidation_1.petSchema), UserPets_1.addPets);
+router.get("/pets/breeds", verifyUser_1.default, UserPets_1.getBreeds);
+router.get("/pets/types", verifyUser_1.default, UserPets_1.getPetsTypes);
 router.get("/pets", verifyUser_1.default, UserPets_1.getPets);
 router.get("/pets/:id", verifyUser_1.default, UserPets_1.getPetById);
 router.delete("/pets/:id", verifyUser_1.default, UserPets_1.deletePet);

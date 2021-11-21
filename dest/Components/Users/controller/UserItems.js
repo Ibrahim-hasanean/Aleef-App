@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.removeFromWishList = exports.addToWishList = exports.reviewItem = exports.getWishList = exports.getItemById = exports.getItems = void 0;
+exports.removeAllFromWishList = exports.removeFromWishList = exports.addToWishList = exports.reviewItem = exports.getWishList = exports.getItemById = exports.getItems = void 0;
 const Item_1 = __importDefault(require("../../../models/Item"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const isLikeItem_1 = __importDefault(require("../../utils/isLikeItem"));
 const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, category, text } = req.query;
+    let user = req.user;
     let query = {};
     if (category)
         query.category = category;
@@ -26,15 +28,21 @@ const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
     const items = yield Item_1.default.find(query).skip(skip).limit(limitNumber);
-    return res.status(200).json({ status: 200, data: { items } });
+    const checkItems = (0, isLikeItem_1.default)(items, user);
+    return res.status(200).json({ status: 200, data: { checkItems } });
 });
 exports.getItems = getItems;
 const getItemById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const itemId = req.params.id;
+    let user = req.user;
     if (!mongoose_1.default.isValidObjectId(itemId)) {
         return res.status(200).json({ status: 200, data: { item: null } });
     }
-    const item = yield Item_1.default.findById(itemId);
+    let item = yield Item_1.default.findById(itemId);
+    if (item) {
+        let isLikeItem = user.wishList.some(x => x.toString() === String(item._id));
+        item = Object.assign(Object.assign({}, item._doc), { isLikeItem });
+    }
     return res.status(200).json({ status: 200, data: { item } });
 });
 exports.getItemById = getItemById;
@@ -104,3 +112,10 @@ const removeFromWishList = (req, res, next) => __awaiter(void 0, void 0, void 0,
     return res.status(200).json({ status: 200, data: { item } });
 });
 exports.removeFromWishList = removeFromWishList;
+const removeAllFromWishList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = req.user;
+    user.wishList = [];
+    yield user.save();
+    return res.status(200).json({ status: 200, msg: "all items removed successfully from wishlist" });
+});
+exports.removeAllFromWishList = removeAllFromWishList;

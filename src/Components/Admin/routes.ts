@@ -4,7 +4,7 @@ import { addBreed, deletebreed, getbreeds } from "./controller/Pets/Breeds";
 import { addItemCategory, getItemsCategory, deleteCategory } from "./controller/Items/ItemsCategory";
 import { addItem, deleteItem, getItemById, getItems, updateItem } from "./controller/Items/items";
 import { addService, deleteService, getServiceById, getServices } from "./controller/services/services";
-import { addStaff, defaultAdmin, deleteStaffMember, getStaffMemeberById, getStaffMemebers, updateStaff } from "./controller/staff/staff";
+import { addStaff, defaultAdmin, deleteStaffMember, getStaffMemeberById, getStaffMemebers, updateStaff, getWorkHoures, setWorkHoures } from "./controller/staff/staff";
 import { addAppointment, deleteAppointments, getAppointments, getAppointmentsById, getAvaliableTime, updateAppointment, getAvaliableDoctrs } from "./controller/appointments/appointments";
 import {
     addAppointmentsPayment,
@@ -16,10 +16,11 @@ import {
 import { getPaymentById, getPayments } from "./controller/Payments/Payments";
 import { addOrder, getOrderById, getOrders, setStatus } from "./controller/Orders/Orders";
 import { getUsers, getUserById, addNewUser, updateUser, suspendUser } from "./controller/Users/Users";
-import { getPets } from "./controller/Pets/Pet";
+import { getPets, addNewPet, getPetById, deletePet } from "./controller/Pets/Pet";
+import { getProfile, updateProfile } from "./controller/Profile/Profile";
 import { login } from "./controller/auth/auth";
 import { loginSchema, validate } from "./middleware/validateAuth";
-import { addStaffSchema } from "./middleware/validateStaff";
+import { addStaffSchema, workHouresSchema } from "./middleware/validateStaff";
 import verifyAdmin from "./middleware/verifyAdmin";
 import verifyRecieption from "./middleware/verifyRecieption";
 import verifyStoreManagement from "./middleware/verifyStoreManagement";
@@ -30,15 +31,24 @@ import { AppointmentSchema } from "./middleware/validateAppointment";
 import { paymentSchema } from "./middleware/validatePayment";
 import { orderSchema, orderStatusSchema } from "./middleware/validateOrdres";
 import { addClientSchema } from "./middleware/validateClient";
+import { petSchema } from "./middleware/validatePets";
+import { profileSchema } from "./middleware/validateProfile";
 
 const router = Router();
 
 // auth routers
 router.post("/login", validate(loginSchema), login);
 
+// profile
+router.patch("/profile", verifyStaffMember, validate(profileSchema), updateProfile);
+router.get("/profile", verifyStaffMember, getProfile);
+
 
 //pets 
+router.post("/pets", verifyStaffMember, validate(petSchema), addNewPet);
 router.get("/pets", verifyStaffMember, getPets);
+router.get("/pets/:id", verifyStaffMember, getPetById);
+router.delete("/pets/:id", verifyStaffMember, deletePet);
 
 
 // clients 
@@ -81,6 +91,8 @@ router.post("/staff", verifyAdmin, validate(addStaffSchema), addStaff);
 router.patch("/staff/:id", verifyAdmin, validate(addStaffSchema), updateStaff);
 router.get("/staff", verifyAdmin, getStaffMemebers);
 router.get("/staff/:id", verifyAdmin, getStaffMemeberById);
+router.get("/staff/:id/workHoures", verifyAdmin, getWorkHoures);
+router.post("/staff/:id/workHoures", verifyAdmin, validate(workHouresSchema), setWorkHoures);
 router.delete("/staff/:id", verifyAdmin, deleteStaffMember);
 
 // items and items variables

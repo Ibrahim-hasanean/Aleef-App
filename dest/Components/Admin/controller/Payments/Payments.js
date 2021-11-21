@@ -46,13 +46,23 @@ const getPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         handleToDate.setHours(23);
         query = Object.assign(Object.assign({}, query), { createdAt: Object.assign(Object.assign({}, query.createdAt), { $lte: handleToDate }) });
     }
-    let payments = yield Payment_1.default.find(query).skip(skip).limit(limitNumber).populate("user");
+    let payments = yield Payment_1.default
+        .find(query)
+        .sort({ createdAt: "descending" })
+        .skip(skip)
+        .limit(limitNumber)
+        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
+        .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
+        .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
     return res.status(200).json({ status: 200, data: { payments } });
 });
 exports.getPayments = getPayments;
 const getPaymentById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
-    let payment = yield Payment_1.default.findById(id);
+    let payment = yield Payment_1.default.findById(id)
+        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
+        .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
+        .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
     return res.status(200).json({ status: 200, data: { payment } });
 });
 exports.getPaymentById = getPaymentById;

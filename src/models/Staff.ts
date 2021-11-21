@@ -1,6 +1,44 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
 import bcrypt from "bcrypt";
 
+const dayHouresSchema = new Schema({
+    from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
+    to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
+    isActive: { type: Boolean, default: true }
+});
+
+const weekenDayHouresSchema = new Schema({
+    from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
+    to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
+    isActive: { type: Boolean, default: false }
+});
+
+interface dayHouresInterface {
+    from: Date,
+    to: Date,
+    isActive: boolean
+}
+
+const workHouresSchema = new Schema({
+    saturday: { type: weekenDayHouresSchema, default: () => ({}) },
+    sunday: { type: dayHouresSchema, default: () => ({}) },
+    monday: { type: dayHouresSchema, default: () => ({}) },
+    tuesday: { type: dayHouresSchema, default: () => ({}) },
+    wednesday: { type: dayHouresSchema, default: () => ({}) },
+    thursday: { type: dayHouresSchema, default: () => ({}) },
+    friday: { type: weekenDayHouresSchema, default: () => ({}) },
+});
+
+
+export interface workHouresInterface extends mongoose.Document {
+    saturday: dayHouresInterface,
+    sunday: dayHouresInterface,
+    monday: dayHouresInterface,
+    tuesday: dayHouresInterface,
+    wednesday: dayHouresInterface,
+    thursday: dayHouresInterface,
+    friday: dayHouresInterface,
+}
 
 export interface StafInterface extends mongoose.Document {
     name: string,
@@ -16,6 +54,7 @@ export interface StafInterface extends mongoose.Document {
     canceledOrdersNotifications: boolean,
     newReviewsNotifications: boolean,
     itemsAlmostOutOfStockNotification: boolean,
+    workHoures: workHouresInterface
     comaprePassword(password: string): Promise<boolean>
 }
 
@@ -27,12 +66,16 @@ const staffSchema = new Schema({
     phoneNumber: { type: String, required: true },
     email: { type: String, required: true },
     role: { type: String, required: true },
-    muteChat: { type: Boolean },
-    allowReceivingMessagesOutOfWorksHours: { type: Boolean },
-    newOrdersNotifications: { type: Boolean },
-    canceledOrdersNotifications: { type: Boolean },
-    newReviewsNotifications: { type: Boolean },
-    itemsAlmostOutOfStockNotification: { type: Boolean },
+    muteChat: { type: Boolean, default: false },
+    allowReceivingMessagesOutOfWorksHours: { type: Boolean, default: false },
+    newOrdersNotifications: { type: Boolean, default: false },
+    canceledOrdersNotifications: { type: Boolean, default: false },
+    newReviewsNotifications: { type: Boolean, default: false },
+    itemsAlmostOutOfStockNotification: { type: Boolean, default: false },
+    workHoures: {
+        type: workHouresSchema,
+        default: () => ({})
+    }
 
 }, { timestamps: true });
 
@@ -55,5 +98,8 @@ staffSchema.methods.comaprePassword = async function (password: string): Promise
 
 
 const Staff = mongoose.model<StafInterface>("staff", staffSchema);
+
+export const WorkHoures = mongoose.model<StafInterface>("workHoures", workHouresSchema);
+export const dayHoures = mongoose.model<StafInterface>("dayHoures", dayHouresSchema);
 
 export default Staff;

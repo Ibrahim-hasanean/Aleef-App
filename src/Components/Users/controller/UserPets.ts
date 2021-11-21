@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Pets from "../../../models/Pets";
+import PetsTypes from "../../../models/PetsTypes";
+import Breeds from "../../../models/Breed";
 
 export const getPets = async (req: Request, res: Response, next: NextFunction) => {
     let user = req.user;
@@ -41,5 +43,14 @@ export const deletePet = async (req: Request, res: Response, next: NextFunction)
     return res.status(200).json({ status: 200, data: { pet } });
 }
 
+export const getPetsTypes = async (req: Request, res: Response, next: NextFunction) => {
+    let petsTypes = await PetsTypes.find({});
+    return res.status(200).json({ status: 200, data: { petsTypes } });
+}
+
+export const getBreeds = async (req: Request, res: Response, next: NextFunction) => {
+    let breeds = await Breeds.find({}).populate("type");
+    return res.status(200).json({ status: 200, data: { breeds } });
+}
 
 

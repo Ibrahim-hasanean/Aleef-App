@@ -14,23 +14,44 @@ const appointments_1 = require("./controller/appointments/appointments");
 const AppointmentsPayment_1 = require("./controller/AppointmentsPayment/AppointmentsPayment");
 const Payments_1 = require("./controller/Payments/Payments");
 const Orders_1 = require("./controller/Orders/Orders");
+const Users_1 = require("./controller/Users/Users");
+const Pet_1 = require("./controller/Pets/Pet");
+const Profile_1 = require("./controller/Profile/Profile");
 const auth_1 = require("./controller/auth/auth");
 const validateAuth_1 = require("./middleware/validateAuth");
 const validateStaff_1 = require("./middleware/validateStaff");
 const verifyAdmin_1 = __importDefault(require("./middleware/verifyAdmin"));
 const verifyRecieption_1 = __importDefault(require("./middleware/verifyRecieption"));
 const verifyStoreManagement_1 = __importDefault(require("./middleware/verifyStoreManagement"));
+const verifyStaffMember_1 = __importDefault(require("./middleware/verifyStaffMember"));
 const validateItem_1 = require("./middleware/validateItem");
 const validateName_1 = require("./middleware/validateName");
 const validateAppointment_1 = require("./middleware/validateAppointment");
 const validatePayment_1 = require("./middleware/validatePayment");
 const validateOrdres_1 = require("./middleware/validateOrdres");
+const validateClient_1 = require("./middleware/validateClient");
+const validatePets_1 = require("./middleware/validatePets");
+const validateProfile_1 = require("./middleware/validateProfile");
 const router = (0, express_1.Router)();
 // auth routers
 router.post("/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
+// profile
+router.patch("/profile", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);
+router.get("/profile", verifyStaffMember_1.default, Profile_1.getProfile);
+//pets 
+router.post("/pets", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validatePets_1.petSchema), Pet_1.addNewPet);
+router.get("/pets", verifyStaffMember_1.default, Pet_1.getPets);
+router.get("/pets/:id", verifyStaffMember_1.default, Pet_1.getPetById);
+router.delete("/pets/:id", verifyStaffMember_1.default, Pet_1.deletePet);
+// clients 
+router.post("/clients", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.addNewUser);
+router.patch("/clients/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.updateUser);
+router.get("/clients", verifyStaffMember_1.default, Users_1.getUsers);
+router.post("/clients/:id/suspend", verifyStaffMember_1.default, Users_1.suspendUser);
+router.get("/clients/:id", verifyStaffMember_1.default, Users_1.getUserById);
 // payments 
-router.get("/payments", Payments_1.getPayments);
-router.get("/payments/:id", Payments_1.getPaymentById);
+router.get("/payments", verifyRecieption_1.default, Payments_1.getPayments);
+router.get("/payments/:id", verifyRecieption_1.default, Payments_1.getPaymentById);
 //orders 
 router.post("/orders", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateOrdres_1.orderSchema), Orders_1.addOrder);
 router.get("/orders", verifyStoreManagement_1.default, Orders_1.getOrders);
@@ -43,19 +64,21 @@ router.get("/appointments/payments", verifyRecieption_1.default, AppointmentsPay
 router.get("/appointments/payments/:id", verifyRecieption_1.default, AppointmentsPayment_1.getAppointmentsPaymentById);
 router.delete("/appointments/payments/:id", verifyRecieption_1.default, AppointmentsPayment_1.deleteAppointmentsPayment);
 // appointments routes 
-router.get("/appointments", verifyRecieption_1.default, appointments_1.getAppointments);
-router.post("/appointments", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.addAppointment);
-router.patch("/appointments", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.updateAppointment);
-router.get("/appointments/avaliable", verifyRecieption_1.default, appointments_1.getAvaliableTime);
-router.get("/appointments/doctors", verifyRecieption_1.default, appointments_1.getAvaliableDoctrs);
-router.get("/appointments/:id", verifyRecieption_1.default, appointments_1.getAppointmentsById);
-router.delete("/appointments/:id", verifyRecieption_1.default, appointments_1.deleteAppointments);
+router.get("/appointments", verifyStaffMember_1.default, appointments_1.getAppointments);
+router.post("/appointments", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.addAppointment);
+router.patch("/appointments", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.updateAppointment);
+router.get("/appointments/avaliable", verifyStaffMember_1.default, appointments_1.getAvaliableTime);
+router.get("/appointments/doctors", verifyStaffMember_1.default, appointments_1.getAvaliableDoctrs);
+router.get("/appointments/:id", verifyStaffMember_1.default, appointments_1.getAppointmentsById);
+router.delete("/appointments/:id", verifyStaffMember_1.default, appointments_1.deleteAppointments);
 // Staff routes
 router.post("/defaultAdmin", staff_1.defaultAdmin);
 router.post("/staff", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateStaff_1.addStaffSchema), staff_1.addStaff);
 router.patch("/staff/:id", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateStaff_1.addStaffSchema), staff_1.updateStaff);
 router.get("/staff", verifyAdmin_1.default, staff_1.getStaffMemebers);
 router.get("/staff/:id", verifyAdmin_1.default, staff_1.getStaffMemeberById);
+router.get("/staff/:id/workHoures", verifyAdmin_1.default, staff_1.getWorkHoures);
+router.post("/staff/:id/workHoures", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateStaff_1.workHouresSchema), staff_1.setWorkHoures);
 router.delete("/staff/:id", verifyAdmin_1.default, staff_1.deleteStaffMember);
 // items and items variables
 router.get("/items", verifyStoreManagement_1.default, items_1.getItems);

@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import Item, { ItemInterface } from "../../../models/Item";
 import mongoose from "mongoose";
+import isLikeITems from "../../utils/isLikeItem";
+
 export const getItems = async (req: Request, res: Response, next: NextFunction) => {
     const { page, limit, category, text } = req.query;
+    let user = req.user;
     let query: any = {};
     if (category) query.category = category;
     if (text) {
@@ -11,15 +14,21 @@ export const getItems = async (req: Request, res: Response, next: NextFunction) 
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
     const items = await Item.find(query).skip(skip).limit(limitNumber);
-    return res.status(200).json({ status: 200, data: { items } });
+    const checkItems = isLikeITems(items, user);
+    return res.status(200).json({ status: 200, data: { checkItems } });
 }
 
 export const getItemById = async (req: Request, res: Response, next: NextFunction) => {
     const itemId = req.params.id;
+    let user = req.user;
     if (!mongoose.isValidObjectId(itemId)) {
         return res.status(200).json({ status: 200, data: { item: null } });
     }
-    const item = await Item.findById(itemId);
+    let item = await Item.findById(itemId);
+    if (item) {
+        let isLikeItem = user.wishList.some(x => x.toString() === String(item._id));
+        item = { ...item._doc, isLikeItem };
+    }
     return res.status(200).json({ status: 200, data: { item } });
 }
 
@@ -89,6 +98,14 @@ export const removeFromWishList = async (req: Request, res: Response, next: Next
     await item.save();
     await user.save();
     return res.status(200).json({ status: 200, data: { item } });
+}
+
+
+export const removeAllFromWishList = async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user;
+    user.wishList = [];
+    await user.save();
+    return res.status(200).json({ status: 200, msg: "all items removed successfully from wishlist" });
 }
 
 

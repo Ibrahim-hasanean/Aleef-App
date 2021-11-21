@@ -13,3 +13,44 @@ export const addStaffSchema = {
         password: Joi.string().required(),
     })
 }
+
+export const workHouresSchema = {
+    [Segments.BODY]: Joi.object().keys({
+        saturday: Joi.object().required().keys({
+            isActive: Joi.boolean().required(),
+            from: Joi.date().required(),
+            to: Joi.date().required(),
+        }),
+        sunday: Joi.object().required().keys({
+            isActive: Joi.boolean().required(),
+            from: Joi.date().required(),
+            to: Joi.date().required(),
+        }),
+        monday: Joi.object().required().keys({
+            isActive: Joi.boolean().required(),
+            from: Joi.date().required(),
+            to: Joi.date().required(),
+        }),
+        tuesday: Joi.object().required().keys({
+            isActive: Joi.boolean().required(),
+            from: Joi.date().required(),
+            to: Joi.date().required(),
+        }),
+        wednesday: Joi.object().required().keys({
+            isActive: Joi.boolean().required(),
+            from: Joi.date().required(),
+            to: Joi.date().required(),
+        }),
+        thursday: Joi.object().required().keys({
+            isActive: Joi.boolean().required(),
+            from: Joi.date().required(),
+            to: Joi.date().required(),
+        }),
+        friday: Joi.object().required().keys({
+            isActive: Joi.boolean().required(),
+            from: Joi.date().required(),
+            to: Joi.date().required(),
+        }),
+
+    })
+}

@@ -57,6 +57,7 @@ const getOrders = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     }
     let orders = yield Order_1.default
         .find(query)
+        .sort({ createdAt: "desc" })
         .populate({
         path: "items",
         populate: {
@@ -64,9 +65,10 @@ const getOrders = (req, res, next) => __awaiter(void 0, void 0, void 0, function
             // match: { name: { "$regex": text || "", "$options": "i" } } 
         }
     })
-        .populate("user")
+        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] })
         .skip(skip)
-        .limit(limitNumber).exec();
+        .limit(limitNumber)
+        .exec();
     return res.status(200).json({ status: 200, data: { orders } });
 });
 exports.getOrders = getOrders;

@@ -32,31 +32,26 @@ function default_1(date) {
             .select(['appointmentDate', 'doctor']);
         const appointmentDates = appointments.map(x => x.appointmentDate);
         let time = (0, moment_1.default)(startWorkHours);
+        let day = String(time.format("dddd")).toLowerCase();
+        console.log(String(day).toLowerCase());
         const doctors = yield Staff_1.default.find({ role: "doctor" });
-        const doctorsIds = doctors.map(doctor => doctor._id);
         while (time.toDate() < EndHours) {
             const beginPeriod = (0, moment_1.default)(time);
             const endPeriod = (0, moment_1.default)(time).add(15, 'minutes');
             const isTimePeriodHold = appointments.filter(x => x.appointmentDate >= beginPeriod.toDate() && x.appointmentDate < endPeriod.toDate()).map(x => x.doctor);
-            // if (isTimePeriodHold.length !== doctorsIds.length) {
-            //     freeHours.push({ from: beginPeriod.toDate(), to: endPeriod.toDate() });
-            // };
             const freeDoctors = doctors
-                .filter(doctor => isTimePeriodHold.findIndex(doctorId => String(doctorId) === String(doctor._id)) === -1);
+                .filter((doctor) => {
+                let isHold = isTimePeriodHold.findIndex(doctorId => String(doctorId) === String(doctor._id)) === -1;
+                let isActive = doctor.workHoures.get(day).isActive;
+                let isInWorkHouresRange = new Date(doctor.workHoures.get(day).from).getHours() < beginPeriod.toDate().getHours()
+                    && new Date(doctor.workHoures.get(day).to).getHours() > endPeriod.toDate().getHours();
+                return isHold && isActive && isInWorkHouresRange;
+            });
             if (freeDoctors.length > 0) {
                 freeHours.push({ from: beginPeriod.toDate(), to: endPeriod.toDate() });
             }
             time = time.add(15, 'minutes');
         }
-        // while (time.toDate() < EndHours) {
-        //     const beginPeriod = moment(time);
-        //     const endPeriod = moment(time).add(15, 'minutes');
-        //     const isTimePeriodHold = appointmentDates.filter(x => x >= beginPeriod.toDate() && x <= endPeriod.toDate());
-        //     if (isTimePeriodHold.length === 0) {
-        //         freeHours.push({ from: beginPeriod.toDate(), to: endPeriod.toDate() });
-        //     };
-        //     time = time.add(15, 'minutes');
-        // }
         return freeHours;
     });
 }

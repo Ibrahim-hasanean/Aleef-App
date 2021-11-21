@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAppointmentPaymentById = exports.getAppointmentPayments = exports.payAppointment = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
+exports.getReminder = exports.getAppointmentPaymentById = exports.getAppointmentPayments = exports.payAppointment = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
 const Appointments_1 = __importDefault(require("../../../models/Appointments"));
 const getFreeTimes_1 = __importDefault(require("../../utils/getFreeTimes"));
 const getFreeDoctors_1 = __importDefault(require("../../utils/getFreeDoctors"));
@@ -154,6 +154,7 @@ const payAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         appointment: appointmentId
     });
     isAppointmentExist.payment = newPayment._id;
+    isAppointmentExist.paymentStatus = "Completed";
     yield isAppointmentExist.save();
     return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
 });
@@ -173,3 +174,13 @@ const getAppointmentPaymentById = (req, res, next) => __awaiter(void 0, void 0, 
     return res.status(200).json({ status: 200, data: { payment } });
 });
 exports.getAppointmentPaymentById = getAppointmentPaymentById;
+const getReminder = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let { page, limit } = req.query;
+    let user = req.user;
+    let numberPageSize = limit ? Number(limit) : 2;
+    let skip = (Number(page || 1) - 1) * numberPageSize;
+    let date = new Date();
+    let appointments = yield Appointments_1.default.find({ appointmentDate: { $gte: date }, user: user._id }).skip(skip).limit(numberPageSize);
+    return res.status(200).json({ status: 200, data: { appointments } });
+});
+exports.getReminder = getReminder;

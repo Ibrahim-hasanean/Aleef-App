@@ -12,3 +12,4 @@ mongoose_1.default.connect(databaseUrl).then(() => {
 }).catch(e => {
     console.log(e);
 });
+exports.default = mongoose_1.default;

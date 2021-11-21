@@ -12,8 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePet = exports.getPetById = exports.updatePet = exports.addPets = exports.getPets = void 0;
+exports.getBreeds = exports.getPetsTypes = exports.deletePet = exports.getPetById = exports.updatePet = exports.addPets = exports.getPets = void 0;
 const Pets_1 = __importDefault(require("../../../models/Pets"));
+const PetsTypes_1 = __importDefault(require("../../../models/PetsTypes"));
+const Breed_1 = __importDefault(require("../../../models/Breed"));
 const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let user = req.user;
     let pets = yield Pets_1.default.find({ user: user._id }).populate("type").populate("gender").populate("breed");
@@ -51,3 +53,13 @@ const deletePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     return res.status(200).json({ status: 200, data: { pet } });
 });
 exports.deletePet = deletePet;
+const getPetsTypes = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let petsTypes = yield PetsTypes_1.default.find({});
+    return res.status(200).json({ status: 200, data: { petsTypes } });
+});
+exports.getPetsTypes = getPetsTypes;
+const getBreeds = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let breeds = yield Breed_1.default.find({}).populate("type");
+    return res.status(200).json({ status: 200, data: { breeds } });
+});
+exports.getBreeds = getBreeds;

@@ -12,21 +12,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const User_1 = __importDefault(require("../../../models/User"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const Staff_1 = __importDefault(require("../../../models/Staff"));
 require("dotenv").config();
-function verifyUser(req, res, next) {
+function default_1(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         const authorization = req.headers.authorization;
         const token = authorization === null || authorization === void 0 ? void 0 : authorization.split(" ")[1];
         try {
-            const userTokenSecret = process.env.USER_TOKEN_SECRET;
-            const decode = jsonwebtoken_1.default.verify(token, userTokenSecret);
-            const user = yield User_1.default.findById(decode.userId);
-            if (!user) {
+            const staffTokenSecret = process.env.STAF_TOKEN_SECRET;
+            const decode = jsonwebtoken_1.default.verify(token, staffTokenSecret);
+            const staffMember = yield Staff_1.default.findById(decode.staffId).populate("role");
+            if (!staffMember) {
                 return res.status(401).json({ status: 401, msg: "unauthorized" });
             }
-            req.user = user;
+            req.staff = staffMember;
             next();
         }
         catch (error) {
@@ -35,4 +35,4 @@ function verifyUser(req, res, next) {
         }
     });
 }
-exports.default = verifyUser;
+exports.default = default_1;

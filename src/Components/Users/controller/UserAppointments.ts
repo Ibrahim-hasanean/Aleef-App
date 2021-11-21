@@ -152,3 +152,13 @@ export const getAppointmentPaymentById = async (req: Request, res: Response, nex
     let payment: PaymentInterFace | null = await Payment.findOne(query);
     return res.status(200).json({ status: 200, data: { payment } });
 }
+
+export const getReminder = async (req: Request, res: Response, next: NextFunction) => {
+    let { page, limit } = req.query;
+    let user = req.user;
+    let numberPageSize = limit ? Number(limit) : 2;
+    let skip = (Number(page || 1) - 1) * numberPageSize;
+    let date = new Date();
+    let appointments = await Appointments.find({ appointmentDate: { $gte: date }, user: user._id }).skip(skip).limit(numberPageSize);
+    return res.status(200).json({ status: 200, data: { appointments } })
+}
