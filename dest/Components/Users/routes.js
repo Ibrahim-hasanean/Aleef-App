@@ -15,7 +15,11 @@ const UserItems_1 = require("./controller/UserItems");
 const userPaymentsValidation_1 = require("./middleware/userPaymentsValidation");
 const UserOrders_1 = require("./controller/UserOrders");
 const UserAppointments_1 = require("./controller/UserAppointments");
+const UserCardsInfo_1 = require("./controller/UserCardsInfo");
+const cardInfoValidation_1 = require("./middleware/cardInfoValidation");
 const appointmentsValidation_1 = require("./middleware/appointmentsValidation");
+const UserOrderItems_1 = require("./controller/UserOrderItems");
+const UserItemListValidation_1 = require("./middleware/UserItemListValidation");
 const router = (0, express_1.Router)();
 //Auth
 router.post("/auth/register", (0, userAuthValidate_1.validate)(userAuthValidate_1.registerSchema), UsersAuth_1.register);
@@ -23,6 +27,16 @@ router.post("/auth/login", (0, userAuthValidate_1.validate)(userAuthValidate_1.l
 router.post("/auth/forgetpassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.forgetPasswordSchema), UsersAuth_1.forgetPassword);
 router.post("/auth/resetPassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.resetPasswordSchema), UsersAuth_1.resetPassword);
 router.post("/auth/verify", (0, userAuthValidate_1.validate)(userAuthValidate_1.verifyCodeSchema), UsersAuth_1.verifyCode);
+// user item list
+router.post("/itemList", verifyUser_1.default, (0, userAuthValidate_1.validate)(UserItemListValidation_1.userItemListSchema), UserOrderItems_1.addOrderItems);
+router.patch("/itemList/:id", verifyUser_1.default, (0, userAuthValidate_1.validate)(UserItemListValidation_1.userItemListSchema), UserOrderItems_1.updateOrderList);
+router.get("/itemList", verifyUser_1.default, UserOrderItems_1.getOrderItems);
+router.delete("/itemList", verifyUser_1.default, UserOrderItems_1.clearOrderItems);
+//cards
+router.post("/cards", verifyUser_1.default, (0, userAuthValidate_1.validate)(cardInfoValidation_1.cardInfoSchema), UserCardsInfo_1.addCardInfo);
+router.get("/cards", verifyUser_1.default, UserCardsInfo_1.getCardInfo);
+router.get("/cards/:id", verifyUser_1.default, UserCardsInfo_1.getCardInfoById);
+router.delete("/cards/:id", verifyUser_1.default, UserCardsInfo_1.deleteCardInfo);
 // user profile
 router.patch("/profile", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.updateProfileSchema), UserProfile_1.updateProfile);
 router.post("/profile/changePassword", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.changePasswordSchema), UserProfile_1.changePassword);

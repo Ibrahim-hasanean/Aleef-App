@@ -51,9 +51,11 @@ const userSchema = new mongoose_1.Schema({
     appointmentReminder: { type: Boolean, default: true },
     payments: { type: mongoose_1.default.Types.ObjectId, ref: "payments" },
     pets: [{ type: mongoose_1.default.Types.ObjectId, ref: "pets" }],
+    cardsInfo: [{ type: mongoose_1.default.Types.ObjectId, ref: "cardInfo" }],
     orders: { type: mongoose_1.default.Types.ObjectId, ref: "orders" },
     wishList: [{ type: mongoose_1.default.Types.ObjectId, ref: "items" }],
     addresses: [{ type: mongoose_1.default.Types.ObjectId, ref: "addresses" }],
+    itemList: [{ type: mongoose_1.default.Types.ObjectId, ref: "orderItems" }],
 }, { timestamps: true });
 userSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {

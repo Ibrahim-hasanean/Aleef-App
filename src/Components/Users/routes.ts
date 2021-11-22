@@ -21,7 +21,11 @@ import {
     payAppointment,
     getReminder
 } from "./controller/UserAppointments";
+import { addCardInfo, deleteCardInfo, getCardInfoById, getCardInfo } from "./controller/UserCardsInfo";
+import { cardInfoSchema } from "./middleware/cardInfoValidation";
 import { AppointmentSchema, appointmentPaymentSchema } from "./middleware/appointmentsValidation";
+import { addOrderItems, clearOrderItems, getOrderItems, updateOrderList } from "./controller/UserOrderItems";
+import { userItemListSchema } from "./middleware/UserItemListValidation";
 const router = Router();
 
 //Auth
@@ -30,6 +34,20 @@ router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/forgetpassword", validate(forgetPasswordSchema), forgetPassword);
 router.post("/auth/resetPassword", validate(resetPasswordSchema), resetPassword);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
+
+// user item list
+router.post("/itemList", verifyUser, validate(userItemListSchema), addOrderItems);
+router.patch("/itemList/:id", verifyUser, validate(userItemListSchema), updateOrderList);
+router.get("/itemList", verifyUser, getOrderItems);
+router.delete("/itemList", verifyUser, clearOrderItems);
+
+
+
+//cards
+router.post("/cards", verifyUser, validate(cardInfoSchema), addCardInfo);
+router.get("/cards", verifyUser, getCardInfo);
+router.get("/cards/:id", verifyUser, getCardInfoById);
+router.delete("/cards/:id", verifyUser, deleteCardInfo);
 
 // user profile
 router.patch("/profile", verifyUser, validate(updateProfileSchema), updateProfile);

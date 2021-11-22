@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 import { PetsInterface } from "./Pets";
 import { ItemInterface } from "./Item";
 import { AddressInterface } from "./Address";
+import { CardInfoInterface } from "./CardsInfo";
+import { OrdersItemsInterface } from "./OrderItems";
 
 
 export interface UserInterface extends mongoose.Document {
@@ -23,9 +25,11 @@ export interface UserInterface extends mongoose.Document {
     isSuspend: boolean,
     payments: ObjectId[],
     pets: ObjectId[] | PetsInterface[],
+    cardsInfo: ObjectId[] | CardInfoInterface[],
     orders: ObjectId[],
     wishList: string[] | ItemInterface[],
     addresses: AddressInterface[] | ObjectId[],
+    itemList: OrdersItemsInterface[] | ObjectId[],
     comaprePassword(password: string): Promise<boolean>
 }
 
@@ -48,9 +52,11 @@ const userSchema = new Schema({
     appointmentReminder: { type: Boolean, default: true },
     payments: { type: mongoose.Types.ObjectId, ref: "payments" },
     pets: [{ type: mongoose.Types.ObjectId, ref: "pets" }],
+    cardsInfo: [{ type: mongoose.Types.ObjectId, ref: "cardInfo" }],
     orders: { type: mongoose.Types.ObjectId, ref: "orders" },
     wishList: [{ type: mongoose.Types.ObjectId, ref: "items" }],
     addresses: [{ type: mongoose.Types.ObjectId, ref: "addresses" }],
+    itemList: [{ type: mongoose.Types.ObjectId, ref: "orderItems" }],
 }, { timestamps: true });
 
 userSchema.pre("save", async function (next) {

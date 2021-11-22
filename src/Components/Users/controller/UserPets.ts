@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import Pets from "../../../models/Pets";
+import Pets, { PetsInterface } from "../../../models/Pets";
 import PetsTypes from "../../../models/PetsTypes";
 import Breeds from "../../../models/Breed";
 
@@ -23,7 +23,16 @@ export const updatePet = async (req: Request, res: Response, next: NextFunction)
     const { name, serialNumber, age, typeId, breedId, gender } = req.body;
     const petId = req.params.id;
     let user = req.user;
-    let pet = await Pets.findOneAndUpdate({ user: user._id, _id: petId }, { name, serialNumber, age, typeId, breedId, gender });
+    // let pet = await Pets.findOneAndUpdate({ user: user._id, _id: petId }, { name, serialNumber, age, type: typeId, breed: breedId, gender });
+    let pet: PetsInterface = await Pets.findOne({ user: user._id, _id: petId }) as PetsInterface;
+    if (!pet) return res.status(400).json({ status: 400, msg: `pet with id ${petId} not found` });
+    pet.name = name;
+    pet.serialNumber = serialNumber;
+    pet.type = typeId;
+    pet.breed = breedId;
+    pet.gender = gender;
+    pet.age = age;
+    await pet.save();
     return res.status(201).json({ status: 201, data: { pet } });
 }
 
@@ -44,7 +53,7 @@ export const deletePet = async (req: Request, res: Response, next: NextFunction)
 }
 
 export const getPetsTypes = async (req: Request, res: Response, next: NextFunction) => {
-    let petsTypes = await PetsTypes.find({});
+    let petsTypes = await PetsTypes.find({}).populate("breeds");
     return res.status(200).json({ status: 200, data: { petsTypes } });
 }
 
