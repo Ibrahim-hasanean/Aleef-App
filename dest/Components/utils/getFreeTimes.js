@@ -43,8 +43,10 @@ function default_1(date) {
                 .filter((doctor) => {
                 let isHold = isTimePeriodHold.findIndex(doctorId => String(doctorId) === String(doctor._id)) === -1;
                 let isActive = doctor.workHoures.get(day).isActive;
-                let isInWorkHouresRange = new Date(doctor.workHoures.get(day).from).getHours() < beginPeriod.toDate().getHours()
-                    && new Date(doctor.workHoures.get(day).to).getHours() > endPeriod.toDate().getHours();
+                console.log((0, moment_1.default)(doctor.workHoures.get(day).from).toDate().getHours());
+                console.log(beginPeriod.toDate().getHours());
+                let isInWorkHouresRange = (0, moment_1.default)(doctor.workHoures.get(day).from).hours() < beginPeriod.hours()
+                    && (0, moment_1.default)(doctor.workHoures.get(day).to).hours() > endPeriod.hours();
                 return isHold && isActive && isInWorkHouresRange;
             });
             if (freeDoctors.length > 0) {

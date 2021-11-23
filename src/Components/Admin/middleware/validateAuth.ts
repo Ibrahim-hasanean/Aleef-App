@@ -5,6 +5,11 @@ export const validate = (schema: SchemaOptions) => celebrate(schema, { abortEarl
 export const loginSchema = {
     [Segments.BODY]: Joi.object().keys({
         phoneNumber: Joi.string().required(),
-        password: Joi.string().required(),
+    })
+}
+export const verifyCodeSchema = {
+    [Segments.BODY]: Joi.object().keys({
+        phoneNumber: Joi.string().required(),
+        code: Joi.string().required(),
     })
 }

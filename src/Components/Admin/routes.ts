@@ -18,8 +18,8 @@ import { addOrder, getOrderById, getOrders, setStatus } from "./controller/Order
 import { getUsers, getUserById, addNewUser, updateUser, suspendUser } from "./controller/Users/Users";
 import { getPets, addNewPet, getPetById, deletePet } from "./controller/Pets/Pet";
 import { getProfile, updateProfile } from "./controller/Profile/Profile";
-import { login } from "./controller/auth/auth";
-import { loginSchema, validate } from "./middleware/validateAuth";
+import { login, verifyCode } from "./controller/auth/auth";
+import { loginSchema, validate, verifyCodeSchema } from "./middleware/validateAuth";
 import { addStaffSchema, workHouresSchema } from "./middleware/validateStaff";
 import verifyAdmin from "./middleware/verifyAdmin";
 import verifyRecieption from "./middleware/verifyRecieption";
@@ -37,7 +37,8 @@ import { profileSchema } from "./middleware/validateProfile";
 const router = Router();
 
 // auth routers
-router.post("/login", validate(loginSchema), login);
+router.post("/auth/login", validate(loginSchema), login);
+router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 
 // profile
 router.patch("/profile", verifyStaffMember, validate(profileSchema), updateProfile);

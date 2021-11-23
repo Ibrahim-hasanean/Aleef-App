@@ -18,22 +18,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dayHoures = exports.WorkHoures = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const dayHouresSchema = new mongoose_1.Schema({
     from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
     to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
@@ -55,7 +42,7 @@ const workHouresSchema = new mongoose_1.Schema({
 });
 const staffSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
-    password: { type: String, required: true },
+    code: { type: String },
     cardNumber: { type: String, required: true },
     staffMemberId: { type: Number, required: true },
     phoneNumber: { type: String, required: true },
@@ -72,23 +59,19 @@ const staffSchema = new mongoose_1.Schema({
         default: () => ({})
     }
 }, { timestamps: true });
-staffSchema.pre("validate", function (next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let staff = this;
-        if (staff.isModified("password")) {
-            let hashPassword = yield bcrypt_1.default.hash(staff.password, 12);
-            staff.password = hashPassword;
-        }
-        next();
-    });
-});
-staffSchema.methods.comaprePassword = function (password) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let staff = this;
-        let isEqual = yield bcrypt_1.default.compare(password, staff.password);
-        return isEqual;
-    });
-};
+// staffSchema.pre("validate", async function (next) {
+//     let staff = this as StafInterface;
+//     if (staff.isModified("password")) {
+//         let hashPassword = await bcrypt.hash(staff.password, 12);
+//         staff.password = hashPassword;
+//     }
+//     next();
+// });
+// staffSchema.methods.comaprePassword = async function (password: string): Promise<boolean> {
+//     let staff = this as StafInterface;
+//     let isEqual = await bcrypt.compare(password, staff.password);
+//     return isEqual;
+// }
 const Staff = mongoose_1.default.model("staff", staffSchema);
 exports.WorkHoures = mongoose_1.default.model("workHoures", workHouresSchema);
 exports.dayHoures = mongoose_1.default.model("dayHoures", dayHouresSchema);

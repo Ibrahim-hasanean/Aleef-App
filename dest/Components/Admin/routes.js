@@ -34,7 +34,8 @@ const validatePets_1 = require("./middleware/validatePets");
 const validateProfile_1 = require("./middleware/validateProfile");
 const router = (0, express_1.Router)();
 // auth routers
-router.post("/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
+router.post("/auth/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
+router.post("/auth/verify", (0, validateAuth_1.validate)(validateAuth_1.verifyCodeSchema), auth_1.verifyCode);
 // profile
 router.patch("/profile", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);
 router.get("/profile", verifyStaffMember_1.default, Profile_1.getProfile);

@@ -16,14 +16,14 @@ exports.defaultAdmin = exports.setWorkHoures = exports.getWorkHoures = exports.d
 const Staff_1 = __importDefault(require("../../../../models/Staff"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const addStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, cardNumber, phoneNumber, email, role, staffMemberId, password } = req.body;
+    const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
     const isPhoneNumberExist = yield Staff_1.default.findOne({ phoneNumber });
     if (isPhoneNumberExist)
         return res.status(409).json({ status: 409, msg: "phone number is used before" });
     const isCardNumberExist = yield Staff_1.default.findOne({ cardNumber });
     if (isCardNumberExist)
         return res.status(409).json({ status: 409, msg: "card number is used before" });
-    const newStaff = yield Staff_1.default.create({ name, password, cardNumber, phoneNumber, email, role, staffMemberId });
+    const newStaff = yield Staff_1.default.create({ name, cardNumber, phoneNumber, email, role, staffMemberId });
     return res.status(201).json({
         status: 201, msg: "staff member added successfully", data: {
             staffMember: newStaff
@@ -33,7 +33,7 @@ const addStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 exports.addStaff = addStaff;
 const updateStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const memberId = req.params.id;
-    const { name, cardNumber, phoneNumber, email, role, staffMemberId, password } = req.body;
+    const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
     let staffMember = yield Staff_1.default.findById(memberId);
     const isPhoneNumberExist = yield Staff_1.default.findOne({ phoneNumber });
     if (isPhoneNumberExist && String(staffMember._id) !== String(isPhoneNumberExist._id))
@@ -43,14 +43,12 @@ const updateStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         return res.status(409).json({ status: 409, msg: "card number is used before" });
     const newStaff = yield Staff_1.default.findById(memberId);
     newStaff.name = name;
-    newStaff.password = password;
     newStaff.cardNumber = cardNumber;
     newStaff.phoneNumber = phoneNumber;
     newStaff.email = email;
     newStaff.staffMemberId = staffMemberId;
     newStaff.role = role;
     yield newStaff.save();
-    console.log("update staff member");
     return res.status(200).json({
         status: 200, msg: "staff member updated successfully", data: {
             staffMember: newStaff

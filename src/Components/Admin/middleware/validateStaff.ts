@@ -10,7 +10,7 @@ export const addStaffSchema = {
         email: Joi.string().required(),
         role: Joi.string().required().valid("admin", "doctor", "storeManager", "receiption"),
         staffMemberId: Joi.string().required(),
-        password: Joi.string().required(),
+        // password: Joi.string().required(),
     })
 }
 
