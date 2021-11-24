@@ -24,8 +24,8 @@ import {
 import { addCardInfo, deleteCardInfo, getCardInfoById, getCardInfo } from "./controller/UserCardsInfo";
 import { cardInfoSchema } from "./middleware/cardInfoValidation";
 import { AppointmentSchema, appointmentPaymentSchema } from "./middleware/appointmentsValidation";
-import { addOrderItems, clearOrderItems, getOrderItems, updateOrderList } from "./controller/UserOrderItems";
-import { userItemListSchema } from "./middleware/UserItemListValidation";
+import { addOrderItems, clearOrderItems, getOrderItems, updateOrderList, removeItemFromOrderList } from "./controller/UserOrderItems";
+import { userItemListSchema, updateUserItemListSchema } from "./middleware/UserItemListValidation";
 const router = Router();
 
 //Auth
@@ -37,9 +37,10 @@ router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 
 // user item list
 router.post("/itemList", verifyUser, validate(userItemListSchema), addOrderItems);
-router.patch("/itemList/:id", verifyUser, validate(userItemListSchema), updateOrderList);
+router.patch("/itemList/:id", verifyUser, validate(updateUserItemListSchema), updateOrderList);
 router.get("/itemList", verifyUser, getOrderItems);
 router.delete("/itemList", verifyUser, clearOrderItems);
+router.delete("/itemList/:id", verifyUser, removeItemFromOrderList);
 
 
 

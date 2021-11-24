@@ -29,9 +29,10 @@ router.post("/auth/resetPassword", (0, userAuthValidate_1.validate)(userAuthVali
 router.post("/auth/verify", (0, userAuthValidate_1.validate)(userAuthValidate_1.verifyCodeSchema), UsersAuth_1.verifyCode);
 // user item list
 router.post("/itemList", verifyUser_1.default, (0, userAuthValidate_1.validate)(UserItemListValidation_1.userItemListSchema), UserOrderItems_1.addOrderItems);
-router.patch("/itemList/:id", verifyUser_1.default, (0, userAuthValidate_1.validate)(UserItemListValidation_1.userItemListSchema), UserOrderItems_1.updateOrderList);
+router.patch("/itemList/:id", verifyUser_1.default, (0, userAuthValidate_1.validate)(UserItemListValidation_1.updateUserItemListSchema), UserOrderItems_1.updateOrderList);
 router.get("/itemList", verifyUser_1.default, UserOrderItems_1.getOrderItems);
 router.delete("/itemList", verifyUser_1.default, UserOrderItems_1.clearOrderItems);
+router.delete("/itemList/:id", verifyUser_1.default, UserOrderItems_1.removeItemFromOrderList);
 //cards
 router.post("/cards", verifyUser_1.default, (0, userAuthValidate_1.validate)(cardInfoValidation_1.cardInfoSchema), UserCardsInfo_1.addCardInfo);
 router.get("/cards", verifyUser_1.default, UserCardsInfo_1.getCardInfo);

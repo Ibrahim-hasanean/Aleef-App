@@ -30,11 +30,11 @@ export const addAddressSchema = {
 
 export const notificationSettingsSchema = {
     [Segments.BODY]: Joi.object().keys({
-        muteAllNotification: Joi.boolean().required(),
-        muteChat: Joi.boolean().required(),
-        vaccinationReminder: Joi.boolean().required(),
-        appointmentReminder: Joi.boolean().required(),
-        medacinReminder: Joi.boolean().required(),
+        muteAllNotification: Joi.boolean(),
+        muteChat: Joi.boolean(),
+        vaccinationReminder: Joi.boolean(),
+        appointmentReminder: Joi.boolean(),
+        medacinReminder: Joi.boolean(),
     })
 }
 

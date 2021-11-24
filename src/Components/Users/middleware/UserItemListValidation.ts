@@ -7,3 +7,9 @@ export const userItemListSchema = {
         itemId: Joi.string().required()
     })
 }
+
+export const updateUserItemListSchema = {
+    [Segments.BODY]: Joi.object().keys({
+        count: Joi.number().required(),
+    })
+}

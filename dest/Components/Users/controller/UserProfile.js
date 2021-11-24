@@ -58,11 +58,16 @@ exports.changePassword = changePassword;
 const notificationSettings = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { muteAllNotification, muteChat, vaccinationReminder, appointmentReminder, medacinReminder } = req.body;
     const user = req.user;
-    user.muteAllNotification = muteAllNotification;
-    user.muteChat = muteChat;
-    user.vaccinationReminder = vaccinationReminder;
-    user.appointmentReminder = appointmentReminder;
-    user.medacinReminder = medacinReminder;
+    if (typeof muteAllNotification == 'boolean')
+        user.muteAllNotification = muteAllNotification;
+    if (typeof muteChat == 'boolean')
+        user.muteChat = muteChat;
+    if (typeof vaccinationReminder == 'boolean')
+        user.vaccinationReminder = vaccinationReminder;
+    if (typeof appointmentReminder == 'boolean')
+        user.appointmentReminder = appointmentReminder;
+    if (typeof medacinReminder == 'boolean')
+        user.medacinReminder = medacinReminder;
     yield user.save();
     return res.status(200).json({ status: 200, msg: "notification settings updated  successfully" });
 });

@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateOrderList = exports.clearOrderItems = exports.getOrderItems = exports.addOrderItems = void 0;
+exports.removeItemFromOrderList = exports.updateOrderList = exports.clearOrderItems = exports.getOrderItems = exports.addOrderItems = void 0;
 const User_1 = __importDefault(require("../../../models/User"));
 const OrderItems_1 = __importDefault(require("../../../models/OrderItems"));
 const Item_1 = __importDefault(require("../../../models/Item"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const addOrderItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let user = req.user;
     let { itemId, count } = req.body;
@@ -43,17 +44,31 @@ const clearOrderItems = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.clearOrderItems = clearOrderItems;
 const updateOrderList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { itemId, count } = req.body;
+    let { count } = req.body;
     let id = req.params.id;
-    let user = req.user;
-    const item = yield Item_1.default.findById(itemId);
-    if (!item)
-        return res.status(200).json({ status: 200, msg: `item with id ${itemId} not found` });
     const orderItem = yield OrderItems_1.default.findById(id);
+    if (!orderItem)
+        return res.status(400).json({ status: 400, msg: `item list with id ${id} not found` });
     orderItem.count = count;
-    orderItem.item = itemId;
     yield orderItem.save();
     let populatedOrderItem = yield orderItem.populate("item");
-    return res.status(201).json({ status: 201, data: { item: populatedOrderItem } });
+    return res.status(200).json({ status: 200, data: { item: populatedOrderItem } });
 });
 exports.updateOrderList = updateOrderList;
+const removeItemFromOrderList = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let orderItemId = req.params.id;
+    const user = req.user;
+    const orderItem = yield OrderItems_1.default.findById(orderItemId);
+    if (!mongoose_1.default.isValidObjectId(orderItemId)) {
+        return res.status(400).json({ status: 400, msg: `${orderItemId} invalid id` });
+    }
+    if (!orderItem)
+        return res.status(400).json({ status: 400, msg: `item list with id ${orderItemId} not found` });
+    let itemsList = user.itemList;
+    itemsList.filter(x => String(x) != orderItemId);
+    user.itemList = itemsList;
+    yield user.save();
+    yield orderItem.delete();
+    return res.status(201).json({ status: 200, msg: "order item removed successfully" });
+});
+exports.removeItemFromOrderList = removeItemFromOrderList;

@@ -26,10 +26,10 @@ exports.addAddressSchema = {
 };
 exports.notificationSettingsSchema = {
     [celebrate_1.Segments.BODY]: celebrate_1.Joi.object().keys({
-        muteAllNotification: celebrate_1.Joi.boolean().required(),
-        muteChat: celebrate_1.Joi.boolean().required(),
-        vaccinationReminder: celebrate_1.Joi.boolean().required(),
-        appointmentReminder: celebrate_1.Joi.boolean().required(),
-        medacinReminder: celebrate_1.Joi.boolean().required(),
+        muteAllNotification: celebrate_1.Joi.boolean(),
+        muteChat: celebrate_1.Joi.boolean(),
+        vaccinationReminder: celebrate_1.Joi.boolean(),
+        appointmentReminder: celebrate_1.Joi.boolean(),
+        medacinReminder: celebrate_1.Joi.boolean(),
     })
 };

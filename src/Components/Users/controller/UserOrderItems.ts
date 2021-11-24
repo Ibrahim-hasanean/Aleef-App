@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import User, { UserInterface } from "../../../models/User";
 import OrderItems, { OrdersItemsInterface } from "../../../models/OrderItems";
 import Item from "../../../models/Item";
-
+import mongoose, { ObjectId } from "mongoose";
 
 export const addOrderItems = async (req: Request, res: Response, next: NextFunction) => {
     let user = req.user;
@@ -30,19 +30,30 @@ export const clearOrderItems = async (req: Request, res: Response, next: NextFun
 }
 
 export const updateOrderList = async (req: Request, res: Response, next: NextFunction) => {
-    let { itemId, count } = req.body;
+    let { count } = req.body;
     let id = req.params.id;
-    let user = req.user;
-    const item = await Item.findById(itemId);
-    if (!item) return res.status(200).json({ status: 200, msg: `item with id ${itemId} not found` });
-    const orderItem: OrdersItemsInterface = await OrderItems.findById(id);
+    const orderItem: OrdersItemsInterface = await OrderItems.findById(id) as OrdersItemsInterface;
+    if (!orderItem) return res.status(400).json({ status: 400, msg: `item list with id ${id} not found` });
     orderItem.count = count;
-    orderItem.item = itemId;
     await orderItem.save();
     let populatedOrderItem = await orderItem.populate("item");
+    return res.status(200).json({ status: 200, data: { item: populatedOrderItem } });
+}
 
-    return res.status(201).json({ status: 201, data: { item: populatedOrderItem } });
-
+export const removeItemFromOrderList = async (req: Request, res: Response, next: NextFunction) => {
+    let orderItemId = req.params.id;
+    const user = req.user;
+    const orderItem: OrdersItemsInterface = await OrderItems.findById(orderItemId) as OrdersItemsInterface;
+    if (!mongoose.isValidObjectId(orderItemId)) {
+        return res.status(400).json({ status: 400, msg: `${orderItemId} invalid id` });
+    }
+    if (!orderItem) return res.status(400).json({ status: 400, msg: `item list with id ${orderItemId} not found` });
+    let itemsList: ObjectId[] = user.itemList as ObjectId[];
+    itemsList.filter(x => String(x) != orderItemId);
+    user.itemList = itemsList;
+    await user.save();
+    await orderItem.delete();
+    return res.status(201).json({ status: 200, msg: "order item removed successfully" });
 }
 
 
