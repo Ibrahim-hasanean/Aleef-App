@@ -4,9 +4,15 @@ import { StafInterface } from "../../../../models/Staff";
 import getFreeTimes from "../../../utils/getFreeTimes";
 import getFreeDoctors from "../../../utils/getFreeDoctors";
 import isDateOutWorkTime from "../../../utils/isDateOutWorkTime";
+import Pets, { PetsInterface } from "../../../../models/Pets";
+import User, { UserInterface } from "../../../../models/User";
 
 export const addAppointment = async (req: Request, res: Response, next: NextFunction) => {
     const { petId, service, appointmentDate, reason, userId, doctorId } = req.body;
+    let isPetExist: PetsInterface = await Pets.findOne({ _id: petId, user: userId }) as PetsInterface;
+    if (!isPetExist) return res.status(400).json({ status: 400, msg: `pet with id ${petId} not exist` });
+    let isUserExist: UserInterface = await User.findById(userId) as UserInterface;
+    if (!isUserExist) return res.status(400).json({ status: 400, msg: `user with id ${userId} not exist` });
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);

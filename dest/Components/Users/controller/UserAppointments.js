@@ -19,9 +19,13 @@ const getFreeDoctors_1 = __importDefault(require("../../utils/getFreeDoctors"));
 const isDateOutWorkTime_1 = __importDefault(require("../../utils/isDateOutWorkTime"));
 const Payment_1 = __importDefault(require("../../../models/Payment"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const Pets_1 = __importDefault(require("../../../models/Pets"));
 const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { petId, service, appointmentDate, reason } = req.body;
     const user = req.user;
+    let isPetExist = yield Pets_1.default.findOne({ _id: petId, user: user._id });
+    if (!isPetExist)
+        return res.status(400).json({ status: 400, msg: `pet with id ${petId} not exist` });
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);

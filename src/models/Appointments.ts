@@ -6,7 +6,7 @@ import { StafInterface } from "./Staff";
 import { UserInterface } from "./User";
 
 export interface AppointmentsInterface extends mongoose.Document {
-    pet: ObjectId | PetsInterface,
+    pet: ObjectId | PetsInterface | string,
     service: string,
     appointmentDate: Date,
     reason: string,

@@ -6,10 +6,13 @@ import getFreeDoctors from "../../utils/getFreeDoctors";
 import isDateOutWorkTime from "../../utils/isDateOutWorkTime";
 import Payment, { PaymentInterFace } from "../../../models/Payment";
 import mongoose from "mongoose";
+import Pets, { PetsInterface } from "../../../models/Pets";
 
 export const addAppointment = async (req: Request, res: Response, next: NextFunction) => {
     const { petId, service, appointmentDate, reason } = req.body;
     const user = req.user;
+    let isPetExist: PetsInterface = await Pets.findOne({ _id: petId, user: user._id }) as PetsInterface;
+    if (!isPetExist) return res.status(400).json({ status: 400, msg: `pet with id ${petId} not exist` });
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);

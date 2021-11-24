@@ -17,8 +17,16 @@ const Appointments_1 = __importDefault(require("../../../../models/Appointments"
 const getFreeTimes_1 = __importDefault(require("../../../utils/getFreeTimes"));
 const getFreeDoctors_1 = __importDefault(require("../../../utils/getFreeDoctors"));
 const isDateOutWorkTime_1 = __importDefault(require("../../../utils/isDateOutWorkTime"));
+const Pets_1 = __importDefault(require("../../../../models/Pets"));
+const User_1 = __importDefault(require("../../../../models/User"));
 const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { petId, service, appointmentDate, reason, userId, doctorId } = req.body;
+    let isPetExist = yield Pets_1.default.findOne({ _id: petId, user: userId });
+    if (!isPetExist)
+        return res.status(400).json({ status: 400, msg: `pet with id ${petId} not exist` });
+    let isUserExist = yield User_1.default.findById(userId);
+    if (!isUserExist)
+        return res.status(400).json({ status: 400, msg: `user with id ${userId} not exist` });
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
