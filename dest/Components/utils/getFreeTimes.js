@@ -30,7 +30,7 @@ function default_1(date) {
         EndHours.setMilliseconds(0);
         const appointments = yield Appointments_1.default.find({ appointmentDate: { $gte: startWorkHours, $lt: EndHours, } })
             .select(['appointmentDate', 'doctor']);
-        const appointmentDates = appointments.map(x => x.appointmentDate);
+        // const appointmentDates: Date[] = appointments.map(x => x.appointmentDate);
         let time = (0, moment_1.default)(startWorkHours);
         let day = String(time.format("dddd")).toLowerCase();
         console.log(String(day).toLowerCase());
@@ -43,10 +43,10 @@ function default_1(date) {
                 .filter((doctor) => {
                 let isHold = isTimePeriodHold.findIndex(doctorId => String(doctorId) === String(doctor._id)) === -1;
                 let isActive = doctor.workHoures.get(day).isActive;
-                console.log((0, moment_1.default)(doctor.workHoures.get(day).from).toDate().getHours());
-                console.log(beginPeriod.toDate().getHours());
-                let isInWorkHouresRange = (0, moment_1.default)(doctor.workHoures.get(day).from).hours() < beginPeriod.hours()
-                    && (0, moment_1.default)(doctor.workHoures.get(day).to).hours() > endPeriod.hours();
+                // console.log(moment(doctor.workHoures.get(day).from).toDate().getHours());
+                // console.log(beginPeriod.toDate().getHours());
+                let isInWorkHouresRange = (0, moment_1.default)(doctor.workHoures.get(day).from).hours() <= beginPeriod.hours()
+                    && (0, moment_1.default)(doctor.workHoures.get(day).to).hours() >= endPeriod.hours();
                 return isHold && isActive && isInWorkHouresRange;
             });
             if (freeDoctors.length > 0) {

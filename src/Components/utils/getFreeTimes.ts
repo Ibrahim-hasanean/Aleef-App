@@ -20,7 +20,7 @@ export default async function (date: Date): Promise<PeriodTime[]> {
     const appointments = await Appointments.find({ appointmentDate: { $gte: startWorkHours, $lt: EndHours, } })
         .select(['appointmentDate', 'doctor']);
 
-    const appointmentDates: Date[] = appointments.map(x => x.appointmentDate);
+    // const appointmentDates: Date[] = appointments.map(x => x.appointmentDate);
     let time = moment(startWorkHours);
     let day = String(time.format("dddd")).toLowerCase();
     console.log(String(day).toLowerCase());
@@ -30,15 +30,16 @@ export default async function (date: Date): Promise<PeriodTime[]> {
         const endPeriod = moment(time).add(15, 'minutes');
         const isTimePeriodHold = appointments.filter(x => x.appointmentDate >= beginPeriod.toDate() && x.appointmentDate < endPeriod.toDate()).map(x => x.doctor);
 
+
         const freeDoctors = doctors
             .filter((doctor: StafInterface) => {
                 let isHold = isTimePeriodHold.findIndex(doctorId => String(doctorId) === String(doctor._id)) === -1
                 let isActive = doctor.workHoures.get(day).isActive;
-                console.log(moment(doctor.workHoures.get(day).from).toDate().getHours());
-                console.log(beginPeriod.toDate().getHours());
+                // console.log(moment(doctor.workHoures.get(day).from).toDate().getHours());
+                // console.log(beginPeriod.toDate().getHours());
                 let isInWorkHouresRange =
-                    moment(doctor.workHoures.get(day).from).hours() < beginPeriod.hours()
-                    && moment(doctor.workHoures.get(day).to).hours() > endPeriod.hours();
+                    moment(doctor.workHoures.get(day).from).hours() <= beginPeriod.hours()
+                    && moment(doctor.workHoures.get(day).to).hours() >= endPeriod.hours();
                 return isHold && isActive && isInWorkHouresRange;
             }
             );

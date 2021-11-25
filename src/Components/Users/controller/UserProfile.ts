@@ -90,6 +90,11 @@ export const deleteAddress = async (req: Request, res: Response, next: NextFunct
     });
 }
 
+export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
+    let user = req.user;
+    return res.status(200).json({ status: 200, data: { user } });
+}
+
 // export const setLanguage = async (req: Request, res: Response, next: NextFunction) => {
 //     let user = req.user;
 //     req.headers.

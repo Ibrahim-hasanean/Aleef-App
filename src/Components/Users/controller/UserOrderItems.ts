@@ -49,7 +49,7 @@ export const removeItemFromOrderList = async (req: Request, res: Response, next:
     }
     if (!orderItem) return res.status(400).json({ status: 400, msg: `item list with id ${orderItemId} not found` });
     let itemsList: ObjectId[] = user.itemList as ObjectId[];
-    itemsList.filter(x => String(x) != orderItemId);
+    itemsList = itemsList.filter(x => String(x) != String(orderItem._id));
     user.itemList = itemsList;
     await user.save();
     await orderItem.delete();

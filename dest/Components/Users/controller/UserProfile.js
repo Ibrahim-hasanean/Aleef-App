@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteAddress = exports.getAddresses = exports.addAddress = exports.notificationSettings = exports.changePassword = exports.updateProfile = void 0;
+exports.getProfile = exports.deleteAddress = exports.getAddresses = exports.addAddress = exports.notificationSettings = exports.changePassword = exports.updateProfile = void 0;
 const User_1 = __importDefault(require("../../../models/User"));
 const GenerateCode_1 = __importDefault(require("../../utils/GenerateCode"));
 const Address_1 = __importDefault(require("../../../models/Address"));
@@ -107,6 +107,11 @@ const deleteAddress = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     });
 });
 exports.deleteAddress = deleteAddress;
+const getProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let user = req.user;
+    return res.status(200).json({ status: 200, data: { user } });
+});
+exports.getProfile = getProfile;
 // export const setLanguage = async (req: Request, res: Response, next: NextFunction) => {
 //     let user = req.user;
 //     req.headers.

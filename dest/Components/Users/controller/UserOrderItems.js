@@ -65,7 +65,7 @@ const removeItemFromOrderList = (req, res, next) => __awaiter(void 0, void 0, vo
     if (!orderItem)
         return res.status(400).json({ status: 400, msg: `item list with id ${orderItemId} not found` });
     let itemsList = user.itemList;
-    itemsList.filter(x => String(x) != orderItemId);
+    itemsList = itemsList.filter(x => String(x) != String(orderItem._id));
     user.itemList = itemsList;
     yield user.save();
     yield orderItem.delete();

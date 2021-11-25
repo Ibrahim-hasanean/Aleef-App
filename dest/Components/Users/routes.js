@@ -39,6 +39,7 @@ router.get("/cards", verifyUser_1.default, UserCardsInfo_1.getCardInfo);
 router.get("/cards/:id", verifyUser_1.default, UserCardsInfo_1.getCardInfoById);
 router.delete("/cards/:id", verifyUser_1.default, UserCardsInfo_1.deleteCardInfo);
 // user profile
+router.get("/profile", verifyUser_1.default, UserProfile_1.getProfile);
 router.patch("/profile", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.updateProfileSchema), UserProfile_1.updateProfile);
 router.post("/profile/changePassword", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.changePasswordSchema), UserProfile_1.changePassword);
 router.post("/notifications", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.notificationSettingsSchema), UserProfile_1.notificationSettings);

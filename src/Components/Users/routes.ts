@@ -2,7 +2,7 @@ import { Router } from "express";
 import { registerSchema, loginSchema, forgetPasswordSchema, verifyCodeSchema, validate, resetPasswordSchema } from "./middleware/userAuthValidate";
 import { addAddressSchema, changePasswordSchema, notificationSettingsSchema, updateProfileSchema } from "./middleware/userProfileValidation";
 import { register, login, forgetPassword, verifyCode, resetPassword } from "./controller/UsersAuth";
-import { addAddress, getAddresses, deleteAddress, updateProfile, changePassword, notificationSettings } from "./controller/UserProfile";
+import { addAddress, getAddresses, deleteAddress, updateProfile, changePassword, notificationSettings, getProfile } from "./controller/UserProfile";
 import verifyUser from "./middleware/verifyUser";
 import { petSchema } from "./middleware/PetsValidation";
 import { addPets, deletePet, getPetById, getPets, updatePet, getBreeds, getPetsTypes } from "./controller/UserPets";
@@ -51,6 +51,7 @@ router.get("/cards/:id", verifyUser, getCardInfoById);
 router.delete("/cards/:id", verifyUser, deleteCardInfo);
 
 // user profile
+router.get("/profile", verifyUser, getProfile);
 router.patch("/profile", verifyUser, validate(updateProfileSchema), updateProfile);
 router.post("/profile/changePassword", verifyUser, validate(changePasswordSchema), changePassword);
 router.post("/notifications", verifyUser, validate(notificationSettingsSchema), notificationSettings);
