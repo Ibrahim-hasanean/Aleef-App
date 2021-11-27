@@ -33,6 +33,12 @@ import { orderSchema, orderStatusSchema } from "./middleware/validateOrdres";
 import { addClientSchema } from "./middleware/validateClient";
 import { petSchema } from "./middleware/validatePets";
 import { profileSchema } from "./middleware/validateProfile";
+import { getPetVaccinations, getVaccinationById, addVaccination, deleteVaccinationById, updateVaccination } from "./controller/vaccinations/vaccination";
+import verifyDoctor from "./middleware/verifyDoctor";
+import { vaccinationSchema } from "./middleware/validateVaccination";
+import { MedacinSchema } from "./middleware/validateMedacin";
+import { addMedacin, updateMedacin, deleteMedacin, getMedacinById, getPetMedacins } from "./controller/medacins/medacins";
+
 
 const router = Router();
 
@@ -45,12 +51,29 @@ router.patch("/profile", verifyStaffMember, validate(profileSchema), updateProfi
 router.get("/profile", verifyStaffMember, getProfile);
 
 
+
+
 //pets 
 router.post("/pets", verifyStaffMember, validate(petSchema), addNewPet);
 router.get("/pets", verifyStaffMember, getPets);
 router.get("/pets/:id", verifyStaffMember, getPetById);
 router.delete("/pets/:id", verifyStaffMember, deletePet);
 
+
+// pets vaccinations
+router.post("/pets/:id/vaccinations", verifyDoctor, validate(vaccinationSchema), addVaccination);
+router.patch("/pets/:id/vaccinations/:vaccinationId", verifyDoctor, validate(vaccinationSchema), updateVaccination);
+router.get("/pets/:id/vaccinations", verifyDoctor, getPetVaccinations);
+router.get("/pets/:id/vaccinations/:vaccinationId", verifyDoctor, getVaccinationById);
+router.delete("/pets/:id/vaccinations/:vaccinationId", verifyDoctor, deleteVaccinationById);
+
+
+// pets medacin
+router.post("/pets/:id/medacins", verifyDoctor, validate(MedacinSchema), addMedacin);
+router.patch("/pets/:id/medacins/:medacinId", verifyDoctor, validate(MedacinSchema), updateMedacin);
+router.get("/pets/:id/medacins", verifyDoctor, getPetMedacins);
+router.get("/pets/:id/medacins/:medacinId", verifyDoctor, getMedacinById);
+router.delete("/pets/:id/medacins/:medacinId", verifyDoctor, deleteMedacin);
 
 // clients 
 router.post("/clients", verifyStaffMember, validate(addClientSchema), addNewUser);

@@ -11,6 +11,8 @@ export const petSchema = {
         age: Joi.string().required(),
         typeId: Joi.string().required(),
         breedId: Joi.string().required(),
+        nutried: Joi.boolean(),
+        duerming: Joi.boolean(),
         gender: Joi.string().required().valid("male", "female"),
     })
 }

@@ -1,7 +1,9 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
 import { BreedInterface } from "./Breed";
+import { PetsMedacins } from "./Medacine";
 import { PetsTypesInterface } from "./PetsTypes";
 import { UserInterface } from "./User";
+import { PetsVaccination } from "./Vaccination";
 
 export interface PetsInterface extends mongoose.Document {
     name: string
@@ -11,11 +13,15 @@ export interface PetsInterface extends mongoose.Document {
     imageUrl: string
     user: ObjectId | UserInterface
     breed: ObjectId | BreedInterface
+    vaccinations: ObjectId[] | PetsVaccination[]
+    medacins: ObjectId[] | PetsMedacins[]
     gender: string
     microshipNumber: number
     weight: number
     notes: string
-    lastCheckUp: Date
+    nutried: boolean
+    duerming: boolean
+    // lastCheckUp: Date
 }
 
 const petsSchema = new Schema({
@@ -26,11 +32,15 @@ const petsSchema = new Schema({
     imageUrl: { type: String },
     user: { type: mongoose.Types.ObjectId, ref: "users" },
     breed: { type: mongoose.Types.ObjectId, ref: "breeds" },
+    vaccinations: [{ type: mongoose.Types.ObjectId, ref: "vaccination" }],
+    medacins: [{ type: mongoose.Types.ObjectId, ref: "medicins" }],
     gender: { type: String },
     microshipNumber: { type: Number },
     weight: { type: Number },
     notes: { type: String },
-    lastCheckUp: { type: Date }
+    // lastCheckUp: { type: Date }
+    nutried: { type: Boolean },
+    duerming: { type: Boolean }
 });
 
 const Pets = mongoose.model<PetsInterface>("pets", petsSchema);

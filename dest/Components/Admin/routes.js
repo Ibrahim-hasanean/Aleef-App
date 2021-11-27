@@ -32,6 +32,11 @@ const validateOrdres_1 = require("./middleware/validateOrdres");
 const validateClient_1 = require("./middleware/validateClient");
 const validatePets_1 = require("./middleware/validatePets");
 const validateProfile_1 = require("./middleware/validateProfile");
+const vaccination_1 = require("./controller/vaccinations/vaccination");
+const verifyDoctor_1 = __importDefault(require("./middleware/verifyDoctor"));
+const validateVaccination_1 = require("./middleware/validateVaccination");
+const validateMedacin_1 = require("./middleware/validateMedacin");
+const medacins_1 = require("./controller/medacins/medacins");
 const router = (0, express_1.Router)();
 // auth routers
 router.post("/auth/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
@@ -44,6 +49,18 @@ router.post("/pets", verifyStaffMember_1.default, (0, validateAuth_1.validate)(v
 router.get("/pets", verifyStaffMember_1.default, Pet_1.getPets);
 router.get("/pets/:id", verifyStaffMember_1.default, Pet_1.getPetById);
 router.delete("/pets/:id", verifyStaffMember_1.default, Pet_1.deletePet);
+// pets vaccinations
+router.post("/pets/:id/vaccinations", verifyDoctor_1.default, (0, validateAuth_1.validate)(validateVaccination_1.vaccinationSchema), vaccination_1.addVaccination);
+router.patch("/pets/:id/vaccinations/:vaccinationId", verifyDoctor_1.default, (0, validateAuth_1.validate)(validateVaccination_1.vaccinationSchema), vaccination_1.updateVaccination);
+router.get("/pets/:id/vaccinations", verifyDoctor_1.default, vaccination_1.getPetVaccinations);
+router.get("/pets/:id/vaccinations/:vaccinationId", verifyDoctor_1.default, vaccination_1.getVaccinationById);
+router.delete("/pets/:id/vaccinations/:vaccinationId", verifyDoctor_1.default, vaccination_1.deleteVaccinationById);
+// pets medacin
+router.post("/pets/:id/medacins", verifyDoctor_1.default, (0, validateAuth_1.validate)(validateMedacin_1.MedacinSchema), medacins_1.addMedacin);
+router.patch("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, (0, validateAuth_1.validate)(validateMedacin_1.MedacinSchema), medacins_1.updateMedacin);
+router.get("/pets/:id/medacins", verifyDoctor_1.default, medacins_1.getPetMedacins);
+router.get("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, medacins_1.getMedacinById);
+router.delete("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, medacins_1.deleteMedacin);
 // clients 
 router.post("/clients", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.addNewUser);
 router.patch("/clients/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.updateUser);

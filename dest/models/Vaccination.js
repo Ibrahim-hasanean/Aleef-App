@@ -20,23 +20,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const petsSchema = new mongoose_1.Schema({
-    name: { type: String },
-    serialNumber: { type: String },
-    age: { type: Number },
-    type: { type: mongoose_1.default.Types.ObjectId, ref: "petsTypes" },
-    imageUrl: { type: String },
-    user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
-    breed: { type: mongoose_1.default.Types.ObjectId, ref: "breeds" },
-    vaccinations: [{ type: mongoose_1.default.Types.ObjectId, ref: "vaccination" }],
-    medacins: [{ type: mongoose_1.default.Types.ObjectId, ref: "medicins" }],
-    gender: { type: String },
-    microshipNumber: { type: Number },
-    weight: { type: Number },
-    notes: { type: String },
-    // lastCheckUp: { type: Date }
-    nutried: { type: Boolean },
-    duerming: { type: Boolean }
+const vaccinationSchema = new mongoose_1.Schema({
+    name: { type: String, required: true },
+    pet: { type: mongoose_1.default.Types.ObjectId, ref: "pets" },
+    dates: [{ type: Date, required: true }],
+    repetition: { type: Number, default: 1 },
+    notes: { type: String }
 });
-const Pets = mongoose_1.default.model("pets", petsSchema);
-exports.default = Pets;
+const Vaccination = mongoose_1.default.model("vaccination", vaccinationSchema);
+exports.default = Vaccination;

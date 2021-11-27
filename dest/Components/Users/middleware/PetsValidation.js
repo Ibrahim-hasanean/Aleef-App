@@ -11,6 +11,8 @@ exports.petSchema = {
         age: celebrate_1.Joi.string().required(),
         typeId: celebrate_1.Joi.string().required(),
         breedId: celebrate_1.Joi.string().required(),
+        nutried: celebrate_1.Joi.boolean(),
+        duerming: celebrate_1.Joi.boolean(),
         gender: celebrate_1.Joi.string().required().valid("male", "female"),
     })
 };
