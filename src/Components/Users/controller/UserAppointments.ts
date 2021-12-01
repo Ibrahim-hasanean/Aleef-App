@@ -16,6 +16,8 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
+    let nowDate = new Date();
+    if (handleAppointmentDate < nowDate) return res.status(400).json({ status: 400, msg: "can not book appointment in past time" });
     const isAppointmentOutOfWorkHours: boolean = isDateOutWorkTime(handleAppointmentDate);
     if (isAppointmentOutOfWorkHours) return res.status(400).json({ status: 400, msg: "appointment date is out of work hours" });
     const freeDoctors: StafInterface[] = await getFreeDoctors(appointmentDate, handleAppointmentDate);
@@ -27,6 +29,7 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
         reason,
         doctor: freeDoctors[0]._id,
         user: user._id,
+        status: "upcoming"
     });
     return res.status(201).json({
         status: 201, msg: "appointment created successfully",
@@ -73,7 +76,7 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
 }
 
 export const getAppointments = async (req: Request, res: Response, next: NextFunction) => {
-    let { page, pageSize, service, doctorId, paymentStatus, petId } = req.query;
+    let { page, pageSize, service, doctorId, paymentStatus, petId, status } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
@@ -82,6 +85,7 @@ export const getAppointments = async (req: Request, res: Response, next: NextFun
     if (doctorId) query.doctor = doctorId;
     if (paymentStatus) query.paymentStatus = paymentStatus;
     if (petId) query.pet = petId;
+    if (status) query.status = status;
     const appointments = await Appointments.find(query)
         .populate("doctor")
         .populate("pet")
@@ -97,7 +101,10 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
     if (!mongoose.isValidObjectId(id)) {
         return res.status(200).json({ status: 200, data: { appointment: null } });
     }
-    const appointment = await Appointments.findOne({ _id: id, user: user._id });
+    const appointment = await Appointments.findOne({ _id: id, user: user._id })
+        .populate("doctor")
+        .populate("pet")
+        .populate("medacin");
     return res.status(200).json({ status: 200, data: { appointment } });
 }
 
@@ -105,10 +112,13 @@ export const deleteAppointments = async (req: Request, res: Response, next: Next
     let id = req.params.id;
     let user = req.user;
     if (!mongoose.isValidObjectId(id)) {
-        return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
+        return res.status(400).json({ status: 400, msg: "appointmentId not found" });
     }
-    const appointment = await Appointments.findOneAndDelete({ _id: id, user: user._id });
-    return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
+    const appointment: AppointmentsInterface = await Appointments.findOne({ _id: id, user: user._id }) as AppointmentsInterface;
+    if (!appointment) return res.status(400).json({ status: 400, msg: "appointment not found" });
+    appointment.status = "cancelled";
+    await appointment.save()
+    return res.status(200).json({ status: 200, msg: "appointment cancelled successfully" });
 }
 
 export const getAvaliableTime = async (req: Request, res: Response, next: NextFunction) => {

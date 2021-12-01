@@ -36,7 +36,7 @@ import { profileSchema } from "./middleware/validateProfile";
 import { getPetVaccinations, getVaccinationById, addVaccination, deleteVaccinationById, updateVaccination } from "./controller/vaccinations/vaccination";
 import verifyDoctor from "./middleware/verifyDoctor";
 import { vaccinationSchema } from "./middleware/validateVaccination";
-import { MedacinSchema } from "./middleware/validateMedacin";
+import { MedacinSchema, updateMedacinSchema } from "./middleware/validateMedacin";
 import { addMedacin, updateMedacin, deleteMedacin, getMedacinById, getPetMedacins } from "./controller/medacins/medacins";
 
 
@@ -70,7 +70,7 @@ router.delete("/pets/:id/vaccinations/:vaccinationId", verifyDoctor, deleteVacci
 
 // pets medacin
 router.post("/pets/:id/medacins", verifyDoctor, validate(MedacinSchema), addMedacin);
-router.patch("/pets/:id/medacins/:medacinId", verifyDoctor, validate(MedacinSchema), updateMedacin);
+router.patch("/pets/:id/medacins/:medacinId", verifyDoctor, validate(updateMedacinSchema), updateMedacin);
 router.get("/pets/:id/medacins", verifyDoctor, getPetMedacins);
 router.get("/pets/:id/medacins/:medacinId", verifyDoctor, getMedacinById);
 router.delete("/pets/:id/medacins/:medacinId", verifyDoctor, deleteMedacin);
@@ -103,7 +103,7 @@ router.delete("/appointments/payments/:id", verifyRecieption, deleteAppointments
 // appointments routes 
 router.get("/appointments", verifyStaffMember, getAppointments);
 router.post("/appointments", verifyStaffMember, validate(AppointmentSchema), addAppointment);
-router.patch("/appointments", verifyStaffMember, validate(AppointmentSchema), updateAppointment);
+router.patch("/appointments/:id", verifyStaffMember, validate(AppointmentSchema), updateAppointment);
 router.get("/appointments/avaliable", verifyStaffMember, getAvaliableTime);
 router.get("/appointments/doctors", verifyStaffMember, getAvaliableDoctrs);
 router.get("/appointments/:id", verifyStaffMember, getAppointmentsById);

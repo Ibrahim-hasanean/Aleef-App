@@ -20,7 +20,7 @@ const isDateOutWorkTime_1 = __importDefault(require("../../../utils/isDateOutWor
 const Pets_1 = __importDefault(require("../../../../models/Pets"));
 const User_1 = __importDefault(require("../../../../models/User"));
 const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { petId, service, appointmentDate, reason, userId, doctorId } = req.body;
+    const { petId, service, appointmentDate, reason, userId, doctorId, report } = req.body;
     let isPetExist = yield Pets_1.default.findOne({ _id: petId, user: userId });
     if (!isPetExist)
         return res.status(400).json({ status: 400, msg: `pet with id ${petId} not exist` });
@@ -43,6 +43,7 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         reason,
         doctor: doctorId || freeDoctors[0]._id,
         user: userId,
+        report
     });
     return res.status(201).json({
         status: 201, msg: "appointment created successfully",
@@ -51,7 +52,7 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.addAppointment = addAppointment;
 const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { petId, service, appointmentDate, reason, doctorId, userId } = req.body;
+    const { petId, service, appointmentDate, reason, doctorId, userId, report } = req.body;
     let appointmentId = req.params.id;
     const appointment = yield Appointments_1.default.findById(appointmentId);
     if (!appointment)
@@ -72,6 +73,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
         reason,
         doctor: doctorId || freeDoctors[0]._id,
         user: userId,
+        report
     });
     return res.status(201).json({
         status: 201, msg: "appointment updated successfully", data: {
@@ -110,6 +112,7 @@ const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0
     const appointment = yield Appointments_1.default.findById(id)
         .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
         .populate({ path: "pet" })
+        .populate({ path: "medacin" })
         .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { appointment } });
 });

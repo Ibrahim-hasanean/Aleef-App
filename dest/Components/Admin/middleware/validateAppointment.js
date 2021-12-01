@@ -5,6 +5,8 @@ const celebrate_1 = require("celebrate");
 exports.AppointmentSchema = {
     [celebrate_1.Segments.BODY]: celebrate_1.Joi.object().keys({
         petId: celebrate_1.Joi.string().required(),
+        userId: celebrate_1.Joi.string().required(),
+        report: celebrate_1.Joi.string(),
         service: celebrate_1.Joi.string().required().valid("visit the vet", "hosting", "grooming"),
         appointmentDate: celebrate_1.Joi.date().required(),
         reason: celebrate_1.Joi.string().required(),

@@ -8,7 +8,7 @@ import Pets, { PetsInterface } from "../../../../models/Pets";
 import User, { UserInterface } from "../../../../models/User";
 
 export const addAppointment = async (req: Request, res: Response, next: NextFunction) => {
-    const { petId, service, appointmentDate, reason, userId, doctorId } = req.body;
+    const { petId, service, appointmentDate, reason, userId, doctorId, report } = req.body;
     let isPetExist: PetsInterface = await Pets.findOne({ _id: petId, user: userId }) as PetsInterface;
     if (!isPetExist) return res.status(400).json({ status: 400, msg: `pet with id ${petId} not exist` });
     let isUserExist: UserInterface = await User.findById(userId) as UserInterface;
@@ -27,6 +27,7 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
         reason,
         doctor: doctorId || freeDoctors[0]._id,
         user: userId,
+        report
     });
     return res.status(201).json({
         status: 201, msg: "appointment created successfully",
@@ -35,7 +36,7 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
 }
 
 export const updateAppointment = async (req: Request, res: Response, next: NextFunction) => {
-    const { petId, service, appointmentDate, reason, doctorId, userId } = req.body;
+    const { petId, service, appointmentDate, reason, doctorId, userId, report } = req.body;
     let appointmentId = req.params.id;
     const appointment = await Appointments.findById(appointmentId);
     if (!appointment) return res.status(400).json({ status: 400, msg: "apppointment not found" });
@@ -53,6 +54,7 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
         reason,
         doctor: doctorId || freeDoctors[0]._id,
         user: userId,
+        report
     });
     return res.status(201).json({
         status: 201, msg: "appointment updated successfully", data: {
@@ -87,6 +89,7 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
     const appointment = await Appointments.findById(id)
         .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
         .populate({ path: "pet" })
+        .populate({ path: "medacin" })
         .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { appointment } });
 }

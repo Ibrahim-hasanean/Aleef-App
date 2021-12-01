@@ -44,7 +44,7 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         shippingFees,
         shippingAddress: shippingAddressId,
         cardNumber,
-        status: "pending"
+        status: "to be shipped"
     });
     const payment = new Payment_1.default({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id });
     newOrder.payment = payment._id;
@@ -54,8 +54,29 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.payItem = payItem;
 const getPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let { page, limit, status, from, to } = req.query;
+    const limitNumber = Number(limit) || 10;
+    const skip = (Number(page || 1) - 1) * limitNumber;
     let user = req.user;
-    let userOrders = yield Order_1.default.find({ user: user._id }).populate({ path: "items", populate: { path: "item" } });
+    let query = { user: user._id };
+    if (status)
+        query.status = status;
+    if (from || to)
+        query.createdAt = {};
+    if (to) {
+        let date = new Date(to);
+        date.setHours(23);
+        date.setMinutes(59);
+        query.createdAt.$lte = date;
+    }
+    if (from)
+        query.createdAt.$gte = new Date(from);
+    console.log(query);
+    let userOrders = yield Order_1.default
+        .find(query)
+        .populate({ path: "items", populate: { path: "item" } })
+        .skip(skip)
+        .limit(limitNumber);
     return res.status(200).json({ status: 200, data: { orders: userOrders } });
 });
 exports.getPayments = getPayments;

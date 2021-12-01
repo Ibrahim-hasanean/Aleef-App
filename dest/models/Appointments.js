@@ -27,6 +27,8 @@ const appointmentSchema = new mongoose_1.Schema({
     reason: { type: String },
     doctor: { type: mongoose_1.default.Types.ObjectId, ref: "staff" },
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
+    medacin: { type: mongoose_1.default.Types.ObjectId, ref: "medicins" },
+    report: { type: String },
     status: { type: String },
     paymentStatus: { type: String, default: "Not Completed" },
     payment: { type: mongoose_1.default.Types.ObjectId, ref: "payments" },

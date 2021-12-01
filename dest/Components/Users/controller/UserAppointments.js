@@ -29,6 +29,9 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
+    let nowDate = new Date();
+    if (handleAppointmentDate < nowDate)
+        return res.status(400).json({ status: 400, msg: "can not book appointment in past time" });
     const isAppointmentOutOfWorkHours = (0, isDateOutWorkTime_1.default)(handleAppointmentDate);
     if (isAppointmentOutOfWorkHours)
         return res.status(400).json({ status: 400, msg: "appointment date is out of work hours" });
@@ -42,6 +45,7 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         reason,
         doctor: freeDoctors[0]._id,
         user: user._id,
+        status: "upcoming"
     });
     return res.status(201).json({
         status: 201, msg: "appointment created successfully",
@@ -90,7 +94,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.updateAppointment = updateAppointment;
 const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, pageSize, service, doctorId, paymentStatus, petId } = req.query;
+    let { page, pageSize, service, doctorId, paymentStatus, petId, status } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
@@ -103,6 +107,8 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         query.paymentStatus = paymentStatus;
     if (petId)
         query.pet = petId;
+    if (status)
+        query.status = status;
     const appointments = yield Appointments_1.default.find(query)
         .populate("doctor")
         .populate("pet")
@@ -118,7 +124,10 @@ const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0
     if (!mongoose_1.default.isValidObjectId(id)) {
         return res.status(200).json({ status: 200, data: { appointment: null } });
     }
-    const appointment = yield Appointments_1.default.findOne({ _id: id, user: user._id });
+    const appointment = yield Appointments_1.default.findOne({ _id: id, user: user._id })
+        .populate("doctor")
+        .populate("pet")
+        .populate("medacin");
     return res.status(200).json({ status: 200, data: { appointment } });
 });
 exports.getAppointmentsById = getAppointmentsById;
@@ -126,10 +135,14 @@ const deleteAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0,
     let id = req.params.id;
     let user = req.user;
     if (!mongoose_1.default.isValidObjectId(id)) {
-        return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
+        return res.status(400).json({ status: 400, msg: "appointmentId not found" });
     }
-    const appointment = yield Appointments_1.default.findOneAndDelete({ _id: id, user: user._id });
-    return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
+    const appointment = yield Appointments_1.default.findOne({ _id: id, user: user._id });
+    if (!appointment)
+        return res.status(400).json({ status: 400, msg: "appointment not found" });
+    appointment.status = "cancelled";
+    yield appointment.save();
+    return res.status(200).json({ status: 200, msg: "appointment cancelled successfully" });
 });
 exports.deleteAppointments = deleteAppointments;
 const getAvaliableTime = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

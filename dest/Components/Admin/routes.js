@@ -57,7 +57,7 @@ router.get("/pets/:id/vaccinations/:vaccinationId", verifyDoctor_1.default, vacc
 router.delete("/pets/:id/vaccinations/:vaccinationId", verifyDoctor_1.default, vaccination_1.deleteVaccinationById);
 // pets medacin
 router.post("/pets/:id/medacins", verifyDoctor_1.default, (0, validateAuth_1.validate)(validateMedacin_1.MedacinSchema), medacins_1.addMedacin);
-router.patch("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, (0, validateAuth_1.validate)(validateMedacin_1.MedacinSchema), medacins_1.updateMedacin);
+router.patch("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, (0, validateAuth_1.validate)(validateMedacin_1.updateMedacinSchema), medacins_1.updateMedacin);
 router.get("/pets/:id/medacins", verifyDoctor_1.default, medacins_1.getPetMedacins);
 router.get("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, medacins_1.getMedacinById);
 router.delete("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, medacins_1.deleteMedacin);
@@ -84,7 +84,7 @@ router.delete("/appointments/payments/:id", verifyRecieption_1.default, Appointm
 // appointments routes 
 router.get("/appointments", verifyStaffMember_1.default, appointments_1.getAppointments);
 router.post("/appointments", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.addAppointment);
-router.patch("/appointments", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.updateAppointment);
+router.patch("/appointments/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.updateAppointment);
 router.get("/appointments/avaliable", verifyStaffMember_1.default, appointments_1.getAvaliableTime);
 router.get("/appointments/doctors", verifyStaffMember_1.default, appointments_1.getAvaliableDoctrs);
 router.get("/appointments/:id", verifyStaffMember_1.default, appointments_1.getAppointmentsById);

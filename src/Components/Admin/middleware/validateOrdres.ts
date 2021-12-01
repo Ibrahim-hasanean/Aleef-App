@@ -18,6 +18,6 @@ export const orderSchema = {
 
 export const orderStatusSchema = {
     [Segments.BODY]: Joi.object().keys({
-        status: Joi.string().valid("pending", "arrived", "in the way", "canceled"),
+        status: Joi.string().valid("shipped", "to be shipped", "canceled"),
     })
 }

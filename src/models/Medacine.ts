@@ -1,4 +1,5 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
+import { AppointmentsInterface } from "./Appointments";
 import { PetsInterface } from "./Pets";
 
 export interface PetsMedacins extends mongoose.Document {
@@ -6,6 +7,7 @@ export interface PetsMedacins extends mongoose.Document {
     repetition: number
     duration: number
     pet: ObjectId | PetsInterface
+    appointment: ObjectId | AppointmentsInterface
     notes: string
     createdAt: Date
     updatedAt: Date
@@ -16,6 +18,7 @@ const medicinSchema = new Schema({
     repetition: { type: Number, default: 1 },
     duration: { type: Number },
     pet: { type: mongoose.Types.ObjectId, ref: "pets" },
+    appointment: { type: mongoose.Types.ObjectId, ref: "appointments" },
     notes: { type: String }
 }, { timestamps: true })
 

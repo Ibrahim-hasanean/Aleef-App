@@ -30,7 +30,7 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
         shippingFees,
         shippingAddress: shippingAddressId,
         cardNumber,
-        status: "pending"
+        status: "to be shipped"
     });
     const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id })
     newOrder.payment = payment._id;
@@ -40,8 +40,26 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
 }
 
 export const getPayments = async (req: Request, res: Response, next: NextFunction) => {
+    let { page, limit, status, from, to } = req.query as { page: string, limit: string, status: string, from: string, to: string };
+    const limitNumber = Number(limit) || 10;
+    const skip = (Number(page || 1) - 1) * limitNumber;
     let user = req.user;
-    let userOrders = await Order.find({ user: user._id }).populate({ path: "items", populate: { path: "item" } });
+    let query: any = { user: user._id };
+    if (status) query.status = status;
+    if (from || to) query.createdAt = {}
+    if (to) {
+        let date = new Date(to);
+        date.setHours(23);
+        date.setMinutes(59);
+        query.createdAt.$lte = date;
+    }
+    if (from) query.createdAt.$gte = new Date(from);
+    console.log(query)
+    let userOrders = await Order
+        .find(query)
+        .populate({ path: "items", populate: { path: "item" } })
+        .skip(skip)
+        .limit(limitNumber);
     return res.status(200).json({ status: 200, data: { orders: userOrders } });
 }
 

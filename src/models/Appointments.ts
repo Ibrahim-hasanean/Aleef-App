@@ -4,6 +4,7 @@ import { PetsInterface } from "./Pets";
 import { ServicesInterface } from "./Services";
 import { StafInterface } from "./Staff";
 import { UserInterface } from "./User";
+import { PetsMedacins } from "./Medacine";
 
 export interface AppointmentsInterface extends mongoose.Document {
     pet: ObjectId | PetsInterface | string,
@@ -12,7 +13,9 @@ export interface AppointmentsInterface extends mongoose.Document {
     reason: string,
     doctor: ObjectId | StafInterface,
     user: ObjectId | UserInterface,
+    medacin: ObjectId | PetsMedacins,
     status: string,
+    report: string,
     paymentStatus: string,
     payment: ObjectId | PaymentInterFace | null,
     paymentType: string
@@ -25,6 +28,8 @@ const appointmentSchema = new Schema({
     reason: { type: String },
     doctor: { type: mongoose.Types.ObjectId, ref: "staff" },
     user: { type: mongoose.Types.ObjectId, ref: "users" },
+    medacin: { type: mongoose.Types.ObjectId, ref: "medicins" },
+    report: { type: String },
     status: { type: String },
     paymentStatus: { type: String, default: "Not Completed" },
     payment: { type: mongoose.Types.ObjectId, ref: "payments" },

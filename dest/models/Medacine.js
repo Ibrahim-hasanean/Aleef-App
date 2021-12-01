@@ -25,6 +25,7 @@ const medicinSchema = new mongoose_1.Schema({
     repetition: { type: Number, default: 1 },
     duration: { type: Number },
     pet: { type: mongoose_1.default.Types.ObjectId, ref: "pets" },
+    appointment: { type: mongoose_1.default.Types.ObjectId, ref: "appointments" },
     notes: { type: String }
 }, { timestamps: true });
 const medicins = mongoose_1.default.model("medicins", medicinSchema);

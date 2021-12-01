@@ -19,6 +19,6 @@ exports.orderSchema = {
 };
 exports.orderStatusSchema = {
     [celebrate_1.Segments.BODY]: celebrate_1.Joi.object().keys({
-        status: celebrate_1.Joi.string().valid("pending", "arrived", "in the way", "canceled"),
+        status: celebrate_1.Joi.string().valid("shipped", "to be shipped", "canceled"),
     })
 };
