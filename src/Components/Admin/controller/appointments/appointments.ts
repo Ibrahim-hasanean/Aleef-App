@@ -104,9 +104,9 @@ export const deleteAppointments = async (req: Request, res: Response, next: Next
 export const getAvaliableTime = async (req: Request, res: Response, next: NextFunction) => {
     let { day } = req.query as { day: string };
     const handleAppointmentDate = new Date(day);
-    handleAppointmentDate.setMinutes(0);
-    handleAppointmentDate.setSeconds(0);
-    handleAppointmentDate.setMilliseconds(0);
+    // handleAppointmentDate.setMinutes(0);
+    // handleAppointmentDate.setSeconds(0);
+    // handleAppointmentDate.setMilliseconds(0);
     const appointmentDates = await getFreeTimes(handleAppointmentDate);
     return res.status(200).json({ status: 200, data: { appointmentDates } });
 }

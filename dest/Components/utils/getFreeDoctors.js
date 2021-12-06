@@ -27,7 +27,6 @@ function getFreeDoctors(appointmentDate, handleAppointmentDate) {
         after15MinAppointment.setMilliseconds(0);
         let time = (0, moment_1.default)(appointmentDate);
         let day = String(time.format("dddd")).toLowerCase();
-        console.log(day);
         const isAppointmentDateHold = yield Appointments_1.default
             .find({
             $or: [
@@ -39,7 +38,25 @@ function getFreeDoctors(appointmentDate, handleAppointmentDate) {
         const freeDoctors = yield Staff_1.default.find({
             _id: { $nin: busyDoctors }, role: "doctor"
         });
-        const filterFreeDoctors = freeDoctors.filter((doctor) => doctor.workHoures.get(day).isActive);
+        const filterFreeDoctors = freeDoctors.filter((doctor) => {
+            const isActive = doctor.workHoures.get(day).isActive;
+            let beginDate = doctor.workHoures.get(day).from;
+            // let doctorBeginHours = new Date(doctor.workHoures.get(day).from);
+            let todayBeginHouerseDate = new Date(appointmentDate);
+            todayBeginHouerseDate.setUTCHours(beginDate.getUTCHours());
+            todayBeginHouerseDate.setMinutes(beginDate.getMinutes());
+            todayBeginHouerseDate.setSeconds(0);
+            todayBeginHouerseDate.setMilliseconds(0);
+            // let doctorEndHours = new Date(doctor.workHoures.get(day).to);
+            let endDate = doctor.workHoures.get(day).to;
+            let todayEndHouerseDate = new Date(appointmentDate);
+            todayEndHouerseDate.setUTCHours(endDate.getUTCHours());
+            todayEndHouerseDate.setMinutes(endDate.getMinutes());
+            todayEndHouerseDate.setSeconds(0);
+            todayEndHouerseDate.setMilliseconds(0);
+            let isInWorkHouresRange = time.isBetween(todayBeginHouerseDate, todayEndHouerseDate, undefined, '[]');
+            return isActive && isInWorkHouresRange;
+        });
         return filterFreeDoctors;
     });
 }

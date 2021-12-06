@@ -126,9 +126,9 @@ exports.deleteAppointments = deleteAppointments;
 const getAvaliableTime = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { day } = req.query;
     const handleAppointmentDate = new Date(day);
-    handleAppointmentDate.setMinutes(0);
-    handleAppointmentDate.setSeconds(0);
-    handleAppointmentDate.setMilliseconds(0);
+    // handleAppointmentDate.setMinutes(0);
+    // handleAppointmentDate.setSeconds(0);
+    // handleAppointmentDate.setMilliseconds(0);
     const appointmentDates = yield (0, getFreeTimes_1.default)(handleAppointmentDate);
     return res.status(200).json({ status: 200, data: { appointmentDates } });
 });

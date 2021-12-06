@@ -1,6 +1,6 @@
 export default function isDateOutWorkTime(appointmentDate: Date): boolean {
     const BeginWorkTime = new Date(appointmentDate);
-    BeginWorkTime.setUTCHours(9);
+    BeginWorkTime.setUTCHours(8);
     BeginWorkTime.setMinutes(0);
     BeginWorkTime.setSeconds(0);
     BeginWorkTime.setMilliseconds(0);
