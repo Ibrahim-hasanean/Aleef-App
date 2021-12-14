@@ -30,8 +30,7 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
     let nowDate = new Date();
-    if (handleAppointmentDate < nowDate)
-        return res.status(400).json({ status: 400, msg: "can not book appointment in past time" });
+    // if (handleAppointmentDate < nowDate) return res.status(400).json({ status: 400, msg: "can not book appointment in past time" });
     const isAppointmentOutOfWorkHours = (0, isDateOutWorkTime_1.default)(handleAppointmentDate);
     if (isAppointmentOutOfWorkHours)
         return res.status(400).json({ status: 400, msg: "appointment date is out of work hours" });
@@ -47,6 +46,8 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         user: user._id,
         status: "upcoming"
     });
+    isPetExist.appointments = [...isPetExist.appointments, newAppontment._id];
+    yield isPetExist.save();
     return res.status(201).json({
         status: 201, msg: "appointment created successfully",
         data: { newAppontment }
@@ -94,7 +95,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.updateAppointment = updateAppointment;
 const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, pageSize, service, doctorId, paymentStatus, petId, status } = req.query;
+    let { page, pageSize, service, doctorId, paymentStatus, petId, status, day, } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
@@ -109,6 +110,15 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         query.pet = petId;
     if (status)
         query.status = status;
+    if (day) {
+        let beginDay = new Date(day);
+        beginDay.setHours(1);
+        beginDay.setMinutes(0);
+        let endDay = day ? new Date(day) : new Date();
+        endDay.setHours(24);
+        endDay.setMinutes(0);
+        query.appointmentDate = { $gte: beginDay, $lte: endDay };
+    }
     const appointments = yield Appointments_1.default.find(query)
         .populate("doctor")
         .populate("pet")
@@ -192,12 +202,47 @@ const getAppointmentPaymentById = (req, res, next) => __awaiter(void 0, void 0, 
 });
 exports.getAppointmentPaymentById = getAppointmentPaymentById;
 const getReminder = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, limit } = req.query;
+    let { page, limit, day } = req.query;
     let user = req.user;
     let numberPageSize = limit ? Number(limit) : 2;
     let skip = (Number(page || 1) - 1) * numberPageSize;
-    let date = new Date();
-    let appointments = yield Appointments_1.default.find({ appointmentDate: { $gte: date }, user: user._id }).skip(skip).limit(numberPageSize);
-    return res.status(200).json({ status: 200, data: { appointments } });
+    let beginDay = day ? new Date(day) : new Date();
+    beginDay.setHours(1);
+    beginDay.setMinutes(0);
+    let endDay = day ? new Date(day) : new Date();
+    endDay.setHours(24);
+    endDay.setMinutes(0);
+    console.log(beginDay);
+    console.log(endDay);
+    let pets = yield Pets_1.default.find({ user: user._id })
+        .populate({
+        path: "appointments",
+        select: "appointmentDate",
+        match: { appointmentDate: { $gte: beginDay, $lte: endDay } },
+        options: {
+            sort: { appointmentDate: "asc" },
+        },
+        limit: 1
+    })
+        .populate({
+        path: "vaccinations",
+        select: "dates",
+        match: { dates: { $elemMatch: { $gte: beginDay, $lte: endDay } } },
+    });
+    const nextVaccination = pets
+        .filter(x => x.vaccinations.length > 0)
+        .map(pet => ({
+        name: pet.name,
+        date: pet.vaccinations
+            .map((x) => {
+            let vacination = x;
+            return vacination.dates;
+        })
+            .flat()
+            .filter(x => new Date(x) > beginDay && new Date(x) < endDay)
+            .sort((x, b) => (new Date(x).getTime() - new Date(b).getTime()))[0]
+    }));
+    let nextAppontments = pets.filter(x => x.appointments.length > 0).map(pet => ({ name: pet.name, date: pet.appointments[0] }));
+    return res.status(200).json({ status: 200, data: { nextVaccination, nextAppontments, pets } });
 });
 exports.getReminder = getReminder;

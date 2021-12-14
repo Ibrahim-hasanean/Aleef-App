@@ -27,6 +27,7 @@ const petsSchema = new mongoose_1.Schema({
     type: { type: mongoose_1.default.Types.ObjectId, ref: "petsTypes" },
     imageUrl: { type: String },
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
+    appointments: [{ type: mongoose_1.default.Types.ObjectId, ref: "appointments" }],
     breed: { type: mongoose_1.default.Types.ObjectId, ref: "breeds" },
     vaccinations: [{ type: mongoose_1.default.Types.ObjectId, ref: "vaccination" }],
     medacins: [{ type: mongoose_1.default.Types.ObjectId, ref: "medicins" }],

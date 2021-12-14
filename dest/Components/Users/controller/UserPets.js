@@ -21,14 +21,44 @@ const Vaccination_1 = __importDefault(require("../../../models/Vaccination"));
 const getNextVaccination_1 = __importDefault(require("../../utils/getNextVaccination"));
 const Medacine_1 = __importDefault(require("../../../models/Medacine"));
 const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let { page, limit } = req.query;
+    let numberPageSize = limit ? Number(limit) : 15;
+    let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
-    let pets = yield Pets_1.default.find({ user: user._id }).populate("type").populate("gender").populate("breed");
-    return res.status(200).json({ status: 200, data: { pets } });
+    let date = new Date();
+    // .skip(skip)
+    // .limit(numberPageSize)
+    let pets = yield Pets_1.default.find({ user: user._id })
+        .populate("type")
+        .populate("gender")
+        .populate("breed")
+        .populate({
+        path: "appointments",
+        select: "appointmentDate",
+        match: { appointmentDate: { $lte: date } },
+        options: {
+            sort: { appointmentDate: "desc" },
+        },
+        limit: 1
+    });
+    console.log(pets[0].toObject());
+    let petsObjects = pets.map((x) => {
+        var _a;
+        let appoinments = x.appointments;
+        return (Object.assign({ lastCheckUp: appoinments[0] && ((_a = appoinments[0]) === null || _a === void 0 ? void 0 : _a.appointmentDate) }, x.toObject()));
+    });
+    return res.status(200).json({ status: 200, data: { pets: petsObjects } });
 });
 exports.getPets = getPets;
 const addPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried } = req.body;
     let user = req.user;
+    let isPetTypeExist = yield PetsTypes_1.default.findById(typeId);
+    if (!isPetTypeExist)
+        return res.status(400).json({ status: 400, msg: "pet type not found" });
+    let isPetBreedExist = yield Breed_1.default.findById(breedId);
+    if (!isPetBreedExist)
+        return res.status(400).json({ status: 400, msg: "pet breed not found" });
     let pet = yield Pets_1.default.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     yield user.save();
@@ -42,6 +72,12 @@ const updatePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     let pet = yield Pets_1.default.findOne({ user: user._id, _id: petId });
     if (!pet)
         return res.status(400).json({ status: 400, msg: `pet with id ${petId} not found` });
+    let isPetTypeExist = yield PetsTypes_1.default.findById(typeId);
+    if (!isPetTypeExist)
+        return res.status(400).json({ status: 400, msg: "pet type not found" });
+    let isPetBreedExist = yield Breed_1.default.findById(breedId);
+    if (!isPetBreedExist)
+        return res.status(400).json({ status: 400, msg: "pet breed not found" });
     pet.name = name;
     pet.serialNumber = serialNumber;
     pet.type = typeId;
@@ -59,10 +95,12 @@ const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     let user = req.user;
     let pet = yield Pets_1.default.findOne({ user: user._id, _id: petId })
         .populate("type")
+        .populate("vaccinations")
         .populate("gender")
         .populate("breed");
-    // .populate("vaccinations")
-    // .populate("medacins")
+    // .populate("appointments")
+    if (!pet)
+        return res.status(200).json({ status: 200, pet: null });
     let date = new Date();
     let appointment = yield Appointments_1.default
         .find({ pet: petId, appointmentDate: { $lte: date } })
@@ -82,7 +120,7 @@ const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     return res.status(200).json({
         status: 200,
         data: {
-            pet: Object.assign(Object.assign({}, pet.toJSON()), { lastCheckUp: appointment[0] && appointment[0].appointmentDate, lastGrooming: grooming[0] && grooming[0].appointmentDate, lastPrescription: medacin[0] && medacin[0].createdAt, nextVaccination: nextVaccination })
+            pet: Object.assign(Object.assign({}, pet === null || pet === void 0 ? void 0 : pet.toJSON()), { lastCheckUp: appointment[0] && appointment[0].appointmentDate, lastGrooming: grooming[0] && grooming[0].appointmentDate, lastPrescription: medacin[0] && medacin[0].createdAt, nextVaccination: nextVaccination })
         }
     });
 });

@@ -1,22 +1,54 @@
 import { NextFunction, Request, Response } from "express";
 import Pets, { PetsInterface } from "../../../models/Pets";
-import PetsTypes from "../../../models/PetsTypes";
-import Breeds from "../../../models/Breed";
+import PetsTypes, { PetsTypesInterface } from "../../../models/PetsTypes";
+import Breeds, { BreedInterface } from "../../../models/Breed";
 import Appointments, { AppointmentsInterface } from "../../../models/Appointments";
 import Vaccination, { PetsVaccination } from "../../../models/Vaccination";
 import getNextVaccination from "../../utils/getNextVaccination";
 import Medacin, { PetsMedacins } from "../../../models/Medacine";
 
 export const getPets = async (req: Request, res: Response, next: NextFunction) => {
+    let { page, limit } = req.query;
+    let numberPageSize = limit ? Number(limit) : 15;
+    let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
-    let pets = await Pets.find({ user: user._id }).populate("type").populate("gender").populate("breed");
-    return res.status(200).json({ status: 200, data: { pets } });
+    let date = new Date();
+    // .skip(skip)
+    // .limit(numberPageSize)
+    let pets = await Pets.find({ user: user._id })
+        .populate("type")
+        .populate("gender")
+        .populate("breed")
+        .populate({
+            path: "appointments",
+            select: "appointmentDate",
+            match: { appointmentDate: { $lte: date } },
+            options: {
+                sort: { appointmentDate: "desc" },
+            },
+            limit: 1
+        });
+    console.log(pets[0].toObject())
+    let petsObjects = pets.map((x: PetsInterface) => {
+        let appoinments: AppointmentsInterface[] = x.appointments as AppointmentsInterface[];
+        return ({
+            lastCheckUp: appoinments[0] && appoinments[0]?.appointmentDate,
+            ...x.toObject(),
+            // lastCheckUp: x.toJSON().appointments[0] && x.toJSON().appointments[0]?.appointmentDate
+        })
+    }
+    )
+    return res.status(200).json({ status: 200, data: { pets: petsObjects } });
 }
 
 
 export const addPets = async (req: Request, res: Response, next: NextFunction) => {
     const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried } = req.body;
     let user = req.user;
+    let isPetTypeExist: PetsTypesInterface = await PetsTypes.findById(typeId) as PetsTypesInterface;
+    if (!isPetTypeExist) return res.status(400).json({ status: 400, msg: "pet type not found" });
+    let isPetBreedExist: BreedInterface = await Breeds.findById(breedId) as BreedInterface;
+    if (!isPetBreedExist) return res.status(400).json({ status: 400, msg: "pet breed not found" });
     let pet = await Pets.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     await user.save();
@@ -29,6 +61,10 @@ export const updatePet = async (req: Request, res: Response, next: NextFunction)
     let user = req.user;
     let pet: PetsInterface = await Pets.findOne({ user: user._id, _id: petId }) as PetsInterface;
     if (!pet) return res.status(400).json({ status: 400, msg: `pet with id ${petId} not found` });
+    let isPetTypeExist: PetsTypesInterface = await PetsTypes.findById(typeId) as PetsTypesInterface;
+    if (!isPetTypeExist) return res.status(400).json({ status: 400, msg: "pet type not found" });
+    let isPetBreedExist: BreedInterface = await Breeds.findById(breedId) as BreedInterface;
+    if (!isPetBreedExist) return res.status(400).json({ status: 400, msg: "pet breed not found" });
     pet.name = name;
     pet.serialNumber = serialNumber;
     pet.type = typeId;
@@ -47,11 +83,11 @@ export const getPetById = async (req: Request, res: Response, next: NextFunction
     let user = req.user;
     let pet: PetsInterface = await Pets.findOne({ user: user._id, _id: petId })
         .populate("type")
+        .populate("vaccinations")
         .populate("gender")
         .populate("breed") as PetsInterface;
-    // .populate("vaccinations")
-    // .populate("medacins")
-
+    // .populate("appointments")
+    if (!pet) return res.status(200).json({ status: 200, pet: null });
     let date = new Date();
 
     let appointment: AppointmentsInterface[] = await Appointments
@@ -76,7 +112,7 @@ export const getPetById = async (req: Request, res: Response, next: NextFunction
         status: 200,
         data: {
             pet: {
-                ...pet.toJSON(),
+                ...pet?.toJSON(),
                 lastCheckUp: appointment[0] && appointment[0].appointmentDate,
                 lastGrooming: grooming[0] && grooming[0].appointmentDate,
                 lastPrescription: medacin[0] && medacin[0].createdAt,

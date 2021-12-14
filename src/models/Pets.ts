@@ -4,6 +4,7 @@ import { PetsMedacins } from "./Medacine";
 import { PetsTypesInterface } from "./PetsTypes";
 import { UserInterface } from "./User";
 import { PetsVaccination } from "./Vaccination";
+import { AppointmentsInterface } from "./Appointments";
 
 export interface PetsInterface extends mongoose.Document {
     name: string
@@ -12,6 +13,7 @@ export interface PetsInterface extends mongoose.Document {
     type: ObjectId | PetsTypesInterface
     imageUrl: string
     user: ObjectId | UserInterface
+    appointments: ObjectId[] | AppointmentsInterface[]
     breed: ObjectId | BreedInterface
     vaccinations: ObjectId[] | PetsVaccination[]
     medacins: ObjectId[] | PetsMedacins[]
@@ -31,6 +33,7 @@ const petsSchema = new Schema({
     type: { type: mongoose.Types.ObjectId, ref: "petsTypes" },
     imageUrl: { type: String },
     user: { type: mongoose.Types.ObjectId, ref: "users" },
+    appointments: [{ type: mongoose.Types.ObjectId, ref: "appointments" }],
     breed: { type: mongoose.Types.ObjectId, ref: "breeds" },
     vaccinations: [{ type: mongoose.Types.ObjectId, ref: "vaccination" }],
     medacins: [{ type: mongoose.Types.ObjectId, ref: "medicins" }],
