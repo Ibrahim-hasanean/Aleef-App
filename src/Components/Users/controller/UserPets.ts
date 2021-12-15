@@ -32,7 +32,7 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
     let petsObjects = pets.map((x: PetsInterface) => {
         let appoinments: AppointmentsInterface[] = x.appointments as AppointmentsInterface[];
         return ({
-            lastCheckUp: appoinments[0] && appoinments[0]?.appointmentDate,
+            lastCheckUp: (appoinments[0] && appoinments[0]?.appointmentDate) || null,
             ...x.toObject(),
             // lastCheckUp: x.toJSON().appointments[0] && x.toJSON().appointments[0]?.appointmentDate
         })

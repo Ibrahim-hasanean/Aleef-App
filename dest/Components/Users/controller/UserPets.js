@@ -45,7 +45,7 @@ const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     let petsObjects = pets.map((x) => {
         var _a;
         let appoinments = x.appointments;
-        return (Object.assign({ lastCheckUp: appoinments[0] && ((_a = appoinments[0]) === null || _a === void 0 ? void 0 : _a.appointmentDate) }, x.toObject()));
+        return (Object.assign({ lastCheckUp: (appoinments[0] && ((_a = appoinments[0]) === null || _a === void 0 ? void 0 : _a.appointmentDate)) || null }, x.toObject()));
     });
     return res.status(200).json({ status: 200, data: { pets: petsObjects } });
 });
