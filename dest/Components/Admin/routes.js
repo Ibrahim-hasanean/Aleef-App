@@ -37,6 +37,8 @@ const verifyDoctor_1 = __importDefault(require("./middleware/verifyDoctor"));
 const validateVaccination_1 = require("./middleware/validateVaccination");
 const validateMedacin_1 = require("./middleware/validateMedacin");
 const medacins_1 = require("./controller/medacins/medacins");
+const HealthCare_1 = require("./controller/HealthCare/HealthCare");
+const ReadAbout_1 = require("./controller/ReadAbout/ReadAbout");
 const router = (0, express_1.Router)();
 // auth routers
 router.post("/auth/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
@@ -44,8 +46,15 @@ router.post("/auth/verify", (0, validateAuth_1.validate)(validateAuth_1.verifyCo
 // profile
 router.patch("/profile", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);
 router.get("/profile", verifyStaffMember_1.default, Profile_1.getProfile);
+//health care
+router.get("/healthcare", verifyStaffMember_1.default, HealthCare_1.getHealthCare);
+router.post("/healthcare", verifyStaffMember_1.default, HealthCare_1.addHealthCareTip);
+// Read aboute routes
+router.get("/readabout", verifyStaffMember_1.default, ReadAbout_1.getReadAboute);
+router.post("/readabout", verifyStaffMember_1.default, ReadAbout_1.addReadAbout);
 //pets 
 router.post("/pets", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validatePets_1.petSchema), Pet_1.addNewPet);
+router.patch("/pets/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validatePets_1.petSchema), Pet_1.updatePet);
 router.get("/pets", verifyStaffMember_1.default, Pet_1.getPets);
 router.get("/pets/:id", verifyStaffMember_1.default, Pet_1.getPetById);
 router.delete("/pets/:id", verifyStaffMember_1.default, Pet_1.deletePet);

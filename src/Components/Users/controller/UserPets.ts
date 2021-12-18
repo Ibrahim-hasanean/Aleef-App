@@ -28,12 +28,11 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
             },
             limit: 1
         });
-    console.log(pets[0].toObject())
     let petsObjects = pets.map((x: PetsInterface) => {
         let appoinments: AppointmentsInterface[] = x.appointments as AppointmentsInterface[];
         return ({
             lastCheckUp: (appoinments[0] && appoinments[0]?.appointmentDate) || null,
-            ...x.toObject(),
+            ...x?.toObject(),
             // lastCheckUp: x.toJSON().appointments[0] && x.toJSON().appointments[0]?.appointmentDate
         })
     }
@@ -74,7 +73,7 @@ export const updatePet = async (req: Request, res: Response, next: NextFunction)
     pet.nutried = nutried;
     pet.age = age;
     await pet.save();
-    return res.status(201).json({ status: 201, data: { pet } });
+    return res.status(200).json({ status: 200, data: { pet } });
 }
 
 

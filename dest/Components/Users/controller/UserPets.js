@@ -41,11 +41,10 @@ const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         },
         limit: 1
     });
-    console.log(pets[0].toObject());
     let petsObjects = pets.map((x) => {
         var _a;
         let appoinments = x.appointments;
-        return (Object.assign({ lastCheckUp: (appoinments[0] && ((_a = appoinments[0]) === null || _a === void 0 ? void 0 : _a.appointmentDate)) || null }, x.toObject()));
+        return (Object.assign({ lastCheckUp: (appoinments[0] && ((_a = appoinments[0]) === null || _a === void 0 ? void 0 : _a.appointmentDate)) || null }, x === null || x === void 0 ? void 0 : x.toObject()));
     });
     return res.status(200).json({ status: 200, data: { pets: petsObjects } });
 });
@@ -87,7 +86,7 @@ const updatePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     pet.nutried = nutried;
     pet.age = age;
     yield pet.save();
-    return res.status(201).json({ status: 201, data: { pet } });
+    return res.status(200).json({ status: 200, data: { pet } });
 });
 exports.updatePet = updatePet;
 const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

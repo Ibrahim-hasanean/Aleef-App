@@ -30,7 +30,8 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
     let nowDate = new Date();
-    // if (handleAppointmentDate < nowDate) return res.status(400).json({ status: 400, msg: "can not book appointment in past time" });
+    if (handleAppointmentDate < nowDate)
+        return res.status(400).json({ status: 400, msg: "can not book appointment in past time" });
     const isAppointmentOutOfWorkHours = (0, isDateOutWorkTime_1.default)(handleAppointmentDate);
     if (isAppointmentOutOfWorkHours)
         return res.status(400).json({ status: 400, msg: "appointment date is out of work hours" });

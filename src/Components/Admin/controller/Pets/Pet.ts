@@ -2,18 +2,46 @@ import { NextFunction, Request, Response } from "express";
 import Pet, { PetsInterface } from "../../../../models/Pets";
 import mongoose from "mongoose";
 import User, { UserInterface } from "../../../../models/User";
+import petsTypes, { PetsTypesInterface } from "../../../../models/PetsTypes";
+import Breeds, { BreedInterface } from "../../../../models/Breed";
 
 
 export const addNewPet = async (req: Request, res: Response, next: NextFunction) => {
-    const { name, serialNumber, age, typeId, breedId, gender, userId } = req.body;
+    const { name, serialNumber, age, typeId, breedId, gender, userId, duerming, nutried } = req.body;
     let user: UserInterface = await User.findById(userId) as UserInterface;
     if (!user) {
         return res.status(400).json({ status: 400, msg: "user not found" });
     }
-    let pet = await Pet.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender });
+    let pet = await Pet.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     await user.save();
     return res.status(201).json({ status: 201, data: { pet } });
+}
+
+
+export const updatePet = async (req: Request, res: Response, next: NextFunction) => {
+    const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried, userId } = req.body;
+    const petId = req.params.id;
+    let user: UserInterface = await User.findById(userId) as UserInterface;
+    if (!user) {
+        return res.status(400).json({ status: 400, msg: "user not found" });
+    }
+    let pet: PetsInterface = await Pet.findOne({ user: user._id, _id: petId }) as PetsInterface;
+    if (!pet) return res.status(400).json({ status: 400, msg: `pet with id ${petId} not found` });
+    let isPetTypeExist: PetsTypesInterface = await petsTypes.findById(typeId) as PetsTypesInterface;
+    if (!isPetTypeExist) return res.status(400).json({ status: 400, msg: "pet type not found" });
+    let isPetBreedExist: BreedInterface = await Breeds.findById(breedId) as BreedInterface;
+    if (!isPetBreedExist) return res.status(400).json({ status: 400, msg: "pet breed not found" });
+    pet.name = name;
+    pet.serialNumber = serialNumber;
+    pet.type = typeId;
+    pet.breed = breedId;
+    pet.gender = gender;
+    pet.duerming = duerming;
+    pet.nutried = nutried;
+    pet.age = age;
+    await pet.save();
+    return res.status(200).json({ status: 200, data: { pet } });
 }
 
 export const getPets = async (req: Request, res: Response, next: NextFunction) => {

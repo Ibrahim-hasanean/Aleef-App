@@ -12,22 +12,52 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePet = exports.getPetById = exports.getPets = exports.addNewPet = void 0;
+exports.deletePet = exports.getPetById = exports.getPets = exports.updatePet = exports.addNewPet = void 0;
 const Pets_1 = __importDefault(require("../../../../models/Pets"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const User_1 = __importDefault(require("../../../../models/User"));
+const PetsTypes_1 = __importDefault(require("../../../../models/PetsTypes"));
+const Breed_1 = __importDefault(require("../../../../models/Breed"));
 const addNewPet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, serialNumber, age, typeId, breedId, gender, userId } = req.body;
+    const { name, serialNumber, age, typeId, breedId, gender, userId, duerming, nutried } = req.body;
     let user = yield User_1.default.findById(userId);
     if (!user) {
         return res.status(400).json({ status: 400, msg: "user not found" });
     }
-    let pet = yield Pets_1.default.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender });
+    let pet = yield Pets_1.default.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     yield user.save();
     return res.status(201).json({ status: 201, data: { pet } });
 });
 exports.addNewPet = addNewPet;
+const updatePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried, userId } = req.body;
+    const petId = req.params.id;
+    let user = yield User_1.default.findById(userId);
+    if (!user) {
+        return res.status(400).json({ status: 400, msg: "user not found" });
+    }
+    let pet = yield Pets_1.default.findOne({ user: user._id, _id: petId });
+    if (!pet)
+        return res.status(400).json({ status: 400, msg: `pet with id ${petId} not found` });
+    let isPetTypeExist = yield PetsTypes_1.default.findById(typeId);
+    if (!isPetTypeExist)
+        return res.status(400).json({ status: 400, msg: "pet type not found" });
+    let isPetBreedExist = yield Breed_1.default.findById(breedId);
+    if (!isPetBreedExist)
+        return res.status(400).json({ status: 400, msg: "pet breed not found" });
+    pet.name = name;
+    pet.serialNumber = serialNumber;
+    pet.type = typeId;
+    pet.breed = breedId;
+    pet.gender = gender;
+    pet.duerming = duerming;
+    pet.nutried = nutried;
+    pet.age = age;
+    yield pet.save();
+    return res.status(200).json({ status: 200, data: { pet } });
+});
+exports.updatePet = updatePet;
 const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { page, limit, text, userId } = req.query;
     const limitNumber = Number(limit) || 10;

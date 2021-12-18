@@ -18,7 +18,7 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
     let nowDate = new Date();
-    // if (handleAppointmentDate < nowDate) return res.status(400).json({ status: 400, msg: "can not book appointment in past time" });
+    if (handleAppointmentDate < nowDate) return res.status(400).json({ status: 400, msg: "can not book appointment in past time" });
     const isAppointmentOutOfWorkHours: boolean = isDateOutWorkTime(handleAppointmentDate);
     if (isAppointmentOutOfWorkHours) return res.status(400).json({ status: 400, msg: "appointment date is out of work hours" });
     const freeDoctors: StafInterface[] = await getFreeDoctors(appointmentDate, handleAppointmentDate);

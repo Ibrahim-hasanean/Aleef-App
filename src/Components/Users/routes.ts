@@ -26,6 +26,7 @@ import { cardInfoSchema } from "./middleware/cardInfoValidation";
 import { AppointmentSchema, appointmentPaymentSchema } from "./middleware/appointmentsValidation";
 import { addOrderItems, clearOrderItems, getOrderItems, updateOrderList, removeItemFromOrderList } from "./controller/UserOrderItems";
 import { userItemListSchema, updateUserItemListSchema } from "./middleware/UserItemListValidation";
+import { getHealthCare } from "./controller/HealthCare";
 const router = Router();
 
 //Auth
@@ -34,6 +35,9 @@ router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/forgetpassword", validate(forgetPasswordSchema), forgetPassword);
 router.post("/auth/resetPassword", validate(resetPasswordSchema), resetPassword);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
+
+//health care
+router.get("/healthcare", verifyUser, getHealthCare);
 
 // user item list
 router.post("/itemList", verifyUser, validate(userItemListSchema), addOrderItems);

@@ -16,7 +16,7 @@ import {
 import { getPaymentById, getPayments } from "./controller/Payments/Payments";
 import { addOrder, getOrderById, getOrders, setStatus } from "./controller/Orders/Orders";
 import { getUsers, getUserById, addNewUser, updateUser, suspendUser } from "./controller/Users/Users";
-import { getPets, addNewPet, getPetById, deletePet } from "./controller/Pets/Pet";
+import { getPets, addNewPet, getPetById, deletePet, updatePet } from "./controller/Pets/Pet";
 import { getProfile, updateProfile } from "./controller/Profile/Profile";
 import { login, verifyCode } from "./controller/auth/auth";
 import { loginSchema, validate, verifyCodeSchema } from "./middleware/validateAuth";
@@ -38,7 +38,8 @@ import verifyDoctor from "./middleware/verifyDoctor";
 import { vaccinationSchema } from "./middleware/validateVaccination";
 import { MedacinSchema, updateMedacinSchema } from "./middleware/validateMedacin";
 import { addMedacin, updateMedacin, deleteMedacin, getMedacinById, getPetMedacins } from "./controller/medacins/medacins";
-
+import { addHealthCareTip, getHealthCare } from "./controller/HealthCare/HealthCare";
+import { addReadAbout, getReadAboute } from "./controller/ReadAbout/ReadAbout";
 
 const router = Router();
 
@@ -50,11 +51,18 @@ router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 router.patch("/profile", verifyStaffMember, validate(profileSchema), updateProfile);
 router.get("/profile", verifyStaffMember, getProfile);
 
+//health care
+router.get("/healthcare", verifyStaffMember, getHealthCare);
+router.post("/healthcare", verifyStaffMember, addHealthCareTip);
 
+// Read aboute routes
+router.get("/readabout", verifyStaffMember, getReadAboute);
+router.post("/readabout", verifyStaffMember, addReadAbout);
 
 
 //pets 
 router.post("/pets", verifyStaffMember, validate(petSchema), addNewPet);
+router.patch("/pets/:id", verifyStaffMember, validate(petSchema), updatePet);
 router.get("/pets", verifyStaffMember, getPets);
 router.get("/pets/:id", verifyStaffMember, getPetById);
 router.delete("/pets/:id", verifyStaffMember, deletePet);
