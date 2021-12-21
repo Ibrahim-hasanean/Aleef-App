@@ -8,6 +8,9 @@ export const paymentSchema = {
         shippingFees: Joi.number().required(),
         shippingAddressId: Joi.string().required(),
         cardNumber: Joi.string().required(),
+        cardHolderName: Joi.string().required(),
+        ExperitionDate: Joi.string().required(),
+        SecurityCode: Joi.string().required(),
         status: Joi.string().valid("pending", "arrived", "in the way", "canceled"),
         orderItems: Joi.array().required().items(Joi.object().keys({
             count: Joi.number().required(),

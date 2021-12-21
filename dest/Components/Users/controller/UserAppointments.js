@@ -213,17 +213,25 @@ const getReminder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     let endDay = day ? new Date(day) : new Date();
     endDay.setHours(24);
     endDay.setMinutes(0);
-    console.log(beginDay);
-    console.log(endDay);
+    // console.log(beginDay)
+    // console.log(endDay)
+    let appointmentsQuery = {};
+    if (day) {
+        appointmentsQuery = { $gte: beginDay, $lte: endDay };
+    }
+    else {
+        appointmentsQuery = { $gte: beginDay };
+    }
+    console.log(appointmentsQuery);
     let pets = yield Pets_1.default.find({ user: user._id })
         .populate({
         path: "appointments",
         select: "appointmentDate",
-        match: { appointmentDate: { $gte: beginDay, $lte: endDay } },
+        match: { appointmentDate: appointmentsQuery },
         options: {
             sort: { appointmentDate: "asc" },
         },
-        limit: 1
+        // limit:  1
     })
         .populate({
         path: "vaccinations",
@@ -243,7 +251,7 @@ const getReminder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
             .filter(x => new Date(x) > beginDay && new Date(x) < endDay)
             .sort((x, b) => (new Date(x).getTime() - new Date(b).getTime()))[0]
     }));
-    let nextAppontments = pets.filter(x => x.appointments.length > 0).map(pet => ({ name: pet.name, date: pet.appointments[0] }));
+    let nextAppontments = pets.filter(x => x.appointments.length > 0).map(pet => ({ name: pet.name, date: pet.appointments }));
     return res.status(200).json({ status: 200, data: { nextVaccination, nextAppontments, pets } });
 });
 exports.getReminder = getReminder;

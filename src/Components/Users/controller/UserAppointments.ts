@@ -199,17 +199,24 @@ export const getReminder = async (req: Request, res: Response, next: NextFunctio
     let endDay = day ? new Date(day) : new Date();
     endDay.setHours(24);
     endDay.setMinutes(0);
-    console.log(beginDay)
-    console.log(endDay)
+    // console.log(beginDay)
+    // console.log(endDay)
+    let appointmentsQuery: any = {};
+    if (day) {
+        appointmentsQuery = { $gte: beginDay, $lte: endDay };
+    } else {
+        appointmentsQuery = { $gte: beginDay };
+    }
+    console.log(appointmentsQuery)
     let pets = await Pets.find({ user: user._id })
         .populate({
             path: "appointments",
             select: "appointmentDate",
-            match: { appointmentDate: { $gte: beginDay, $lte: endDay } },
+            match: { appointmentDate: appointmentsQuery },
             options: {
                 sort: { appointmentDate: "asc" },
             },
-            limit: 1
+            // limit:  1
         })
         .populate({
             path: "vaccinations",
@@ -231,7 +238,7 @@ export const getReminder = async (req: Request, res: Response, next: NextFunctio
                 .sort((x: Date, b: Date) => (new Date(x).getTime() - new Date(b).getTime()))[0]
         }));
 
-    let nextAppontments = pets.filter(x => x.appointments.length > 0).map(pet => ({ name: pet.name, date: pet.appointments[0] }));
+    let nextAppontments = pets.filter(x => x.appointments.length > 0).map(pet => ({ name: pet.name, date: pet.appointments }));
 
     return res.status(200).json({ status: 200, data: { nextVaccination, nextAppontments, pets } });
 }

@@ -6,7 +6,17 @@ import Payment, { PaymentInterFace } from "../../../models/Payment";
 import mongoose from "mongoose";
 
 export const payItem = async (req: Request, res: Response, next: NextFunction) => {
-    const { totalPrice, itemsCount, shippingFees, shippingAddressId, cardNumber, orderItems } = req.body;
+    const {
+        totalPrice,
+        itemsCount,
+        shippingFees,
+        shippingAddressId,
+        cardNumber,
+        orderItems,
+        cardHolderName,
+        ExperitionDate,
+        SecurityCode
+    } = req.body;
     const user = req.user;
     let orderItemsTotal;
     try {
@@ -30,6 +40,9 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
         shippingFees,
         shippingAddress: shippingAddressId,
         cardNumber,
+        cardHolderName,
+        ExperitionDate,
+        SecurityCode,
         status: "to be shipped"
     });
     const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id })
@@ -57,6 +70,7 @@ export const getPayments = async (req: Request, res: Response, next: NextFunctio
     console.log(query)
     let userOrders = await Order
         .find(query)
+        .sort({ createdAt: "desc" })
         .populate({ path: "items", populate: { path: "item" } })
         .skip(skip)
         .limit(limitNumber);

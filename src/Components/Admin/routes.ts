@@ -40,6 +40,7 @@ import { MedacinSchema, updateMedacinSchema } from "./middleware/validateMedacin
 import { addMedacin, updateMedacin, deleteMedacin, getMedacinById, getPetMedacins } from "./controller/medacins/medacins";
 import { addHealthCareTip, getHealthCare } from "./controller/HealthCare/HealthCare";
 import { addReadAbout, getReadAboute } from "./controller/ReadAbout/ReadAbout";
+import { addLocation, getLocation } from "./controller/Location/Location";
 
 const router = Router();
 
@@ -50,6 +51,10 @@ router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 // profile
 router.patch("/profile", verifyStaffMember, validate(profileSchema), updateProfile);
 router.get("/profile", verifyStaffMember, getProfile);
+
+// hospital locations
+router.post("/location", verifyStaffMember, addLocation);
+router.get("/location", verifyStaffMember, getLocation);
 
 //health care
 router.get("/healthcare", verifyStaffMember, getHealthCare);

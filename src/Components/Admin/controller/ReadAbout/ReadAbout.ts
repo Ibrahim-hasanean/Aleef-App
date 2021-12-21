@@ -17,5 +17,5 @@ export const addReadAbout = async (req: Request, res: Response, next: NextFuncti
 
 export const getReadAboute = async (req: Request, res: Response, next: NextFunction) => {
     let readAbout = await ReadAbout.find({});
-    return res.status(201).json({ status: 201, data: { healthCare: readAbout[0] || "" } });
+    return res.status(200).json({ status: 200, data: { healthCare: readAbout[0] || "" } });
 }

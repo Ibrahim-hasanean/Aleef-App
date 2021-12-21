@@ -27,6 +27,7 @@ import { AppointmentSchema, appointmentPaymentSchema } from "./middleware/appoin
 import { addOrderItems, clearOrderItems, getOrderItems, updateOrderList, removeItemFromOrderList } from "./controller/UserOrderItems";
 import { userItemListSchema, updateUserItemListSchema } from "./middleware/UserItemListValidation";
 import { getHealthCare } from "./controller/HealthCare";
+import { getLocation } from "./controller/Location";
 const router = Router();
 
 //Auth
@@ -35,6 +36,9 @@ router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/forgetpassword", validate(forgetPasswordSchema), forgetPassword);
 router.post("/auth/resetPassword", validate(resetPasswordSchema), resetPassword);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
+
+//get hospital location
+router.get("/location", verifyUser, getLocation);
 
 //health care
 router.get("/healthcare", verifyUser, getHealthCare);

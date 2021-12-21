@@ -19,7 +19,7 @@ const calculateItemsPrice_1 = __importDefault(require("../../utils/calculateItem
 const Payment_1 = __importDefault(require("../../../models/Payment"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { totalPrice, itemsCount, shippingFees, shippingAddressId, cardNumber, orderItems } = req.body;
+    const { totalPrice, itemsCount, shippingFees, shippingAddressId, cardNumber, orderItems, cardHolderName, ExperitionDate, SecurityCode } = req.body;
     const user = req.user;
     let orderItemsTotal;
     try {
@@ -44,6 +44,9 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         shippingFees,
         shippingAddress: shippingAddressId,
         cardNumber,
+        cardHolderName,
+        ExperitionDate,
+        SecurityCode,
         status: "to be shipped"
     });
     const payment = new Payment_1.default({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id });
@@ -74,6 +77,7 @@ const getPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     console.log(query);
     let userOrders = yield Order_1.default
         .find(query)
+        .sort({ createdAt: "desc" })
         .populate({ path: "items", populate: { path: "item" } })
         .skip(skip)
         .limit(limitNumber);

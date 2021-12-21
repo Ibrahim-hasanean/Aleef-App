@@ -29,6 +29,6 @@ const addReadAbout = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 exports.addReadAbout = addReadAbout;
 const getReadAboute = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let readAbout = yield ReadAboute_1.default.find({});
-    return res.status(201).json({ status: 201, data: { healthCare: readAbout[0] || "" } });
+    return res.status(200).json({ status: 200, data: { healthCare: readAbout[0] || "" } });
 });
 exports.getReadAboute = getReadAboute;

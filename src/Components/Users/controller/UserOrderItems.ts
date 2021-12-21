@@ -5,8 +5,12 @@ import Item from "../../../models/Item";
 import mongoose, { ObjectId } from "mongoose";
 
 export const addOrderItems = async (req: Request, res: Response, next: NextFunction) => {
-    let user = req.user;
+    let user = await req.user.populate("itemList");
     let { itemId, count } = req.body;
+    let itemListIds: OrdersItemsInterface[] = [...user.itemList] as OrdersItemsInterface[];
+    if (itemListIds.find(x => String(x.item) == String(itemId))) {
+        return res.status(400).json({ status: 400, data: "item already added to item list" });
+    }
     const item = await Item.findById(itemId);
     if (!item) return res.status(200).json({ status: 200, msg: `item with id ${itemId} not found` });
     const orderItem: OrdersItemsInterface = await OrderItems.create({ item: itemId, count });

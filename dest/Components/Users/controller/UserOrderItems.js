@@ -18,8 +18,12 @@ const OrderItems_1 = __importDefault(require("../../../models/OrderItems"));
 const Item_1 = __importDefault(require("../../../models/Item"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const addOrderItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let user = req.user;
+    let user = yield req.user.populate("itemList");
     let { itemId, count } = req.body;
+    let itemListIds = [...user.itemList];
+    if (itemListIds.find(x => String(x.item) == String(itemId))) {
+        return res.status(400).json({ status: 400, data: "item already added to item list" });
+    }
     const item = yield Item_1.default.findById(itemId);
     if (!item)
         return res.status(200).json({ status: 200, msg: `item with id ${itemId} not found` });
