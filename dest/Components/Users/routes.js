@@ -22,6 +22,7 @@ const UserOrderItems_1 = require("./controller/UserOrderItems");
 const UserItemListValidation_1 = require("./middleware/UserItemListValidation");
 const HealthCare_1 = require("./controller/HealthCare");
 const Location_1 = require("./controller/Location");
+const ReadAbout_1 = require("./controller/ReadAbout");
 const router = (0, express_1.Router)();
 //Auth
 router.post("/auth/register", (0, userAuthValidate_1.validate)(userAuthValidate_1.registerSchema), UsersAuth_1.register);
@@ -31,6 +32,8 @@ router.post("/auth/resetPassword", (0, userAuthValidate_1.validate)(userAuthVali
 router.post("/auth/verify", (0, userAuthValidate_1.validate)(userAuthValidate_1.verifyCodeSchema), UsersAuth_1.verifyCode);
 //get hospital location
 router.get("/location", verifyUser_1.default, Location_1.getLocation);
+//read about
+router.get("/readabout", verifyUser_1.default, ReadAbout_1.getReadAboute);
 //health care
 router.get("/healthcare", verifyUser_1.default, HealthCare_1.getHealthCare);
 // user item list

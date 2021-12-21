@@ -28,6 +28,7 @@ import { addOrderItems, clearOrderItems, getOrderItems, updateOrderList, removeI
 import { userItemListSchema, updateUserItemListSchema } from "./middleware/UserItemListValidation";
 import { getHealthCare } from "./controller/HealthCare";
 import { getLocation } from "./controller/Location";
+import { getReadAboute } from "./controller/ReadAbout"
 const router = Router();
 
 //Auth
@@ -39,6 +40,9 @@ router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 
 //get hospital location
 router.get("/location", verifyUser, getLocation);
+
+//read about
+router.get("/readabout", verifyUser, getReadAboute);
 
 //health care
 router.get("/healthcare", verifyUser, getHealthCare);
