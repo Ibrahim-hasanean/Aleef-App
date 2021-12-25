@@ -42,7 +42,7 @@ router.post("/upload", uploadImage_1.default.single("image"), (req, res) => __aw
     res.send(fileURL);
 }));
 //Auth
-router.post("/auth/register", uploadImage_1.default.single("image"), (0, userAuthValidate_1.validate)(userAuthValidate_1.registerSchema), UsersAuth_1.register);
+router.post("/auth/register", (0, userAuthValidate_1.validate)(userAuthValidate_1.registerSchema), UsersAuth_1.register);
 router.post("/auth/login", (0, userAuthValidate_1.validate)(userAuthValidate_1.loginSchema), UsersAuth_1.login);
 router.post("/auth/forgetpassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.forgetPasswordSchema), UsersAuth_1.forgetPassword);
 router.post("/auth/resetPassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.resetPasswordSchema), UsersAuth_1.resetPassword);

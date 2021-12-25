@@ -44,7 +44,7 @@ router.post("/upload", upload.single("image"), async (req: Request, res: Respons
 
 
 //Auth
-router.post("/auth/register", upload.single("image"), validate(registerSchema), register);
+router.post("/auth/register", validate(registerSchema), register);
 router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/forgetpassword", validate(forgetPasswordSchema), forgetPassword);
 router.post("/auth/resetPassword", validate(resetPasswordSchema), resetPassword);
