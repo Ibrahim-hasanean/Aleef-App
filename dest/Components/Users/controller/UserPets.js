@@ -20,6 +20,7 @@ const Appointments_1 = __importDefault(require("../../../models/Appointments"));
 const Vaccination_1 = __importDefault(require("../../../models/Vaccination"));
 const getNextVaccination_1 = __importDefault(require("../../utils/getNextVaccination"));
 const Medacine_1 = __importDefault(require("../../../models/Medacine"));
+const uploadFileToFirebase_1 = __importDefault(require("../../utils/uploadFileToFirebase"));
 const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { page, limit } = req.query;
     let numberPageSize = limit ? Number(limit) : 15;
@@ -51,6 +52,8 @@ const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 exports.getPets = getPets;
 const addPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried } = req.body;
+    let image = req.file;
+    let imageUrl = image ? yield (0, uploadFileToFirebase_1.default)(image) : "";
     let user = req.user;
     let isPetTypeExist = yield PetsTypes_1.default.findById(typeId);
     if (!isPetTypeExist)
@@ -58,7 +61,7 @@ const addPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     let isPetBreedExist = yield Breed_1.default.findById(breedId);
     if (!isPetBreedExist)
         return res.status(400).json({ status: 400, msg: "pet breed not found" });
-    let pet = yield Pets_1.default.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
+    let pet = yield Pets_1.default.create({ user: user._id, imageUrl, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     yield user.save();
     return res.status(201).json({ status: 201, data: { pet } });
@@ -66,6 +69,10 @@ const addPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 exports.addPets = addPets;
 const updatePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried } = req.body;
+    let image = req.file;
+    let imageUrl;
+    if (image)
+        imageUrl = yield (0, uploadFileToFirebase_1.default)(image);
     const petId = req.params.id;
     let user = req.user;
     let pet = yield Pets_1.default.findOne({ user: user._id, _id: petId });
@@ -85,6 +92,7 @@ const updatePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     pet.duerming = duerming;
     pet.nutried = nutried;
     pet.age = age;
+    pet.imageUrl = imageUrl ? imageUrl : pet.imageUrl;
     yield pet.save();
     return res.status(200).json({ status: 200, data: { pet } });
 });

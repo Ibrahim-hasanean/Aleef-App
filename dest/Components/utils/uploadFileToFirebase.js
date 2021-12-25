@@ -12,42 +12,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const firebase_1 = __importDefault(require("../../config/firebase"));
-function default_1(file) {
-    return __awaiter(this, void 0, void 0, function* () {
-        return new Promise((resolve, reject) => {
-            // Format the filename
-            const storage = firebase_1.default.storage().bucket();
-            const timestamp = Date.now();
-            const name = file.originalname.split(".")[0];
-            const type = file.originalname.split(".")[1];
-            const fileName = `${name}_${timestamp}.${type}`;
-            // Step 1. Create reference for file name in cloud storage 
-            const fileUpload = storage.file(fileName);
-            const blobStream = fileUpload.createWriteStream({
-                metadata: {
-                    contentType: file.mimetype
-                }
-            });
-            blobStream.on('error', (error) => {
-                reject('Something is wrong! Unable to upload at the moment.');
-            });
-            blobStream.on('finish', () => {
-                // The public URL can be used to directly access the file via HTTP.
-                // const url = format(`https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`);
-                // resolve(url);
-            });
-            blobStream.end(file.buffer);
+const storage_1 = require("@google-cloud/storage");
+const path_1 = __importDefault(require("path"));
+const storage = new storage_1.Storage({
+    projectId: "spotiphy-clone",
+    keyFilename: path_1.default.join(__dirname, "../../fireabase-keys.json")
+});
+const bucket = storage.bucket("gs://spotiphy-clone.appspot.com");
+const uploadImageToStorage = (file) => {
+    return new Promise((resolve, reject) => {
+        if (!file) {
+            reject('No image file');
+        }
+        let newFileName = `${file.originalname}_${Date.now()}`;
+        let fileUpload = bucket.file(newFileName);
+        const blobStream = fileUpload.createWriteStream({
+            metadata: {
+                contentType: file.mimetype
+            }
         });
-        // const storageRef = admin.storage().bucket("gs://spotiphy-clone.appspot.com");
-        // const storage = await storageRef.upload(path, {
-        //     public: true,
-        //     destination: `/uploads/hashnode/${filename}`,
-        //     metadata: {
-        //         firebaseStorageDownloadTokens: uuid()
-        //     }
-        // });
-        // return storage[0].metadata.mediaLink;
+        blobStream.on('error', (error) => {
+            reject('Something is wrong! Unable to upload at the moment.');
+            console.log(error);
+        });
+        blobStream.on('finish', () => __awaiter(void 0, void 0, void 0, function* () {
+            yield fileUpload.makePublic();
+            let url = fileUpload.publicUrl();
+            resolve(url);
+        }));
+        blobStream.end(file.buffer);
     });
-}
-exports.default = default_1;
+};
+exports.default = uploadImageToStorage;

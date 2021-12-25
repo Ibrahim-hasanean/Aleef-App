@@ -16,8 +16,13 @@ exports.getProfile = exports.deleteAddress = exports.getAddresses = exports.addA
 const User_1 = __importDefault(require("../../../models/User"));
 const GenerateCode_1 = __importDefault(require("../../utils/GenerateCode"));
 const Address_1 = __importDefault(require("../../../models/Address"));
+const uploadFileToFirebase_1 = __importDefault(require("../../utils/uploadFileToFirebase"));
 const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { fullName, phoneNumber, email } = req.body;
+    let image = req.file;
+    let imageUrl;
+    if (image)
+        imageUrl = yield (0, uploadFileToFirebase_1.default)(image);
     const user = req.user;
     const isPhoneNumberExist = yield User_1.default.findOne({ phoneNumber });
     if (isPhoneNumberExist && (isPhoneNumberExist === null || isPhoneNumberExist === void 0 ? void 0 : isPhoneNumberExist._id.toString()) !== user._id.toString()) {
@@ -35,6 +40,7 @@ const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         user.isVerify = false;
     }
     user.phoneNumber = phoneNumber;
+    user.imageUrl = imageUrl ? imageUrl : user.imageUrl;
     yield user.save();
     res.status(200).json({
         status: 200, data: {

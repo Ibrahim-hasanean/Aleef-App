@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -23,9 +32,17 @@ const UserItemListValidation_1 = require("./middleware/UserItemListValidation");
 const HealthCare_1 = require("./controller/HealthCare");
 const Location_1 = require("./controller/Location");
 const ReadAbout_1 = require("./controller/ReadAbout");
+const uploadImage_1 = __importDefault(require("../middlewares/uploadImage"));
+const uploadFileToFirebase_1 = __importDefault(require("../utils/uploadFileToFirebase"));
 const router = (0, express_1.Router)();
+router.post("/upload", uploadImage_1.default.single("image"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let file = req.file;
+    // console.log(file);
+    let fileURL = yield (0, uploadFileToFirebase_1.default)(file);
+    res.send(fileURL);
+}));
 //Auth
-router.post("/auth/register", (0, userAuthValidate_1.validate)(userAuthValidate_1.registerSchema), UsersAuth_1.register);
+router.post("/auth/register", uploadImage_1.default.single("image"), (0, userAuthValidate_1.validate)(userAuthValidate_1.registerSchema), UsersAuth_1.register);
 router.post("/auth/login", (0, userAuthValidate_1.validate)(userAuthValidate_1.loginSchema), UsersAuth_1.login);
 router.post("/auth/forgetpassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.forgetPasswordSchema), UsersAuth_1.forgetPassword);
 router.post("/auth/resetPassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.resetPasswordSchema), UsersAuth_1.resetPassword);
@@ -49,7 +66,7 @@ router.get("/cards/:id", verifyUser_1.default, UserCardsInfo_1.getCardInfoById);
 router.delete("/cards/:id", verifyUser_1.default, UserCardsInfo_1.deleteCardInfo);
 // user profile
 router.get("/profile", verifyUser_1.default, UserProfile_1.getProfile);
-router.patch("/profile", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.updateProfileSchema), UserProfile_1.updateProfile);
+router.patch("/profile", verifyUser_1.default, uploadImage_1.default.single("image"), (0, userAuthValidate_1.validate)(userProfileValidation_1.updateProfileSchema), UserProfile_1.updateProfile);
 router.post("/profile/changePassword", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.changePasswordSchema), UserProfile_1.changePassword);
 router.post("/notifications", verifyUser_1.default, (0, userAuthValidate_1.validate)(userProfileValidation_1.notificationSettingsSchema), UserProfile_1.notificationSettings);
 // Appontment Payments
@@ -82,11 +99,11 @@ router.post("/addresses", verifyUser_1.default, (0, userAuthValidate_1.validate)
 router.get("/addresses", verifyUser_1.default, UserProfile_1.getAddresses);
 router.delete("/addresses/:id", verifyUser_1.default, UserProfile_1.deleteAddress);
 //pets routes
-router.post("/pets", verifyUser_1.default, (0, userAuthValidate_1.validate)(PetsValidation_1.petSchema), UserPets_1.addPets);
+router.post("/pets", verifyUser_1.default, uploadImage_1.default.single("image"), (0, userAuthValidate_1.validate)(PetsValidation_1.petSchema), UserPets_1.addPets);
 router.get("/pets/breeds", verifyUser_1.default, UserPets_1.getBreeds);
 router.get("/pets/types", verifyUser_1.default, UserPets_1.getPetsTypes);
 router.get("/pets", verifyUser_1.default, UserPets_1.getPets);
 router.get("/pets/:id", verifyUser_1.default, UserPets_1.getPetById);
 router.delete("/pets/:id", verifyUser_1.default, UserPets_1.deletePet);
-router.patch("/pets/:id", verifyUser_1.default, (0, userAuthValidate_1.validate)(PetsValidation_1.petSchema), UserPets_1.updatePet);
+router.patch("/pets/:id", verifyUser_1.default, uploadImage_1.default.single("image"), (0, userAuthValidate_1.validate)(PetsValidation_1.petSchema), UserPets_1.updatePet);
 exports.default = router;

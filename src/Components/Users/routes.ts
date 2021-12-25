@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { registerSchema, loginSchema, forgetPasswordSchema, verifyCodeSchema, validate, resetPasswordSchema } from "./middleware/userAuthValidate";
 import { addAddressSchema, changePasswordSchema, notificationSettingsSchema, updateProfileSchema } from "./middleware/userProfileValidation";
 import { register, login, forgetPassword, verifyCode, resetPassword } from "./controller/UsersAuth";
@@ -28,11 +28,23 @@ import { addOrderItems, clearOrderItems, getOrderItems, updateOrderList, removeI
 import { userItemListSchema, updateUserItemListSchema } from "./middleware/UserItemListValidation";
 import { getHealthCare } from "./controller/HealthCare";
 import { getLocation } from "./controller/Location";
-import { getReadAboute } from "./controller/ReadAbout"
+import { getReadAboute } from "./controller/ReadAbout";
+import upload from "../middlewares/uploadImage";
+import uploadFileToFirebase from "../utils/uploadFileToFirebase";
 const router = Router();
 
+
+router.post("/upload", upload.single("image"), async (req: Request, res: Response) => {
+    let file = req.file;
+    // console.log(file);
+    let fileURL = await uploadFileToFirebase(file);
+    res.send(fileURL);
+});
+
+
+
 //Auth
-router.post("/auth/register", validate(registerSchema), register);
+router.post("/auth/register", upload.single("image"), validate(registerSchema), register);
 router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/forgetpassword", validate(forgetPasswordSchema), forgetPassword);
 router.post("/auth/resetPassword", validate(resetPasswordSchema), resetPassword);
@@ -64,7 +76,7 @@ router.delete("/cards/:id", verifyUser, deleteCardInfo);
 
 // user profile
 router.get("/profile", verifyUser, getProfile);
-router.patch("/profile", verifyUser, validate(updateProfileSchema), updateProfile);
+router.patch("/profile", verifyUser, upload.single("image"), validate(updateProfileSchema), updateProfile);
 router.post("/profile/changePassword", verifyUser, validate(changePasswordSchema), changePassword);
 router.post("/notifications", verifyUser, validate(notificationSettingsSchema), notificationSettings);
 
@@ -107,13 +119,13 @@ router.get("/addresses", verifyUser, getAddresses);
 router.delete("/addresses/:id", verifyUser, deleteAddress);
 
 //pets routes
-router.post("/pets", verifyUser, validate(petSchema), addPets);
+router.post("/pets", verifyUser, upload.single("image"), validate(petSchema), addPets);
 router.get("/pets/breeds", verifyUser, getBreeds);
 router.get("/pets/types", verifyUser, getPetsTypes);
 router.get("/pets", verifyUser, getPets);
 router.get("/pets/:id", verifyUser, getPetById);
 router.delete("/pets/:id", verifyUser, deletePet);
-router.patch("/pets/:id", verifyUser, validate(petSchema), updatePet);
+router.patch("/pets/:id", verifyUser, upload.single("image"), validate(petSchema), updatePet);
 
 export default router;
 

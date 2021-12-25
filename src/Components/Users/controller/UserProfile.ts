@@ -3,9 +3,13 @@ import { Request, Response, NextFunction } from "express";
 import generateCode from "../../utils/GenerateCode";
 import Address, { AddressInterface } from "../../../models/Address";
 import { ObjectId } from "mongoose";
+import uploadImageToStorage from "../../utils/uploadFileToFirebase";
 
 export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
     const { fullName, phoneNumber, email } = req.body;
+    let image = req.file;
+    let imageUrl;
+    if (image) imageUrl = await uploadImageToStorage(image);
     const user: UserInterface = req.user;
     const isPhoneNumberExist: UserInterface | null = await User.findOne({ phoneNumber });
     if (isPhoneNumberExist && isPhoneNumberExist?._id.toString() !== user._id.toString()) {
@@ -23,6 +27,7 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
         user.isVerify = false;
     }
     user.phoneNumber = phoneNumber;
+    user.imageUrl = imageUrl ? imageUrl : user.imageUrl;
     await user.save();
     res.status(200).json({
         status: 200, data: {

@@ -6,6 +6,7 @@ import Appointments, { AppointmentsInterface } from "../../../models/Appointment
 import Vaccination, { PetsVaccination } from "../../../models/Vaccination";
 import getNextVaccination from "../../utils/getNextVaccination";
 import Medacin, { PetsMedacins } from "../../../models/Medacine";
+import uploadImageToStorage from "../../utils/uploadFileToFirebase";
 
 export const getPets = async (req: Request, res: Response, next: NextFunction) => {
     let { page, limit } = req.query;
@@ -43,12 +44,14 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
 
 export const addPets = async (req: Request, res: Response, next: NextFunction) => {
     const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried } = req.body;
+    let image = req.file;
+    let imageUrl = image ? await uploadImageToStorage(image) : "";
     let user = req.user;
     let isPetTypeExist: PetsTypesInterface = await PetsTypes.findById(typeId) as PetsTypesInterface;
     if (!isPetTypeExist) return res.status(400).json({ status: 400, msg: "pet type not found" });
     let isPetBreedExist: BreedInterface = await Breeds.findById(breedId) as BreedInterface;
     if (!isPetBreedExist) return res.status(400).json({ status: 400, msg: "pet breed not found" });
-    let pet = await Pets.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
+    let pet = await Pets.create({ user: user._id, imageUrl, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     await user.save();
     return res.status(201).json({ status: 201, data: { pet } });
@@ -56,6 +59,9 @@ export const addPets = async (req: Request, res: Response, next: NextFunction) =
 
 export const updatePet = async (req: Request, res: Response, next: NextFunction) => {
     const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried } = req.body;
+    let image = req.file;
+    let imageUrl;
+    if (image) imageUrl = await uploadImageToStorage(image);
     const petId = req.params.id;
     let user = req.user;
     let pet: PetsInterface = await Pets.findOne({ user: user._id, _id: petId }) as PetsInterface;
@@ -72,6 +78,7 @@ export const updatePet = async (req: Request, res: Response, next: NextFunction)
     pet.duerming = duerming;
     pet.nutried = nutried;
     pet.age = age;
+    pet.imageUrl = imageUrl ? imageUrl : pet.imageUrl;
     await pet.save();
     return res.status(200).json({ status: 200, data: { pet } });
 }

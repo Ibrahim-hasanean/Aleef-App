@@ -1,40 +1,41 @@
-import admin from "../../config/firebase";
+import { Storage } from "@google-cloud/storage";
 import { v4 as uuid } from "uuid";
-export default async function (file: any) {
+import path from "path";
+const storage = new Storage({
+    projectId: "spotiphy-clone",
+    keyFilename: path.join(__dirname, "../../fireabase-keys.json")
+});
+
+const bucket = storage.bucket("gs://spotiphy-clone.appspot.com");
+const uploadImageToStorage = (file: any): Promise<string> => {
     return new Promise((resolve, reject) => {
+        if (!file) {
+            reject('No image file');
+        }
+        let newFileName = `${file.originalname}_${Date.now()}`;
 
-        // Format the filename
-        const storage = admin.storage().bucket()
-        const timestamp = Date.now();
-        const name = file.originalname.split(".")[0];
-        const type = file.originalname.split(".")[1];
-        const fileName = `${name}_${timestamp}.${type}`;
+        let fileUpload = bucket.file(newFileName);
 
-        // Step 1. Create reference for file name in cloud storage 
-        const fileUpload = storage.file(fileName);
         const blobStream = fileUpload.createWriteStream({
             metadata: {
                 contentType: file.mimetype
             }
         });
-        blobStream.on('error', (error) => {
+
+        blobStream.on('error', (error: any) => {
             reject('Something is wrong! Unable to upload at the moment.');
+            console.log(error)
         });
 
-        blobStream.on('finish', () => {
-            // The public URL can be used to directly access the file via HTTP.
-            // const url = format(`https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`);
-            // resolve(url);
+        blobStream.on('finish', async () => {
+            await fileUpload.makePublic();
+            let url = fileUpload.publicUrl();
+            resolve(url);
         });
+
         blobStream.end(file.buffer);
-    })
-    // const storageRef = admin.storage().bucket("gs://spotiphy-clone.appspot.com");
-    // const storage = await storageRef.upload(path, {
-    //     public: true,
-    //     destination: `/uploads/hashnode/${filename}`,
-    //     metadata: {
-    //         firebaseStorageDownloadTokens: uuid()
-    //     }
-    // });
-    // return storage[0].metadata.mediaLink;
+    });
 }
+
+export default uploadImageToStorage;
+

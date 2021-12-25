@@ -2,14 +2,17 @@ import User, { UserInterface } from "../../../models/User";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import generateCode from "../../utils/GenerateCode";
+import uploadImageToStorage from "../../utils/uploadFileToFirebase";
 require("dotenv").config();
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
     const { fullName, phoneNumber, password } = req.body;
+    let image = req.file;
+    let imageUrl = image ? await uploadImageToStorage(image) : "";
     const isExist: UserInterface | null = await User.findOne({ phoneNumber });
     if (isExist) return res.status(409).json({ status: 409, msg: "phone number is used" });
     const code = generateCode();
-    let newUser = await User.create({ fullName, phoneNumber, password, code });
+    let newUser = await User.create({ fullName, phoneNumber, password, code, imageUrl });
     //send sms to user
     return res.status(201).json({ status: 201, msg: "user register successfully" });
 }

@@ -16,14 +16,17 @@ exports.verifyCode = exports.resetPassword = exports.forgetPassword = exports.lo
 const User_1 = __importDefault(require("../../../models/User"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const GenerateCode_1 = __importDefault(require("../../utils/GenerateCode"));
+const uploadFileToFirebase_1 = __importDefault(require("../../utils/uploadFileToFirebase"));
 require("dotenv").config();
 const register = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { fullName, phoneNumber, password } = req.body;
+    let image = req.file;
+    let imageUrl = image ? yield (0, uploadFileToFirebase_1.default)(image) : "";
     const isExist = yield User_1.default.findOne({ phoneNumber });
     if (isExist)
         return res.status(409).json({ status: 409, msg: "phone number is used" });
     const code = (0, GenerateCode_1.default)();
-    let newUser = yield User_1.default.create({ fullName, phoneNumber, password, code });
+    let newUser = yield User_1.default.create({ fullName, phoneNumber, password, code, imageUrl });
     //send sms to user
     return res.status(201).json({ status: 201, msg: "user register successfully" });
 });
