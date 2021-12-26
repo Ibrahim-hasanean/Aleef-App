@@ -16,7 +16,7 @@ const storage_1 = require("@google-cloud/storage");
 const path_1 = __importDefault(require("path"));
 const storage = new storage_1.Storage({
     projectId: "spotiphy-clone",
-    keyFilename: path_1.default.join(__dirname, "../../fireabase-keys.json")
+    keyFilename: path_1.default.join(__dirname, "../../../fireabase-keys.json")
 });
 const bucket = storage.bucket("gs://spotiphy-clone.appspot.com");
 const uploadImageToStorage = (file) => {
