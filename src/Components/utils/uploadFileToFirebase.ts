@@ -3,7 +3,7 @@ import { v4 as uuid } from "uuid";
 import path from "path";
 const storage = new Storage({
     projectId: "spotiphy-clone",
-    keyFilename: path.join(__dirname, "../../fireabase-keys.json")
+    keyFilename: path.join(__dirname, "../../../fireabase-keys.json")
 });
 
 const bucket = storage.bucket("gs://spotiphy-clone.appspot.com");
