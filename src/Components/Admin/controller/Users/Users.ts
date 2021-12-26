@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import User, { UserInterface } from "../../../../models/User";
 import mongoose from "mongoose";
+import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     let { page, limit, text, phoneNumber } = req.query as { page: string, limit: string, text: string, phoneNumber: string };
@@ -44,18 +45,23 @@ export const suspendUser = async (req: Request, res: Response, next: NextFunctio
 
 export const addNewUser = async (req: Request, res: Response, next: NextFunction) => {
     let { fullName, email, phoneNumber, password } = req.body;
+    let image = req.file;
+    let imageUrl = image ? await uploadImageToStorage(image) : "";
     const isPhoneNumberExist: UserInterface | null = await User.findOne({ phoneNumber });
     if (isPhoneNumberExist) return res.status(409).json({ status: 409, msg: "phone number is used by other user" });
     if (email) {
         const isEmailExist: UserInterface | null = await User.findOne({ email });
         if (isEmailExist) return res.status(409).json({ status: 409, msg: "email is used by other user" });
     }
-    let newUser = await User.create({ fullName, phoneNumber, password, email });
+    let newUser = await User.create({ fullName, phoneNumber, password, email, imageUrl });
     return res.status(201).json({ status: 201, msg: "user created successfully", data: { user: newUser } });
 }
 
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     const { fullName, phoneNumber, email } = req.body;
+    let image = req.file;
+    let imageUrl;
+    if (image) imageUrl = await uploadImageToStorage(image);
     let userId = req.params.id;
     if (!mongoose.isValidObjectId(userId)) {
         return res.status(400).json({ status: 400, msg: "user not found" });
@@ -72,11 +78,7 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     }
     user.fullName = fullName;
     user.email = email;
-    // if (phoneNumber !== user.phoneNumber) {
-    //     // const code: string = generateCode();
-    //     user.code = code;
-    //     user.isVerify = false;
-    // }
+    user.imageUrl = imageUrl ? imageUrl : user.imageUrl;
     user.phoneNumber = phoneNumber;
     await user.save();
     res.status(200).json({

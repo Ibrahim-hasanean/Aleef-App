@@ -6,11 +6,11 @@ export const profileSchema = {
         name: Joi.string().required(),
         email: Joi.string().required(),
         phoneNumber: Joi.string().required(),
-        muteChat: Joi.boolean().required(),
-        allowReceivingMessagesOutOfWorksHours: Joi.boolean().required(),
-        newOrdersNotifications: Joi.boolean().required(),
-        canceledOrdersNotifications: Joi.boolean().required(),
-        newReviewsNotifications: Joi.boolean().required(),
-        itemsAlmostOutOfStockNotification: Joi.boolean().required(),
+        // muteChat: Joi.boolean().required(),
+        // allowReceivingMessagesOutOfWorksHours: Joi.boolean().required(),
+        // newOrdersNotifications: Joi.boolean().required(),
+        // canceledOrdersNotifications: Joi.boolean().required(),
+        // newReviewsNotifications: Joi.boolean().required(),
+        // itemsAlmostOutOfStockNotification: Joi.boolean().required(),
     })
 }

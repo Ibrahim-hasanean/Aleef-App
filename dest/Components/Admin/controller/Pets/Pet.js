@@ -18,13 +18,16 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const User_1 = __importDefault(require("../../../../models/User"));
 const PetsTypes_1 = __importDefault(require("../../../../models/PetsTypes"));
 const Breed_1 = __importDefault(require("../../../../models/Breed"));
+const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const addNewPet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, serialNumber, age, typeId, breedId, gender, userId, duerming, nutried } = req.body;
+    let image = req.file;
+    let imageUrl = image ? yield (0, uploadFileToFirebase_1.default)(image) : "";
     let user = yield User_1.default.findById(userId);
     if (!user) {
         return res.status(400).json({ status: 400, msg: "user not found" });
     }
-    let pet = yield Pets_1.default.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
+    let pet = yield Pets_1.default.create({ user: user._id, imageUrl, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     yield user.save();
     return res.status(201).json({ status: 201, data: { pet } });
@@ -33,6 +36,10 @@ exports.addNewPet = addNewPet;
 const updatePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried, userId } = req.body;
     const petId = req.params.id;
+    let image = req.file;
+    let imageUrl;
+    if (image)
+        imageUrl = yield (0, uploadFileToFirebase_1.default)(image);
     let user = yield User_1.default.findById(userId);
     if (!user) {
         return res.status(400).json({ status: 400, msg: "user not found" });
@@ -54,6 +61,7 @@ const updatePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     pet.duerming = duerming;
     pet.nutried = nutried;
     pet.age = age;
+    pet.imageUrl = imageUrl ? imageUrl : pet.imageUrl;
     yield pet.save();
     return res.status(200).json({ status: 200, data: { pet } });
 });

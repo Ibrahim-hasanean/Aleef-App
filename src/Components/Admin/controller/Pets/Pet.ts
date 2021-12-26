@@ -4,15 +4,18 @@ import mongoose from "mongoose";
 import User, { UserInterface } from "../../../../models/User";
 import petsTypes, { PetsTypesInterface } from "../../../../models/PetsTypes";
 import Breeds, { BreedInterface } from "../../../../models/Breed";
+import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
 
 
 export const addNewPet = async (req: Request, res: Response, next: NextFunction) => {
     const { name, serialNumber, age, typeId, breedId, gender, userId, duerming, nutried } = req.body;
+    let image = req.file;
+    let imageUrl = image ? await uploadImageToStorage(image) : "";
     let user: UserInterface = await User.findById(userId) as UserInterface;
     if (!user) {
         return res.status(400).json({ status: 400, msg: "user not found" });
     }
-    let pet = await Pet.create({ user: user._id, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
+    let pet = await Pet.create({ user: user._id, imageUrl, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     await user.save();
     return res.status(201).json({ status: 201, data: { pet } });
@@ -22,6 +25,9 @@ export const addNewPet = async (req: Request, res: Response, next: NextFunction)
 export const updatePet = async (req: Request, res: Response, next: NextFunction) => {
     const { name, serialNumber, age, typeId, breedId, gender, duerming, nutried, userId } = req.body;
     const petId = req.params.id;
+    let image = req.file;
+    let imageUrl;
+    if (image) imageUrl = await uploadImageToStorage(image);
     let user: UserInterface = await User.findById(userId) as UserInterface;
     if (!user) {
         return res.status(400).json({ status: 400, msg: "user not found" });
@@ -40,6 +46,7 @@ export const updatePet = async (req: Request, res: Response, next: NextFunction)
     pet.duerming = duerming;
     pet.nutried = nutried;
     pet.age = age;
+    pet.imageUrl = imageUrl ? imageUrl : pet.imageUrl;
     await pet.save();
     return res.status(200).json({ status: 200, data: { pet } });
 }

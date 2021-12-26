@@ -41,6 +41,7 @@ import { addMedacin, updateMedacin, deleteMedacin, getMedacinById, getPetMedacin
 import { addHealthCareTip, getHealthCare } from "./controller/HealthCare/HealthCare";
 import { addReadAbout, getReadAboute } from "./controller/ReadAbout/ReadAbout";
 import { addLocation, getLocation } from "./controller/Location/Location";
+import upload from "../middlewares/uploadImage";
 
 const router = Router();
 
@@ -49,7 +50,7 @@ router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 
 // profile
-router.patch("/profile", verifyStaffMember, validate(profileSchema), updateProfile);
+router.patch("/profile", verifyStaffMember, upload.single('image'), validate(profileSchema), updateProfile);
 router.get("/profile", verifyStaffMember, getProfile);
 
 // hospital locations
@@ -66,8 +67,8 @@ router.post("/readabout", verifyStaffMember, addReadAbout);
 
 
 //pets 
-router.post("/pets", verifyStaffMember, validate(petSchema), addNewPet);
-router.patch("/pets/:id", verifyStaffMember, validate(petSchema), updatePet);
+router.post("/pets", verifyStaffMember, upload.single('image'), validate(petSchema), addNewPet);
+router.patch("/pets/:id", verifyStaffMember, upload.single('image'), validate(petSchema), updatePet);
 router.get("/pets", verifyStaffMember, getPets);
 router.get("/pets/:id", verifyStaffMember, getPetById);
 router.delete("/pets/:id", verifyStaffMember, deletePet);
@@ -89,8 +90,8 @@ router.get("/pets/:id/medacins/:medacinId", verifyDoctor, getMedacinById);
 router.delete("/pets/:id/medacins/:medacinId", verifyDoctor, deleteMedacin);
 
 // clients 
-router.post("/clients", verifyStaffMember, validate(addClientSchema), addNewUser);
-router.patch("/clients/:id", verifyStaffMember, validate(addClientSchema), updateUser);
+router.post("/clients", verifyStaffMember, upload.single('image'), validate(addClientSchema), addNewUser);
+router.patch("/clients/:id", verifyStaffMember, upload.single('image'), validate(addClientSchema), updateUser);
 router.get("/clients", verifyStaffMember, getUsers);
 router.post("/clients/:id/suspend", verifyStaffMember, suspendUser);
 router.get("/clients/:id", verifyStaffMember, getUserById);
@@ -124,8 +125,8 @@ router.delete("/appointments/:id", verifyStaffMember, deleteAppointments);
 
 // Staff routes
 router.post("/defaultAdmin", defaultAdmin);
-router.post("/staff", verifyAdmin, validate(addStaffSchema), addStaff);
-router.patch("/staff/:id", verifyAdmin, validate(addStaffSchema), updateStaff);
+router.post("/staff", verifyAdmin, upload.single('image'), validate(addStaffSchema), addStaff);
+router.patch("/staff/:id", verifyAdmin, upload.single('image'), validate(addStaffSchema), updateStaff);
 router.get("/staff", verifyAdmin, getStaffMemebers);
 router.get("/staff/:id", verifyAdmin, getStaffMemeberById);
 router.get("/staff/:id/workHoures", verifyAdmin, getWorkHoures);

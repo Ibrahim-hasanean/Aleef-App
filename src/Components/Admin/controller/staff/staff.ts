@@ -1,13 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 import Staff, { StafInterface, dayHoures, WorkHoures } from "../../../../models/Staff";
 import mongoose from "mongoose";
+import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
+
 export const addStaff = async (req: Request, res: Response, next: NextFunction) => {
     const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
+    let image = req.file;
+    let imageUrl = image ? await uploadImageToStorage(image) : "";
     const isPhoneNumberExist = await Staff.findOne({ phoneNumber });
     if (isPhoneNumberExist) return res.status(409).json({ status: 409, msg: "phone number is used before" });
     const isCardNumberExist = await Staff.findOne({ cardNumber });
     if (isCardNumberExist) return res.status(409).json({ status: 409, msg: "card number is used before" });
-    const newStaff = await Staff.create({ name, cardNumber, phoneNumber, email, role, staffMemberId });
+    const newStaff = await Staff.create({ name, cardNumber, phoneNumber, email, role, staffMemberId, imageUrl });
     return res.status(201).json({
         status: 201, msg: "staff member added successfully", data: {
             staffMember: newStaff
@@ -18,7 +22,11 @@ export const addStaff = async (req: Request, res: Response, next: NextFunction) 
 export const updateStaff = async (req: Request, res: Response, next: NextFunction) => {
     const memberId = req.params.id;
     const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
+    let image = req.file;
+    let imageUrl;
+    if (image) imageUrl = await uploadImageToStorage(image);
     let staffMember = await Staff.findById(memberId) as StafInterface;
+    if (!staffMember) return res.status(400).json({ status: 400, msg: `staff member with id ${memberId} not exist` });
     const isPhoneNumberExist = await Staff.findOne({ phoneNumber });
     if (isPhoneNumberExist && String(staffMember._id) !== String(isPhoneNumberExist._id))
         return res.status(409).json({ status: 409, msg: "phone number is used before" });
@@ -32,6 +40,7 @@ export const updateStaff = async (req: Request, res: Response, next: NextFunctio
     newStaff.email = email;
     newStaff.staffMemberId = staffMemberId;
     newStaff.role = role;
+    newStaff.imageUrl = imageUrl ? imageUrl : newStaff.imageUrl;
     await newStaff.save();
     return res.status(200).json({
         status: 200, msg: "staff member updated successfully", data: {

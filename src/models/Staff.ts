@@ -44,6 +44,7 @@ export interface StafInterface extends mongoose.Document {
     name: string,
     code: string,
     staffMemberId: number,
+    imageUrl: string,
     cardNumber: string,
     phoneNumber: string,
     email: string,
@@ -61,6 +62,7 @@ export interface StafInterface extends mongoose.Document {
 const staffSchema = new Schema({
     name: { type: String, required: true },
     code: { type: String },
+    imageUrl: { type: String },
     cardNumber: { type: String, required: true },
     staffMemberId: { type: Number, required: true },
     phoneNumber: { type: String, required: true },

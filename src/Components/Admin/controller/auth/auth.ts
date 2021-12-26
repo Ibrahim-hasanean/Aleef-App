@@ -18,6 +18,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 export const verifyCode = async (req: Request, res: Response, next: NextFunction) => {
     const { phoneNumber, code } = req.body;
     const staffMember: StafInterface = await Staff.findOne({ phoneNumber }) as StafInterface;
+    if (!staffMember) return res.status(400).json({ status: 400, msg: `staff member with phonenumber ${phoneNumber} not exist` });
     let isCodeEqual = staffMember.code === code;
     if (isCodeEqual) {
         const staffMembersToken: string = process.env.STAF_TOKEN_SECRET as string;

@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateUser = exports.addNewUser = exports.suspendUser = exports.getUserById = exports.getUsers = void 0;
 const User_1 = __importDefault(require("../../../../models/User"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { page, limit, text, phoneNumber } = req.query;
     const limitNumber = Number(limit) || 10;
@@ -59,6 +60,8 @@ const suspendUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 exports.suspendUser = suspendUser;
 const addNewUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { fullName, email, phoneNumber, password } = req.body;
+    let image = req.file;
+    let imageUrl = image ? yield (0, uploadFileToFirebase_1.default)(image) : "";
     const isPhoneNumberExist = yield User_1.default.findOne({ phoneNumber });
     if (isPhoneNumberExist)
         return res.status(409).json({ status: 409, msg: "phone number is used by other user" });
@@ -67,12 +70,16 @@ const addNewUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         if (isEmailExist)
             return res.status(409).json({ status: 409, msg: "email is used by other user" });
     }
-    let newUser = yield User_1.default.create({ fullName, phoneNumber, password, email });
+    let newUser = yield User_1.default.create({ fullName, phoneNumber, password, email, imageUrl });
     return res.status(201).json({ status: 201, msg: "user created successfully", data: { user: newUser } });
 });
 exports.addNewUser = addNewUser;
 const updateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { fullName, phoneNumber, email } = req.body;
+    let image = req.file;
+    let imageUrl;
+    if (image)
+        imageUrl = yield (0, uploadFileToFirebase_1.default)(image);
     let userId = req.params.id;
     if (!mongoose_1.default.isValidObjectId(userId)) {
         return res.status(400).json({ status: 400, msg: "user not found" });
@@ -90,11 +97,7 @@ const updateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
     user.fullName = fullName;
     user.email = email;
-    // if (phoneNumber !== user.phoneNumber) {
-    //     // const code: string = generateCode();
-    //     user.code = code;
-    //     user.isVerify = false;
-    // }
+    user.imageUrl = imageUrl ? imageUrl : user.imageUrl;
     user.phoneNumber = phoneNumber;
     yield user.save();
     res.status(200).json({

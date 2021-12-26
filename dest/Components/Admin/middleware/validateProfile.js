@@ -7,11 +7,11 @@ exports.profileSchema = {
         name: celebrate_1.Joi.string().required(),
         email: celebrate_1.Joi.string().required(),
         phoneNumber: celebrate_1.Joi.string().required(),
-        muteChat: celebrate_1.Joi.boolean().required(),
-        allowReceivingMessagesOutOfWorksHours: celebrate_1.Joi.boolean().required(),
-        newOrdersNotifications: celebrate_1.Joi.boolean().required(),
-        canceledOrdersNotifications: celebrate_1.Joi.boolean().required(),
-        newReviewsNotifications: celebrate_1.Joi.boolean().required(),
-        itemsAlmostOutOfStockNotification: celebrate_1.Joi.boolean().required(),
+        // muteChat: Joi.boolean().required(),
+        // allowReceivingMessagesOutOfWorksHours: Joi.boolean().required(),
+        // newOrdersNotifications: Joi.boolean().required(),
+        // canceledOrdersNotifications: Joi.boolean().required(),
+        // newReviewsNotifications: Joi.boolean().required(),
+        // itemsAlmostOutOfStockNotification: Joi.boolean().required(),
     })
 };

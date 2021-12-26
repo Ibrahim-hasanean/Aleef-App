@@ -15,15 +15,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.defaultAdmin = exports.setWorkHoures = exports.getWorkHoures = exports.deleteStaffMember = exports.getStaffMemeberById = exports.getStaffMemebers = exports.updateStaff = exports.addStaff = void 0;
 const Staff_1 = __importDefault(require("../../../../models/Staff"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const addStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
+    let image = req.file;
+    let imageUrl = image ? yield (0, uploadFileToFirebase_1.default)(image) : "";
     const isPhoneNumberExist = yield Staff_1.default.findOne({ phoneNumber });
     if (isPhoneNumberExist)
         return res.status(409).json({ status: 409, msg: "phone number is used before" });
     const isCardNumberExist = yield Staff_1.default.findOne({ cardNumber });
     if (isCardNumberExist)
         return res.status(409).json({ status: 409, msg: "card number is used before" });
-    const newStaff = yield Staff_1.default.create({ name, cardNumber, phoneNumber, email, role, staffMemberId });
+    const newStaff = yield Staff_1.default.create({ name, cardNumber, phoneNumber, email, role, staffMemberId, imageUrl });
     return res.status(201).json({
         status: 201, msg: "staff member added successfully", data: {
             staffMember: newStaff
@@ -34,7 +37,13 @@ exports.addStaff = addStaff;
 const updateStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const memberId = req.params.id;
     const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
+    let image = req.file;
+    let imageUrl;
+    if (image)
+        imageUrl = yield (0, uploadFileToFirebase_1.default)(image);
     let staffMember = yield Staff_1.default.findById(memberId);
+    if (!staffMember)
+        return res.status(400).json({ status: 400, msg: `staff member with id ${memberId} not exist` });
     const isPhoneNumberExist = yield Staff_1.default.findOne({ phoneNumber });
     if (isPhoneNumberExist && String(staffMember._id) !== String(isPhoneNumberExist._id))
         return res.status(409).json({ status: 409, msg: "phone number is used before" });
@@ -48,6 +57,7 @@ const updateStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     newStaff.email = email;
     newStaff.staffMemberId = staffMemberId;
     newStaff.role = role;
+    newStaff.imageUrl = imageUrl ? imageUrl : newStaff.imageUrl;
     yield newStaff.save();
     return res.status(200).json({
         status: 200, msg: "staff member updated successfully", data: {

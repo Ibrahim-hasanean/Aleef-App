@@ -40,12 +40,13 @@ const medacins_1 = require("./controller/medacins/medacins");
 const HealthCare_1 = require("./controller/HealthCare/HealthCare");
 const ReadAbout_1 = require("./controller/ReadAbout/ReadAbout");
 const Location_1 = require("./controller/Location/Location");
+const uploadImage_1 = __importDefault(require("../middlewares/uploadImage"));
 const router = (0, express_1.Router)();
 // auth routers
 router.post("/auth/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
 router.post("/auth/verify", (0, validateAuth_1.validate)(validateAuth_1.verifyCodeSchema), auth_1.verifyCode);
 // profile
-router.patch("/profile", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);
+router.patch("/profile", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);
 router.get("/profile", verifyStaffMember_1.default, Profile_1.getProfile);
 // hospital locations
 router.post("/location", verifyStaffMember_1.default, Location_1.addLocation);
@@ -57,8 +58,8 @@ router.post("/healthcare", verifyStaffMember_1.default, HealthCare_1.addHealthCa
 router.get("/readabout", verifyStaffMember_1.default, ReadAbout_1.getReadAboute);
 router.post("/readabout", verifyStaffMember_1.default, ReadAbout_1.addReadAbout);
 //pets 
-router.post("/pets", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validatePets_1.petSchema), Pet_1.addNewPet);
-router.patch("/pets/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validatePets_1.petSchema), Pet_1.updatePet);
+router.post("/pets", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validatePets_1.petSchema), Pet_1.addNewPet);
+router.patch("/pets/:id", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validatePets_1.petSchema), Pet_1.updatePet);
 router.get("/pets", verifyStaffMember_1.default, Pet_1.getPets);
 router.get("/pets/:id", verifyStaffMember_1.default, Pet_1.getPetById);
 router.delete("/pets/:id", verifyStaffMember_1.default, Pet_1.deletePet);
@@ -75,8 +76,8 @@ router.get("/pets/:id/medacins", verifyDoctor_1.default, medacins_1.getPetMedaci
 router.get("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, medacins_1.getMedacinById);
 router.delete("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, medacins_1.deleteMedacin);
 // clients 
-router.post("/clients", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.addNewUser);
-router.patch("/clients/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.updateUser);
+router.post("/clients", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.addNewUser);
+router.patch("/clients/:id", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.updateUser);
 router.get("/clients", verifyStaffMember_1.default, Users_1.getUsers);
 router.post("/clients/:id/suspend", verifyStaffMember_1.default, Users_1.suspendUser);
 router.get("/clients/:id", verifyStaffMember_1.default, Users_1.getUserById);
@@ -104,8 +105,8 @@ router.get("/appointments/:id", verifyStaffMember_1.default, appointments_1.getA
 router.delete("/appointments/:id", verifyStaffMember_1.default, appointments_1.deleteAppointments);
 // Staff routes
 router.post("/defaultAdmin", staff_1.defaultAdmin);
-router.post("/staff", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateStaff_1.addStaffSchema), staff_1.addStaff);
-router.patch("/staff/:id", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateStaff_1.addStaffSchema), staff_1.updateStaff);
+router.post("/staff", verifyAdmin_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateStaff_1.addStaffSchema), staff_1.addStaff);
+router.patch("/staff/:id", verifyAdmin_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateStaff_1.addStaffSchema), staff_1.updateStaff);
 router.get("/staff", verifyAdmin_1.default, staff_1.getStaffMemebers);
 router.get("/staff/:id", verifyAdmin_1.default, staff_1.getStaffMemeberById);
 router.get("/staff/:id/workHoures", verifyAdmin_1.default, staff_1.getWorkHoures);

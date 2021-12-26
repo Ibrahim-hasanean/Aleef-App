@@ -43,6 +43,7 @@ const workHouresSchema = new mongoose_1.Schema({
 const staffSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
     code: { type: String },
+    imageUrl: { type: String },
     cardNumber: { type: String, required: true },
     staffMemberId: { type: Number, required: true },
     phoneNumber: { type: String, required: true },

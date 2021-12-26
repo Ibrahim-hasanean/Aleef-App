@@ -33,6 +33,8 @@ exports.login = login;
 const verifyCode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { phoneNumber, code } = req.body;
     const staffMember = yield Staff_1.default.findOne({ phoneNumber });
+    if (!staffMember)
+        return res.status(400).json({ status: 400, msg: `staff member with phonenumber ${phoneNumber} not exist` });
     let isCodeEqual = staffMember.code === code;
     if (isCodeEqual) {
         const staffMembersToken = process.env.STAF_TOKEN_SECRET;

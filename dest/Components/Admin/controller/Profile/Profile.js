@@ -14,9 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getProfile = exports.updateProfile = void 0;
 const Staff_1 = __importDefault(require("../../../../models/Staff"));
+const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { name, email, phoneNumber, muteChat, allowReceivingMessagesOutOfWorksHours, newOrdersNotifications, canceledOrdersNotifications, newReviewsNotifications, itemsAlmostOutOfStockNotification } = req.body;
+    let { name, email, phoneNumber,
+    // muteChat,
+    // allowReceivingMessagesOutOfWorksHours,
+    // newOrdersNotifications,
+    // canceledOrdersNotifications,
+    // newReviewsNotifications,
+    // itemsAlmostOutOfStockNotification
+     } = req.body;
     let staffMember = req.staff;
+    let image = req.file;
+    let imageUrl;
+    if (image)
+        imageUrl = yield (0, uploadFileToFirebase_1.default)(image);
     let isPhoneNumberExist = yield Staff_1.default.findOne({ phoneNumber });
     if (isPhoneNumberExist && String(isPhoneNumberExist === null || isPhoneNumberExist === void 0 ? void 0 : isPhoneNumberExist._id) !== String(staffMember._id)) {
         return res.status(409).json({ status: 409, msg: "phone number is used by other staff member" });
@@ -28,12 +40,13 @@ const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     staffMember.phoneNumber = phoneNumber;
     staffMember.email = email;
     staffMember.name = name;
-    staffMember.muteChat = muteChat;
-    staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
-    staffMember.newOrdersNotifications = newOrdersNotifications;
-    staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
-    staffMember.newReviewsNotifications = newReviewsNotifications;
-    staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
+    // staffMember.muteChat = muteChat;
+    // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
+    // staffMember.newOrdersNotifications = newOrdersNotifications;
+    // staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
+    // staffMember.newReviewsNotifications = newReviewsNotifications;
+    // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
+    staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
     yield staffMember.save();
     return res.status(200).json({ status: 200, msg: "profile updated successfully" });
 });
