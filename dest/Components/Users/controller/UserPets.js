@@ -127,7 +127,7 @@ const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     return res.status(200).json({
         status: 200,
         data: {
-            pet: Object.assign(Object.assign({}, pet === null || pet === void 0 ? void 0 : pet.toJSON()), { lastCheckUp: appointment[0] && appointment[0].appointmentDate, lastGrooming: grooming[0] && grooming[0].appointmentDate, lastPrescription: medacin[0] && medacin[0].createdAt, nextVaccination: nextVaccination })
+            pet: Object.assign(Object.assign({}, pet === null || pet === void 0 ? void 0 : pet.toJSON()), { lastCheckUp: (appointment[0] && appointment[0].appointmentDate) || "", lastGrooming: (grooming[0] && grooming[0].appointmentDate) || "", lastPrescription: (medacin[0] && medacin[0].createdAt) || "", nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination })
         }
     });
 });
