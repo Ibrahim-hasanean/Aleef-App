@@ -119,10 +119,10 @@ export const getPetById = async (req: Request, res: Response, next: NextFunction
         data: {
             pet: {
                 ...pet?.toJSON(),
-                lastCheckUp: appointment[0] && appointment[0].appointmentDate,
-                lastGrooming: grooming[0] && grooming[0].appointmentDate,
-                lastPrescription: medacin[0] && medacin[0].createdAt,
-                nextVaccination: nextVaccination
+                lastCheckUp: (appointment[0] && appointment[0].appointmentDate) || "",
+                lastGrooming: (grooming[0] && grooming[0].appointmentDate) || "",
+                lastPrescription: (medacin[0] && medacin[0].createdAt) || "",
+                nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination
             }
         }
     });
