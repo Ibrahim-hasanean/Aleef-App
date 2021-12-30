@@ -115,9 +115,9 @@ router.delete("/staff/:id", verifyAdmin_1.default, staff_1.deleteStaffMember);
 // items and items variables
 router.get("/items", verifyStoreManagement_1.default, items_1.getItems);
 router.get("/items/:id", verifyStoreManagement_1.default, items_1.getItemById);
-router.post("/items", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateItem_1.itemSchema), items_1.addItem);
+router.post("/items", verifyStoreManagement_1.default, uploadImage_1.default.fields([{ name: "mainImage", maxCount: 1 }, { name: "images" }]), (0, validateAuth_1.validate)(validateItem_1.itemSchema), items_1.addItem);
 router.delete("/items/:id", verifyStoreManagement_1.default, items_1.deleteItem);
-router.patch("/items/:id", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateItem_1.itemSchema), items_1.updateItem);
+router.patch("/items/:id", verifyStoreManagement_1.default, uploadImage_1.default.fields([{ name: "mainImage", maxCount: 1 }, { name: "images" }]), (0, validateAuth_1.validate)(validateItem_1.itemSchema), items_1.updateItem);
 router.get("/itemsCategory", verifyStoreManagement_1.default, ItemsCategory_1.getItemsCategory);
 router.post("/itemsCategory", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateName_1.nameSchema), ItemsCategory_1.addItemCategory);
 router.delete("/itemsCategory/:id", verifyStoreManagement_1.default, ItemsCategory_1.deleteCategory);

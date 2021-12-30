@@ -14,7 +14,9 @@ export interface ItemInterface extends mongoose.Document {
     shippingPrice: number
     additionDate: Date
     soldQuantity: number
-    usersLiked: string[]
+    usersLiked: string[],
+    mainImageUrl: string,
+    images: string[]
 }
 
 
@@ -33,6 +35,8 @@ const itemSchema = new Schema({
     shippingPrice: { type: Number },
     additionDate: { type: Date },
     soldQuantity: { type: Number },
+    mainImageUrl: { type: String },
+    images: [{ type: String }]
 })
 
 const Item = mongoose.model("items", itemSchema);

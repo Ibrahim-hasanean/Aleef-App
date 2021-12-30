@@ -14,8 +14,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteItem = exports.getItemById = exports.getItems = exports.updateItem = exports.addItem = void 0;
 const Item_1 = __importDefault(require("../../../../models/Item"));
+const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const addItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { name, description, price, category, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
+    let files = req.files;
+    let { mainImage, images } = files;
+    images = images ? images : [];
+    let mainImageUrl = mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : "";
+    let uploadImagesFunctions = images.map((image) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, uploadFileToFirebase_1.default)(image); }));
+    let imagesUrls = yield Promise.all(uploadImagesFunctions);
     let newItem = yield Item_1.default.create({
         name,
         description,
@@ -25,7 +32,7 @@ const addItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         avaliableQuantity,
         allowed,
         shippingPrice,
-        additionDate
+        additionDate, mainImageUrl, images: imagesUrls
     });
     return res.status(201).json({ status: 201, data: { item: newItem } });
 });
@@ -33,7 +40,7 @@ exports.addItem = addItem;
 const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let itemId = req.params.id;
     let { name, description, price, category, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
-    let newItem = yield Item_1.default.findByIdAndUpdate(itemId, {
+    let body = {
         name,
         description,
         price,
@@ -43,7 +50,18 @@ const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         allowed,
         shippingPrice,
         additionDate
-    });
+    };
+    let files = req.files;
+    let { mainImage, images } = files;
+    images = images ? images : [];
+    let mainImageUrl = mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : null;
+    let uploadImagesFunctions = images.map((image) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, uploadFileToFirebase_1.default)(image); }));
+    let imagesUrls = yield Promise.all(uploadImagesFunctions);
+    if (mainImageUrl)
+        body.mainImageUrl = mainImageUrl;
+    if (imagesUrls.length > 0)
+        body.images = imagesUrls;
+    let newItem = yield Item_1.default.findByIdAndUpdate(itemId, body, { new: true });
     return res.status(200).json({ status: 200, data: { item: newItem } });
 });
 exports.updateItem = updateItem;

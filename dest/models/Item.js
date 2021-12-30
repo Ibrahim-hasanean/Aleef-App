@@ -35,6 +35,8 @@ const itemSchema = new mongoose_1.Schema({
     shippingPrice: { type: Number },
     additionDate: { type: Date },
     soldQuantity: { type: Number },
+    mainImageUrl: { type: String },
+    images: [{ type: String }]
 });
 const Item = mongoose_1.default.model("items", itemSchema);
 exports.default = Item;

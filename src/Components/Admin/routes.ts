@@ -136,9 +136,19 @@ router.delete("/staff/:id", verifyAdmin, deleteStaffMember);
 // items and items variables
 router.get("/items", verifyStoreManagement, getItems);
 router.get("/items/:id", verifyStoreManagement, getItemById);
-router.post("/items", verifyStoreManagement, validate(itemSchema), addItem);
+router.post("/items",
+    verifyStoreManagement,
+    upload.fields([{ name: "mainImage", maxCount: 1 }, { name: "images" }]),
+    validate(itemSchema),
+    addItem
+);
 router.delete("/items/:id", verifyStoreManagement, deleteItem);
-router.patch("/items/:id", verifyStoreManagement, validate(itemSchema), updateItem);
+router.patch("/items/:id",
+    verifyStoreManagement,
+    upload.fields([{ name: "mainImage", maxCount: 1 }, { name: "images" }]),
+    validate(itemSchema),
+    updateItem
+);
 
 router.get("/itemsCategory", verifyStoreManagement, getItemsCategory);
 router.post("/itemsCategory", verifyStoreManagement, validate(nameSchema), addItemCategory);

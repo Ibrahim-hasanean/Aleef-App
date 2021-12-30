@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Item from "../../../../models/Item";
+import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
 
 export const addItem = async (req: Request, res: Response, next: NextFunction) => {
     let {
@@ -13,6 +14,12 @@ export const addItem = async (req: Request, res: Response, next: NextFunction) =
         shippingPrice,
         additionDate
     } = req.body;
+    let files: any = req.files;
+    let { mainImage, images } = files;
+    images = images ? images : [];
+    let mainImageUrl = mainImage[0] ? await uploadImageToStorage(mainImage[0]) : "";
+    let uploadImagesFunctions = images.map(async (image: any) => await uploadImageToStorage(image));
+    let imagesUrls = await Promise.all(uploadImagesFunctions);
     let newItem = await Item.create({
         name,
         description,
@@ -22,8 +29,9 @@ export const addItem = async (req: Request, res: Response, next: NextFunction) =
         avaliableQuantity,
         allowed,
         shippingPrice,
-        additionDate
+        additionDate, mainImageUrl, images: imagesUrls
     });
+
     return res.status(201).json({ status: 201, data: { item: newItem } });
 }
 
@@ -40,7 +48,7 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
         shippingPrice,
         additionDate
     } = req.body;
-    let newItem = await Item.findByIdAndUpdate(itemId, {
+    let body: any = {
         name,
         description,
         price,
@@ -50,7 +58,16 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
         allowed,
         shippingPrice,
         additionDate
-    });
+    }
+    let files: any = req.files;
+    let { mainImage, images } = files;
+    images = images ? images : [];
+    let mainImageUrl = mainImage[0] ? await uploadImageToStorage(mainImage[0]) : null;
+    let uploadImagesFunctions = images.map(async (image: any) => await uploadImageToStorage(image));
+    let imagesUrls = await Promise.all(uploadImagesFunctions);
+    if (mainImageUrl) body.mainImageUrl = mainImageUrl;
+    if (imagesUrls.length > 0) body.images = imagesUrls;
+    let newItem = await Item.findByIdAndUpdate(itemId, body, { new: true });
     return res.status(200).json({ status: 200, data: { item: newItem } });
 }
 
