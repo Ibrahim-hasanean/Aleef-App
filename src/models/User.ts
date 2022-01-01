@@ -30,6 +30,7 @@ export interface UserInterface extends mongoose.Document {
     wishList: string[] | ItemInterface[],
     addresses: AddressInterface[] | ObjectId[],
     itemList: OrdersItemsInterface[] | ObjectId[],
+    registrationTokens: string[],
     comaprePassword(password: string): Promise<boolean>
 }
 
@@ -57,6 +58,7 @@ const userSchema = new Schema({
     wishList: [{ type: mongoose.Types.ObjectId, ref: "items" }],
     addresses: [{ type: mongoose.Types.ObjectId, ref: "addresses" }],
     itemList: [{ type: mongoose.Types.ObjectId, ref: "orderItems" }],
+    registrationTokens: [{ type: String }],
 }, { timestamps: true });
 
 userSchema.pre("save", async function (next) {

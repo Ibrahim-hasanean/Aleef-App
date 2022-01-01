@@ -56,6 +56,7 @@ const userSchema = new mongoose_1.Schema({
     wishList: [{ type: mongoose_1.default.Types.ObjectId, ref: "items" }],
     addresses: [{ type: mongoose_1.default.Types.ObjectId, ref: "addresses" }],
     itemList: [{ type: mongoose_1.default.Types.ObjectId, ref: "orderItems" }],
+    registrationTokens: [{ type: String }],
 }, { timestamps: true });
 userSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {

@@ -32,7 +32,8 @@ function getFreeDoctors(appointmentDate, handleAppointmentDate) {
             $or: [
                 { appointmentDate: { $gte: handleAppointmentDate, $lt: after15MinAppointment, } },
                 { appointmentDate: { $gt: before15MinAppointment, $lte: handleAppointmentDate } }
-            ]
+            ],
+            status: { $ne: "cancelled" }
         });
         const busyDoctors = isAppointmentDateHold.map(x => x.doctor);
         const freeDoctors = yield Staff_1.default.find({

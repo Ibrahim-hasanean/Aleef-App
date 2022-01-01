@@ -55,6 +55,7 @@ export interface StafInterface extends mongoose.Document {
     canceledOrdersNotifications: boolean,
     newReviewsNotifications: boolean,
     itemsAlmostOutOfStockNotification: boolean,
+    registrationTokens: string[],
     workHoures: workHouresInterface
     comaprePassword(password: string): Promise<boolean>
 }
@@ -74,6 +75,7 @@ const staffSchema = new Schema({
     canceledOrdersNotifications: { type: Boolean, default: false },
     newReviewsNotifications: { type: Boolean, default: false },
     itemsAlmostOutOfStockNotification: { type: Boolean, default: false },
+    registrationTokens: [{ type: String }],
     workHoures: {
         type: workHouresSchema,
         default: () => ({})

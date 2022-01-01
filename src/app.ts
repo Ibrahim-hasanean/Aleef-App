@@ -2,9 +2,13 @@ import express, { Request, Response, NextFunction } from "express";
 import { errors } from "celebrate";
 import userRoutes from "./Components/Users/routes";
 import adminRoutes from "./Components/Admin/routes";
+import cron from "node-cron";
+import appointmentsNotifications from "./Components/utils/CronJob";
 const app = express();
 const port = process.env.PORT || 3000;
 require("./config/mongoose");
+
+cron.schedule("* * * * *", appointmentsNotifications);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

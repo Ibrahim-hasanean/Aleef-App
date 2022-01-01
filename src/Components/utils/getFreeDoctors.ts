@@ -20,7 +20,8 @@ export default async function getFreeDoctors(appointmentDate: Date | string, han
             $or: [
                 { appointmentDate: { $gte: handleAppointmentDate, $lt: after15MinAppointment, } },
                 { appointmentDate: { $gt: before15MinAppointment, $lte: handleAppointmentDate } }
-            ]
+            ],
+            status: { $ne: "cancelled" }
         });
 
     const busyDoctors = isAppointmentDateHold.map(x => x.doctor);

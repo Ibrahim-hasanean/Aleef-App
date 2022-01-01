@@ -55,6 +55,7 @@ const staffSchema = new mongoose_1.Schema({
     canceledOrdersNotifications: { type: Boolean, default: false },
     newReviewsNotifications: { type: Boolean, default: false },
     itemsAlmostOutOfStockNotification: { type: Boolean, default: false },
+    registrationTokens: [{ type: String }],
     workHoures: {
         type: workHouresSchema,
         default: () => ({})
