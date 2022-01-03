@@ -9,7 +9,7 @@ import { PetsMedacins } from "./Medacine";
 export interface AppointmentsInterface extends mongoose.Document {
     pet: ObjectId | PetsInterface | string,
     service: string,
-    appointmentDate: Date,
+    appointmentDate: Date | string,
     reason: string,
     doctor: ObjectId | StafInterface,
     user: ObjectId | UserInterface,

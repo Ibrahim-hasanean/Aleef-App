@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -33,20 +24,20 @@ const HealthCare_1 = require("./controller/HealthCare");
 const Location_1 = require("./controller/Location");
 const ReadAbout_1 = require("./controller/ReadAbout");
 const uploadImage_1 = __importDefault(require("../middlewares/uploadImage"));
-const uploadFileToFirebase_1 = __importDefault(require("../utils/uploadFileToFirebase"));
 const router = (0, express_1.Router)();
-router.post("/upload", uploadImage_1.default.single("image"), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let file = req.file;
-    // console.log(file);
-    let fileURL = yield (0, uploadFileToFirebase_1.default)(file);
-    res.send(fileURL);
-}));
+// router.post("/upload", upload.single("image"), async (req: Request, res: Response) => {
+//     let file = req.file;
+//     // console.log(file);
+//     let fileURL = await uploadFileToFirebase(file);
+//     res.send(fileURL);
+// });
 //Auth
 router.post("/auth/register", (0, userAuthValidate_1.validate)(userAuthValidate_1.registerSchema), UsersAuth_1.register);
 router.post("/auth/login", (0, userAuthValidate_1.validate)(userAuthValidate_1.loginSchema), UsersAuth_1.login);
 router.post("/auth/forgetpassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.forgetPasswordSchema), UsersAuth_1.forgetPassword);
 router.post("/auth/resetPassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.resetPasswordSchema), UsersAuth_1.resetPassword);
 router.post("/auth/verify", (0, userAuthValidate_1.validate)(userAuthValidate_1.verifyCodeSchema), UsersAuth_1.verifyCode);
+router.post("/auth/logout", verifyUser_1.default, UsersAuth_1.logout);
 //get hospital location
 router.get("/location", verifyUser_1.default, Location_1.getLocation);
 //read about

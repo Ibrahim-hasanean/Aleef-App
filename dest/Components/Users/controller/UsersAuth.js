@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyCode = exports.resetPassword = exports.forgetPassword = exports.login = exports.socialLogin = exports.register = void 0;
+exports.verifyCode = exports.resetPassword = exports.forgetPassword = exports.logout = exports.login = exports.socialLogin = exports.register = void 0;
 const User_1 = __importDefault(require("../../../models/User"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const GenerateCode_1 = __importDefault(require("../../utils/GenerateCode"));
@@ -39,7 +39,7 @@ const socialLogin = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.socialLogin = socialLogin;
 const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { phoneNumber, password } = req.body;
+    const { phoneNumber, password, registrationToken } = req.body;
     const user = yield User_1.default.findOne({ phoneNumber });
     if (!user)
         return res.status(400).json({ status: 400, msg: "user not signed up" });
@@ -50,6 +50,8 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         return res.status(400).json({ status: 400, msg: "wrong password" });
     let tokenSecret = process.env.USER_TOKEN_SECRET;
     let token = jsonwebtoken_1.default.sign({ userId: user._id, phoneNumber: user.phoneNumber, email: user.email }, tokenSecret, { expiresIn: "7 days" });
+    user.registrationTokens = [...user.registrationTokens, registrationToken];
+    yield user.save();
     return res.status(200).json({
         status: 200, data: {
             user, token
@@ -57,6 +59,16 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
     });
 });
 exports.login = login;
+const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { registrationToken } = req.body;
+    let user = req.user;
+    user.registrationTokens = user.registrationTokens.filter(x => x != registrationToken);
+    yield user.save();
+    return res.status(200).json({
+        status: 200, msg: "user log out"
+    });
+});
+exports.logout = logout;
 const forgetPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { phoneNumber } = req.body;
     const user = yield User_1.default.findOne({ phoneNumber });

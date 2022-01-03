@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { registerSchema, loginSchema, forgetPasswordSchema, verifyCodeSchema, validate, resetPasswordSchema } from "./middleware/userAuthValidate";
 import { addAddressSchema, changePasswordSchema, notificationSettingsSchema, updateProfileSchema } from "./middleware/userProfileValidation";
-import { register, login, forgetPassword, verifyCode, resetPassword } from "./controller/UsersAuth";
+import { register, login, logout, forgetPassword, verifyCode, resetPassword } from "./controller/UsersAuth";
 import { addAddress, getAddresses, deleteAddress, updateProfile, changePassword, notificationSettings, getProfile } from "./controller/UserProfile";
 import verifyUser from "./middleware/verifyUser";
 import { petSchema } from "./middleware/PetsValidation";
@@ -34,12 +34,12 @@ import uploadFileToFirebase from "../utils/uploadFileToFirebase";
 const router = Router();
 
 
-router.post("/upload", upload.single("image"), async (req: Request, res: Response) => {
-    let file = req.file;
-    // console.log(file);
-    let fileURL = await uploadFileToFirebase(file);
-    res.send(fileURL);
-});
+// router.post("/upload", upload.single("image"), async (req: Request, res: Response) => {
+//     let file = req.file;
+//     // console.log(file);
+//     let fileURL = await uploadFileToFirebase(file);
+//     res.send(fileURL);
+// });
 
 
 
@@ -49,6 +49,7 @@ router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/forgetpassword", validate(forgetPasswordSchema), forgetPassword);
 router.post("/auth/resetPassword", validate(resetPasswordSchema), resetPassword);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
+router.post("/auth/logout", verifyUser, logout);
 
 //get hospital location
 router.get("/location", verifyUser, getLocation);

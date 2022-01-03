@@ -25,7 +25,7 @@ export const socialLogin = async (req: Request, res: Response, next: NextFunctio
 }
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
-    const { phoneNumber, password } = req.body;
+    const { phoneNumber, password, registrationToken } = req.body;
     const user: UserInterface | null = await User.findOne({ phoneNumber });
     if (!user) return res.status(400).json({ status: 400, msg: "user not signed up" });
     if (!user.isVerify) return res.status(403).json({ status: 403, msg: "user account not verified" });
@@ -37,11 +37,24 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         tokenSecret,
         { expiresIn: "7 days" }
     );
+    user.registrationTokens = [...user.registrationTokens, registrationToken];
+    await user.save()
     return res.status(200).json({
         status: 200, data: {
             user, token
         }
     })
+}
+
+export const logout = async (req: Request, res: Response, next: NextFunction) => {
+    const { registrationToken } = req.body;
+    let user = req.user;
+    user.registrationTokens = user.registrationTokens.filter(x => x != registrationToken);
+    await user.save();
+    return res.status(200).json({
+        status: 200, msg: "user log out"
+    })
+
 }
 
 export const forgetPassword = async (req: Request, res: Response, next: NextFunction) => {

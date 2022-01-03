@@ -13,11 +13,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Appointments_1 = __importDefault(require("../../models/Appointments"));
+const moment_timezone_1 = __importDefault(require("moment-timezone"));
+const SendNotifications_1 = __importDefault(require("./SendNotifications"));
 const appointmentsNotifications = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        let date = (0, moment_timezone_1.default)().tz('Asia/Qatar');
+        date.add({ milliseconds: 0 });
         let nowDate = new Date();
         nowDate.setMilliseconds(0);
+        nowDate.setUTCHours(date.hours());
         let after_30_min = new Date();
+        after_30_min.setUTCHours(date.hours());
         after_30_min.setMinutes(after_30_min.getMinutes() + 30);
         after_30_min.setMilliseconds(0);
         let nowAppointments = yield Appointments_1.default
@@ -32,11 +38,29 @@ const appointmentsNotifications = () => __awaiter(void 0, void 0, void 0, functi
             .populate({ path: "doctor", select: ['name', 'registrationTokens'] });
         let nowAppointmentsUsers = nowAppointments.map(x => x.user);
         let after30MinAppointmentsUsers = after_30min_Appointments.map(x => x.user);
+        let nowAppointmentsUsersTokens = nowAppointmentsUsers
+            .map((x) => x.registrationTokens)
+            .flat();
+        let after30MinAppointmentsUsersTokens = after30MinAppointmentsUsers
+            .map((x) => x.registrationTokens)
+            .flat();
+        if (nowAppointmentsUsersTokens.length > 0)
+            yield (0, SendNotifications_1.default)(nowAppointmentsUsersTokens, {
+                title: "Appointment meet", msg: "You have appointments now"
+            });
+        if (after30MinAppointmentsUsersTokens.length > 0)
+            yield (0, SendNotifications_1.default)(after30MinAppointmentsUsersTokens, {
+                title: "Appointment meet", msg: "You have appointments after 30 min"
+            });
+        // let date = new Date();
+        // console.log(date.toLocaleString("en-US", { timeZone: 'Asia/Qatar' }));
+        console.log(date);
         console.log(nowDate);
         console.log(after_30_min);
-        // console.log(appointments);
         console.log(nowAppointments);
         console.log(after_30min_Appointments);
+        console.log(nowAppointmentsUsersTokens);
+        console.log(after30MinAppointmentsUsersTokens);
     }
     catch (error) {
         console.log(error);

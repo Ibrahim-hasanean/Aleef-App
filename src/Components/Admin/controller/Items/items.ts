@@ -62,7 +62,7 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
     let files: any = req.files;
     let { mainImage, images } = files;
     images = images ? images : [];
-    let mainImageUrl = mainImage[0] ? await uploadImageToStorage(mainImage[0]) : null;
+    let mainImageUrl = mainImage && mainImage[0] ? await uploadImageToStorage(mainImage[0]) : null;
     let uploadImagesFunctions = images.map(async (image: any) => await uploadImageToStorage(image));
     let imagesUrls = await Promise.all(uploadImagesFunctions);
     if (mainImageUrl) body.mainImageUrl = mainImageUrl;

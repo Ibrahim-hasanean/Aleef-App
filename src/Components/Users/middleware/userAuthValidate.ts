@@ -18,6 +18,7 @@ export const loginSchema = {
     [Segments.BODY]: Joi.object().keys({
         phoneNumber: Joi.string().required(),
         password: Joi.string().required(),
+        registrationToken: Joi.string(),
     })
 }
 

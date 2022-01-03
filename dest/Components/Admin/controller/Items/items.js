@@ -54,7 +54,7 @@ const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     let files = req.files;
     let { mainImage, images } = files;
     images = images ? images : [];
-    let mainImageUrl = mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : null;
+    let mainImageUrl = mainImage && mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : null;
     let uploadImagesFunctions = images.map((image) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, uploadFileToFirebase_1.default)(image); }));
     let imagesUrls = yield Promise.all(uploadImagesFunctions);
     if (mainImageUrl)
