@@ -15,7 +15,7 @@ const vaccinationSchema = new Schema({
     dates: [{ type: Date, required: true }],
     repetition: { type: Number, default: 1 },
     notes: { type: String }
-})
+}, { timestamps: true })
 
 const Vaccination = mongoose.model("vaccination", vaccinationSchema);
 

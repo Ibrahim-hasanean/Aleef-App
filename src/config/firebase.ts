@@ -1,5 +1,7 @@
 import firebaseAdmin from "firebase-admin";
-const serviceAccount = require("../fireabase-keys.json");
+import path from "path";
+const serviceAccount = require(path.join(__dirname, "../../fireabase-keys.json"));
+
 
 const admin = firebaseAdmin.initializeApp(serviceAccount);
 

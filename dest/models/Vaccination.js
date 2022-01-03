@@ -26,6 +26,6 @@ const vaccinationSchema = new mongoose_1.Schema({
     dates: [{ type: Date, required: true }],
     repetition: { type: Number, default: 1 },
     notes: { type: String }
-});
+}, { timestamps: true });
 const Vaccination = mongoose_1.default.model("vaccination", vaccinationSchema);
 exports.default = Vaccination;
