@@ -40,11 +40,16 @@ const medacins_1 = require("./controller/medacins/medacins");
 const HealthCare_1 = require("./controller/HealthCare/HealthCare");
 const ReadAbout_1 = require("./controller/ReadAbout/ReadAbout");
 const Location_1 = require("./controller/Location/Location");
+const Invoice_1 = require("./controller/Invoice/Invoice");
+const validateInvoice_1 = require("./middleware/validateInvoice");
 const uploadImage_1 = __importDefault(require("../middlewares/uploadImage"));
 const router = (0, express_1.Router)();
 // auth routers
 router.post("/auth/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
 router.post("/auth/verify", (0, validateAuth_1.validate)(validateAuth_1.verifyCodeSchema), auth_1.verifyCode);
+// invoices routes
+router.patch("/invoice", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateInvoice_1.InvoiceSchema), Invoice_1.addInvoice);
+router.get("/invoice", verifyStaffMember_1.default, Invoice_1.getInvoicements);
 // profile
 router.patch("/profile", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);
 router.get("/profile", verifyStaffMember_1.default, Profile_1.getProfile);
@@ -114,6 +119,7 @@ router.post("/staff/:id/workHoures", verifyAdmin_1.default, (0, validateAuth_1.v
 router.delete("/staff/:id", verifyAdmin_1.default, staff_1.deleteStaffMember);
 // items and items variables
 router.get("/items", verifyStoreManagement_1.default, items_1.getItems);
+router.get("/items/home", verifyStoreManagement_1.default, items_1.itemsHome);
 router.get("/items/:id", verifyStoreManagement_1.default, items_1.getItemById);
 router.post("/items", verifyStoreManagement_1.default, uploadImage_1.default.fields([{ name: "mainImage", maxCount: 1 }, { name: "images" }]), (0, validateAuth_1.validate)(validateItem_1.itemSchema), items_1.addItem);
 router.delete("/items/:id", verifyStoreManagement_1.default, items_1.deleteItem);

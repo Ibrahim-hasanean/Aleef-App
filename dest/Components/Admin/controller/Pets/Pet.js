@@ -85,9 +85,22 @@ const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     if (!mongoose_1.default.isValidObjectId(id)) {
         return res.status(200).json({ status: 200, data: { pet: null } });
     }
+    let date = new Date();
     const pet = yield Pets_1.default.findById(id)
-        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
-    return res.status(200).json({ status: 200, data: { pet } });
+        .populate("type")
+        .populate({ path: "vaccinations", sort: { createdAt: "desc" } })
+        .populate({ path: "medacins", sort: { createdAt: "desc" } })
+        .populate("gender")
+        .populate({ path: "user", select: ["fullName", "phoneNumber", "email"] })
+        .populate("breed");
+    if (!pet)
+        return res.status(200).json({ status: 200, pet: null });
+    return res.status(200).json({
+        status: 200,
+        data: {
+            pet
+        }
+    });
 });
 exports.getPetById = getPetById;
 const deletePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

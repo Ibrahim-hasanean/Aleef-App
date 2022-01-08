@@ -83,7 +83,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.updateAppointment = updateAppointment;
 const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, pageSize, service, doctorId, userId, paymentStatus, petId } = req.query;
+    let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let query = {};
@@ -97,12 +97,24 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         query.pet = petId;
     if (paymentStatus)
         query.paymentStatus = paymentStatus;
+    if (day) {
+        let beginDay = new Date(day);
+        beginDay.setUTCHours(0);
+        beginDay.setMinutes(0);
+        beginDay.setUTCMilliseconds(0);
+        let endDay = new Date(day);
+        endDay.setUTCHours(24);
+        endDay.setMinutes(0);
+        endDay.setUTCMilliseconds(0);
+        query.appointmentDate = { $gte: beginDay, $lte: endDay };
+        console.log(query);
+    }
     const appointments = yield Appointments_1.default.find(query)
         .sort({ appointmentDate: "desc" })
         .skip(skip)
         .limit(numberPageSize)
         .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
-        .populate({ path: "pet" })
+        .populate({ path: "pet", select: ['name', 'serialNumber', 'age'] })
         .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { appointments } });
 });

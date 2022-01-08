@@ -2,7 +2,7 @@ import { Router } from "express";
 import { getTypes, addPetsType, deleteType } from "./controller/Pets/PetsTypes";
 import { addBreed, deletebreed, getbreeds } from "./controller/Pets/Breeds";
 import { addItemCategory, getItemsCategory, deleteCategory } from "./controller/Items/ItemsCategory";
-import { addItem, deleteItem, getItemById, getItems, updateItem } from "./controller/Items/items";
+import { addItem, deleteItem, getItemById, getItems, updateItem, itemsHome } from "./controller/Items/items";
 import { addService, deleteService, getServiceById, getServices } from "./controller/services/services";
 import { addStaff, defaultAdmin, deleteStaffMember, getStaffMemeberById, getStaffMemebers, updateStaff, getWorkHoures, setWorkHoures } from "./controller/staff/staff";
 import { addAppointment, deleteAppointments, getAppointments, getAppointmentsById, getAvaliableTime, updateAppointment, getAvaliableDoctrs } from "./controller/appointments/appointments";
@@ -41,6 +41,8 @@ import { addMedacin, updateMedacin, deleteMedacin, getMedacinById, getPetMedacin
 import { addHealthCareTip, getHealthCare } from "./controller/HealthCare/HealthCare";
 import { addReadAbout, getReadAboute } from "./controller/ReadAbout/ReadAbout";
 import { addLocation, getLocation } from "./controller/Location/Location";
+import { addInvoice, getInvoicements } from "./controller/Invoice/Invoice";
+import { InvoiceSchema } from "./middleware/validateInvoice"
 import upload from "../middlewares/uploadImage";
 
 const router = Router();
@@ -48,6 +50,10 @@ const router = Router();
 // auth routers
 router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
+
+// invoices routes
+router.patch("/invoice", verifyStaffMember, validate(InvoiceSchema), addInvoice);
+router.get("/invoice", verifyStaffMember, getInvoicements);
 
 // profile
 router.patch("/profile", verifyStaffMember, upload.single('image'), validate(profileSchema), updateProfile);
@@ -135,6 +141,7 @@ router.delete("/staff/:id", verifyAdmin, deleteStaffMember);
 
 // items and items variables
 router.get("/items", verifyStoreManagement, getItems);
+router.get("/items/home", verifyStoreManagement, itemsHome);
 router.get("/items/:id", verifyStoreManagement, getItemById);
 router.post("/items",
     verifyStoreManagement,

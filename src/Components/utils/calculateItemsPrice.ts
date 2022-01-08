@@ -10,10 +10,15 @@ export default async function caculateItemsPrice(orderItems: OrdersItemsInterfac
         let itemId = orderItem.item as ObjectId;
         const item = await Item.findById(itemId);
         if (!item) throw new Error(`can not pay items, item with id  ${itemId} not found`);
+        if (item.avaliableQuantity <= 0) throw new Error(`this item ${itemId} is out of stock`);
+        if (item.avaliableQuantity < orderItem.count) throw new Error(`this item is out of stock`);
         let itemShippingCost = Number(item.shippingPrice) * Number(orderItem.count);
         let itemCost = Number(item.price) * Number(orderItem.count);
         shippingCost = itemShippingCost + shippingCost;
         itemsCost = itemCost + itemsCost;
+        item.avaliableQuantity = item.avaliableQuantity - (1 * orderItem.count);
+        item.soldQuantity = item.soldQuantity + (1 * orderItem.count);
+        await item.save();
     };
 
     return { shippingCost, itemsCost, totalCost: itemsCost + shippingCost };

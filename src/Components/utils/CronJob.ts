@@ -35,29 +35,31 @@ const appointmentsNotifications = async () => {
         if (nowAppointmentsUsersTokens.length > 0) await sendNotifications(
             nowAppointmentsUsersTokens,
             {
-                title: "Appointment meet", msg: "You have appointments now"
+                title: "Appointment meet", body: "You have appointments now"
             }
         );
         if (after30MinAppointmentsUsersTokens.length > 0) await sendNotifications(
             after30MinAppointmentsUsersTokens,
             {
-                title: "Appointment meet", msg: "You have appointments after 30 min"
+                title: "Appointment meet", body: "You have appointments after 30 min"
             }
         );
+
+
+        // await sendNotifications(["c02ghdJLQkqN8r4R_NBqbK:APA91bEWmVsNGWnK7ZEWi8KMiXyoShi6vKwmYiN9slQsJU-ZuYXLV8COw1cdSkO6GBUlUINOOp2aEvYZoP1S-Vfq38HANGYAsE_Oj_p2_uW1IkDICEJcFBKq3nN0vtCIKRWMUeI02_jY"], { title: "test", body: "test msg test" })
         // let date = new Date();
         // console.log(date.toLocaleString("en-US", { timeZone: 'Asia/Qatar' }));
 
-        console.log(date);
-        console.log(nowDate);
-        console.log(after_30_min);
-        console.log(nowAppointments);
-        console.log(after_30min_Appointments);
-        console.log(nowAppointmentsUsersTokens)
-        console.log(after30MinAppointmentsUsersTokens)
+        // console.log(date);
+        // console.log(nowDate);
+        // console.log(after_30_min);
+        // console.log(nowAppointments);
+        // console.log(after_30min_Appointments);
+        // console.log(nowAppointmentsUsersTokens)
+        // console.log(after30MinAppointmentsUsersTokens)
 
     } catch (error) {
         console.log(error)
     }
 }
-
 export default appointmentsNotifications;

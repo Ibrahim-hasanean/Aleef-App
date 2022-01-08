@@ -15,8 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const firebase_1 = __importDefault(require("../../config/firebase"));
 const sendNotifications = (tokens, data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let sendNotifications = yield firebase_1.default.messaging().sendMulticast({ tokens, data });
-        console.log(sendNotifications.successCount + ' messages were sent successfully');
+        const payload = {
+            notification: data
+        };
+        const options = {
+            priority: 'high',
+            timeToLive: 60 * 60 * 24, // 1 day
+        };
+        let sendNotifications = yield firebase_1.default.messaging().sendToDevice(tokens, payload, options);
+        // .sendMulticast({data,tokens});
+        console.log(tokens);
+        console.log(data);
+        console.log(sendNotifications);
+        console.log(sendNotifications + ' messages were sent successfully');
     }
     catch (error) {
         console.log(error);

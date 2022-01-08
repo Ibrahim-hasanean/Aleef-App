@@ -20,23 +20,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const itemSchema = new mongoose_1.Schema({
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    price: { type: Number },
-    review: { type: Number, default: 0 },
-    numberOfReviews: { type: Number, default: 0 },
-    sumOfReviews: { type: Number, default: 0 },
-    category: { type: String },
-    usersLiked: [{ type: mongoose_1.default.Types.ObjectId, ref: "users" }],
-    serialNumber: { type: Number },
-    avaliableQuantity: { type: Number },
-    allowed: { type: Boolean },
-    shippingPrice: { type: Number },
-    additionDate: { type: Date },
-    soldQuantity: { type: Number, default: 0 },
-    mainImageUrl: { type: String },
-    images: [{ type: String }]
+const invoiceSchema = new mongoose_1.Schema({
+    paymentAmount: { type: Number, required: true },
+    reason: { type: String },
+    appointment: { type: mongoose_1.default.Types.ObjectId, ref: "appointments" },
+    user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
 });
-const Item = mongoose_1.default.model("items", itemSchema);
-exports.default = Item;
+const Invoice = mongoose_1.default.model("invoices", invoiceSchema);
+exports.default = Invoice;

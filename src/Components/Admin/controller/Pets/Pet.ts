@@ -5,6 +5,10 @@ import User, { UserInterface } from "../../../../models/User";
 import petsTypes, { PetsTypesInterface } from "../../../../models/PetsTypes";
 import Breeds, { BreedInterface } from "../../../../models/Breed";
 import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
+import Medacin, { PetsMedacins } from "../../../../models/Medacine";
+import Vaccination, { PetsVaccination } from "../../../../models/Vaccination";
+import Appointments, { AppointmentsInterface } from "../../../../models/Appointments";
+import getNextVaccination from "../../../utils/getNextVaccination";
 
 
 export const addNewPet = async (req: Request, res: Response, next: NextFunction) => {
@@ -68,9 +72,22 @@ export const getPetById = async (req: Request, res: Response, next: NextFunction
     if (!mongoose.isValidObjectId(id)) {
         return res.status(200).json({ status: 200, data: { pet: null } });
     }
+    let date = new Date();
     const pet: PetsInterface | null = await Pet.findById(id)
-        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
-    return res.status(200).json({ status: 200, data: { pet } });
+        .populate("type")
+        .populate({ path: "vaccinations", sort: { createdAt: "desc" } })
+        .populate({ path: "medacins", sort: { createdAt: "desc" } })
+        .populate("gender")
+        .populate({ path: "user", select: ["fullName", "phoneNumber", "email"] })
+        .populate("breed") as PetsInterface;
+
+    if (!pet) return res.status(200).json({ status: 200, pet: null });
+    return res.status(200).json({
+        status: 200,
+        data: {
+            pet
+        }
+    });
 }
 
 export const deletePet = async (req: Request, res: Response, next: NextFunction) => {

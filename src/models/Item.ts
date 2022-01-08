@@ -34,7 +34,7 @@ const itemSchema = new Schema({
     allowed: { type: Boolean },
     shippingPrice: { type: Number },
     additionDate: { type: Date },
-    soldQuantity: { type: Number },
+    soldQuantity: { type: Number, default: 0 },
     mainImageUrl: { type: String },
     images: [{ type: String }]
 })
