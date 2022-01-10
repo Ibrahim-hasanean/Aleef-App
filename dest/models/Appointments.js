@@ -32,7 +32,8 @@ const appointmentSchema = new mongoose_1.Schema({
     status: { type: String },
     paymentStatus: { type: String, default: "Not Completed" },
     payment: { type: mongoose_1.default.Types.ObjectId, ref: "payments" },
-    paymentType: { type: String }
+    paymentType: { type: String },
+    invoice: [{ type: mongoose_1.default.Types.ObjectId, ref: "invoices" }],
 }, { timestamps: true });
 const Appointments = mongoose_1.default.model("appointments", appointmentSchema);
 exports.default = Appointments;

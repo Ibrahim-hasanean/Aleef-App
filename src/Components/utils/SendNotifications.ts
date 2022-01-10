@@ -12,11 +12,7 @@ const sendNotifications = async (tokens: string[], data: any) => {
 
         let sendNotifications = await admin.messaging().sendToDevice(tokens, payload, options);
 
-        // .sendMulticast({data,tokens});
-        console.log(tokens)
-        console.log(data)
-        console.log(sendNotifications)
-        console.log(sendNotifications + ' messages were sent successfully');
+        console.log(sendNotifications.successCount + ' messages were sent successfully');
     } catch (error: any) {
         console.log(error)
     }

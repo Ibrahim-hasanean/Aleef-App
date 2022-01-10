@@ -52,7 +52,7 @@ router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 
 // invoices routes
-router.patch("/invoice", verifyStaffMember, validate(InvoiceSchema), addInvoice);
+router.post("/invoice", verifyStaffMember, validate(InvoiceSchema), addInvoice);
 router.get("/invoice", verifyStaffMember, getInvoicements);
 
 // profile

@@ -40,7 +40,7 @@ const appointmentsNotifications = () => __awaiter(void 0, void 0, void 0, functi
         let after30MinAppointmentsUsers = after_30min_Appointments.map(x => x.user);
         let nowAppointmentsUsersTokens = nowAppointmentsUsers
             .map((x) => x.registrationTokens)
-            .flat();
+            .flat().filter(x => typeof x == "string");
         let after30MinAppointmentsUsersTokens = after30MinAppointmentsUsers
             .map((x) => x.registrationTokens)
             .flat();

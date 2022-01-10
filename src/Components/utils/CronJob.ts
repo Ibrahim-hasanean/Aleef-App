@@ -27,7 +27,7 @@ const appointmentsNotifications = async () => {
         let after30MinAppointmentsUsers: UserInterface[] = after_30min_Appointments.map(x => x.user) as UserInterface[];
         let nowAppointmentsUsersTokens = nowAppointmentsUsers
             .map((x: UserInterface) => x.registrationTokens)
-            .flat();
+            .flat().filter(x => typeof x == "string");
         let after30MinAppointmentsUsersTokens = after30MinAppointmentsUsers
             .map((x: UserInterface) => x.registrationTokens)
             .flat();

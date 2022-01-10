@@ -8,11 +8,13 @@ const celebrate_1 = require("celebrate");
 const routes_1 = __importDefault(require("./Components/Users/routes"));
 const routes_2 = __importDefault(require("./Components/Admin/routes"));
 const node_cron_1 = __importDefault(require("node-cron"));
+const cors_1 = __importDefault(require("cors"));
 const CronJob_1 = __importDefault(require("./Components/utils/CronJob"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 require("./config/mongoose");
 node_cron_1.default.schedule("* * * * *", CronJob_1.default);
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.get("/", (req, res, next) => {

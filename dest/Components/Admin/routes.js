@@ -48,7 +48,7 @@ const router = (0, express_1.Router)();
 router.post("/auth/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
 router.post("/auth/verify", (0, validateAuth_1.validate)(validateAuth_1.verifyCodeSchema), auth_1.verifyCode);
 // invoices routes
-router.patch("/invoice", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateInvoice_1.InvoiceSchema), Invoice_1.addInvoice);
+router.post("/invoice", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateInvoice_1.InvoiceSchema), Invoice_1.addInvoice);
 router.get("/invoice", verifyStaffMember_1.default, Invoice_1.getInvoicements);
 // profile
 router.patch("/profile", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);

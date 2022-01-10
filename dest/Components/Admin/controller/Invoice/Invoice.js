@@ -16,23 +16,35 @@ exports.getInvoicements = exports.addInvoice = void 0;
 const Invoice_1 = __importDefault(require("../../../../models/Invoice"));
 const Appointments_1 = __importDefault(require("../../../../models/Appointments"));
 const addInvoice = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { paymentAmount, reason, appointmentId } = req.body;
-    let user = req.user;
-    let isAppointmentExist = yield Appointments_1.default.findById(appointmentId);
+    let { paymentAmount, reason, appointmentId, userId } = req.body;
+    let doctor = req.staff;
+    let isAppointmentExist = yield Appointments_1.default.findOne({ _id: appointmentId, user: userId });
     if (!isAppointmentExist) {
         return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
     }
-    let addInvoice = yield Invoice_1.default.create({ paymentAmount, reason, appointment: appointmentId, user: user._id });
+    let addInvoice = yield Invoice_1.default.create({
+        paymentAmount,
+        reason,
+        appointment: appointmentId,
+        user: userId,
+        addedBy: doctor._id
+    });
+    isAppointmentExist.invoice = [...isAppointmentExist.invoice, addInvoice._id];
+    yield isAppointmentExist.save();
     return res.status(201).json({ status: 201, msg: "invoice added successfully" });
 });
 exports.addInvoice = addInvoice;
 const getInvoicements = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let user = req.user;
-    let { appointmentId } = req.body;
-    let query = { user: user._id };
+    let staffMemeber = req.staff;
+    let { appointmentId } = req.query;
+    let query = {};
     if (appointmentId)
         query.appointment = appointmentId;
-    let invoices = yield Invoice_1.default.find(query);
+    let invoices = yield Invoice_1.default
+        .find(query)
+        .populate({ path: "appointment", select: ['appointmentDate', 'reason', 'status'] })
+        .populate({ path: "user", select: ['fullName', 'phoneNumber'] })
+        .populate({ path: "addedBy", select: ['email', 'phoneNumber', 'name'] });
     return res.status(200).json({ status: 200, data: { invoices } });
 });
 exports.getInvoicements = getInvoicements;

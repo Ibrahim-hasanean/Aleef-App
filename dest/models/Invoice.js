@@ -25,6 +25,7 @@ const invoiceSchema = new mongoose_1.Schema({
     reason: { type: String },
     appointment: { type: mongoose_1.default.Types.ObjectId, ref: "appointments" },
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
+    addedBy: { type: mongoose_1.default.Types.ObjectId, ref: "staff" },
 });
 const Invoice = mongoose_1.default.model("invoices", invoiceSchema);
 exports.default = Invoice;

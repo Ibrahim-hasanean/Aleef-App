@@ -6,6 +6,7 @@ exports.InvoiceSchema = {
     [celebrate_1.Segments.BODY]: celebrate_1.Joi.object().keys({
         paymentAmount: celebrate_1.Joi.number().required(),
         appointmentId: celebrate_1.Joi.string().required(),
+        userId: celebrate_1.Joi.string().required(),
         reason: celebrate_1.Joi.string(),
     })
 };
