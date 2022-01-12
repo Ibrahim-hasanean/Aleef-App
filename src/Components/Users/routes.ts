@@ -31,6 +31,7 @@ import { getLocation } from "./controller/Location";
 import { getReadAboute } from "./controller/ReadAbout";
 import upload from "../middlewares/uploadImage";
 import uploadFileToFirebase from "../utils/uploadFileToFirebase";
+import { getNotifications } from "./controller/Notifications";
 const router = Router();
 
 
@@ -53,6 +54,9 @@ router.post("/auth/logout", verifyUser, logout);
 
 //get hospital location
 router.get("/location", verifyUser, getLocation);
+
+//get notifications
+router.get("/notifications", verifyUser, getNotifications);
 
 //read about
 router.get("/readabout", verifyUser, getReadAboute);

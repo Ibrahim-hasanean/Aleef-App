@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import User, { UserInterface } from "../../../models/User";
 import OrderItems, { OrdersItemsInterface } from "../../../models/OrderItems";
-import Item from "../../../models/Item";
+import Item, { ItemInterface } from "../../../models/Item";
 import mongoose, { ObjectId } from "mongoose";
 
 export const addOrderItems = async (req: Request, res: Response, next: NextFunction) => {
@@ -23,7 +23,12 @@ export const getOrderItems = async (req: Request, res: Response, next: NextFunct
     let user = req.user
     // .populate({ path: "itemList", populate: "item" });
     let userWithWishList = await User.findById(user._id).populate({ path: "itemList", populate: "item" }) as UserInterface;
-    return res.status(200).json({ status: 200, data: { items: userWithWishList.itemList } });
+    const items = userWithWishList.itemList.map((x: OrdersItemsInterface | ObjectId) => {
+        const orderItem: OrdersItemsInterface = x as OrdersItemsInterface;
+        const item: ItemInterface = orderItem.item as ItemInterface;
+        return { totalPrice: item.price + item.shippingPrice, count: orderItem.count, item };
+    })
+    return res.status(200).json({ status: 200, data: { items: items } });
 }
 
 export const clearOrderItems = async (req: Request, res: Response, next: NextFunction) => {

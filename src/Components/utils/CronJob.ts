@@ -1,7 +1,9 @@
-import Appointments from "../../models/Appointments";
+import Appointments, { AppointmentsInterface } from "../../models/Appointments";
 import moment from "moment-timezone";
 import sendNotifications from "./SendNotifications";
 import { UserInterface } from "../../models/User";
+import { StafInterface } from "../../models/Staff";
+import Notification from "../../models/Notifications";
 const appointmentsNotifications = async () => {
     try {
         let date = moment().tz('Asia/Qatar');
@@ -44,6 +46,16 @@ const appointmentsNotifications = async () => {
                 title: "Appointment meet", body: "You have appointments after 30 min"
             }
         );
+
+        const nowAppointmentNotifictions = nowAppointments.map((appointment: AppointmentsInterface) => {
+            const user: UserInterface = appointment.user as UserInterface;
+            const doctor: StafInterface = appointment.doctor as StafInterface;
+            let notificationObject =
+                { title: "Appointment meet", body: "You have appointments now", user: user._id, staffMemeber: doctor._id }
+            return notificationObject;
+        });
+
+        await Notification.create(nowAppointmentNotifictions);
 
 
         // await sendNotifications(["c02ghdJLQkqN8r4R_NBqbK:APA91bEWmVsNGWnK7ZEWi8KMiXyoShi6vKwmYiN9slQsJU-ZuYXLV8COw1cdSkO6GBUlUINOOp2aEvYZoP1S-Vfq38HANGYAsE_Oj_p2_uW1IkDICEJcFBKq3nN0vtCIKRWMUeI02_jY"], { title: "test", body: "test msg test" })
