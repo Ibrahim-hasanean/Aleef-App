@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Appointments_1 = __importDefault(require("../../models/Appointments"));
 const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const SendNotifications_1 = __importDefault(require("./SendNotifications"));
+const Notifications_1 = __importDefault(require("../../models/Notifications"));
 const appointmentsNotifications = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let date = (0, moment_timezone_1.default)().tz('Asia/Qatar');
@@ -52,6 +53,13 @@ const appointmentsNotifications = () => __awaiter(void 0, void 0, void 0, functi
             yield (0, SendNotifications_1.default)(after30MinAppointmentsUsersTokens, {
                 title: "Appointment meet", body: "You have appointments after 30 min"
             });
+        const nowAppointmentNotifictions = nowAppointments.map((appointment) => {
+            const user = appointment.user;
+            const doctor = appointment.doctor;
+            let notificationObject = { title: "Appointment meet", body: "You have appointments now", user: user._id, staffMemeber: doctor._id };
+            return notificationObject;
+        });
+        yield Notifications_1.default.create(nowAppointmentNotifictions);
         // await sendNotifications(["c02ghdJLQkqN8r4R_NBqbK:APA91bEWmVsNGWnK7ZEWi8KMiXyoShi6vKwmYiN9slQsJU-ZuYXLV8COw1cdSkO6GBUlUINOOp2aEvYZoP1S-Vfq38HANGYAsE_Oj_p2_uW1IkDICEJcFBKq3nN0vtCIKRWMUeI02_jY"], { title: "test", body: "test msg test" })
         // let date = new Date();
         // console.log(date.toLocaleString("en-US", { timeZone: 'Asia/Qatar' }));

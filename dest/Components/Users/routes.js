@@ -24,6 +24,7 @@ const HealthCare_1 = require("./controller/HealthCare");
 const Location_1 = require("./controller/Location");
 const ReadAbout_1 = require("./controller/ReadAbout");
 const uploadImage_1 = __importDefault(require("../middlewares/uploadImage"));
+const Notifications_1 = require("./controller/Notifications");
 const router = (0, express_1.Router)();
 // router.post("/upload", upload.single("image"), async (req: Request, res: Response) => {
 //     let file = req.file;
@@ -40,6 +41,8 @@ router.post("/auth/verify", (0, userAuthValidate_1.validate)(userAuthValidate_1.
 router.post("/auth/logout", verifyUser_1.default, UsersAuth_1.logout);
 //get hospital location
 router.get("/location", verifyUser_1.default, Location_1.getLocation);
+//get notifications
+router.get("/notifications", verifyUser_1.default, Notifications_1.getNotifications);
 //read about
 router.get("/readabout", verifyUser_1.default, ReadAbout_1.getReadAboute);
 //health care

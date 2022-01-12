@@ -37,7 +37,12 @@ const getOrderItems = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     let user = req.user;
     // .populate({ path: "itemList", populate: "item" });
     let userWithWishList = yield User_1.default.findById(user._id).populate({ path: "itemList", populate: "item" });
-    return res.status(200).json({ status: 200, data: { items: userWithWishList.itemList } });
+    const items = userWithWishList.itemList.map((x) => {
+        const orderItem = x;
+        const item = orderItem.item;
+        return { totalPrice: item.price + item.shippingPrice, count: orderItem.count, item };
+    });
+    return res.status(200).json({ status: 200, data: { items: items } });
 });
 exports.getOrderItems = getOrderItems;
 const clearOrderItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
