@@ -37,9 +37,9 @@ export interface UserInterface extends mongoose.Document {
 
 const userSchema = new Schema({
     fullName: { type: String, required: true },
-    phoneNumber: { type: String, required: true, unique: true },
+    phoneNumber: { type: String },
     email: { type: String, default: "" },
-    password: { type: String, required: true },
+    password: { type: String },
     code: { type: String },
     language: { type: String },
     isVerify: { type: Boolean, default: false },
@@ -79,6 +79,6 @@ userSchema.methods.comaprePassword = async function (password: string): Promise<
 
 const User = mongoose.model<UserInterface>("users", userSchema);
 
-
+// User.collection.dropIndexes();
 export default User;
 

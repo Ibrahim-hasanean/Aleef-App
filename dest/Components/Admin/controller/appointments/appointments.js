@@ -83,7 +83,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 });
 exports.updateAppointment = updateAppointment;
 const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day } = req.query;
+    let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day, status } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let query = {};

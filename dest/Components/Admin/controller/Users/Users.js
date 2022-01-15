@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateUser = exports.addNewUser = exports.suspendUser = exports.getUserById = exports.getUsers = void 0;
+exports.deleteUser = exports.updateUser = exports.addNewUser = exports.suspendUser = exports.getUserById = exports.getUsers = void 0;
 const User_1 = __importDefault(require("../../../../models/User"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
@@ -107,3 +107,9 @@ const updateUser = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     });
 });
 exports.updateUser = updateUser;
+const deleteUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = req.params.id;
+    let deleteUser = yield User_1.default.findByIdAndDelete(id);
+    return res.status(200).json({ status: 200, msg: "user deleted successfully" });
+});
+exports.deleteUser = deleteUser;

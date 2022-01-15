@@ -25,6 +25,6 @@ const notificationsSchema = new mongoose_1.Schema({
     body: { type: String, required: true },
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
     staffMemeber: { type: mongoose_1.default.Types.ObjectId, ref: "staff" },
-});
+}, { timestamps: true });
 const Notification = mongoose_1.default.model("notification", notificationsSchema);
 exports.default = Notification;

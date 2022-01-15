@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { registerSchema, loginSchema, forgetPasswordSchema, verifyCodeSchema, validate, resetPasswordSchema } from "./middleware/userAuthValidate";
 import { addAddressSchema, changePasswordSchema, notificationSettingsSchema, updateProfileSchema } from "./middleware/userProfileValidation";
-import { register, login, logout, forgetPassword, verifyCode, resetPassword } from "./controller/UsersAuth";
+import { register, login, logout, forgetPassword, verifyCode, resetPassword, googleAuth, facebookAuth } from "./controller/UsersAuth";
 import { addAddress, getAddresses, deleteAddress, updateProfile, changePassword, notificationSettings, getProfile } from "./controller/UserProfile";
 import verifyUser from "./middleware/verifyUser";
 import { petSchema } from "./middleware/PetsValidation";
@@ -32,6 +32,8 @@ import { getReadAboute } from "./controller/ReadAbout";
 import upload from "../middlewares/uploadImage";
 import uploadFileToFirebase from "../utils/uploadFileToFirebase";
 import { getNotifications } from "./controller/Notifications";
+import { socialLoginSchema } from "./middleware/socialLoginValidation";
+
 const router = Router();
 
 
@@ -50,6 +52,8 @@ router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/forgetpassword", validate(forgetPasswordSchema), forgetPassword);
 router.post("/auth/resetPassword", validate(resetPasswordSchema), resetPassword);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
+router.post("/auth/google", validate(socialLoginSchema), googleAuth);
+router.post("/auth/facebook", validate(socialLoginSchema), facebookAuth);
 router.post("/auth/logout", verifyUser, logout);
 
 //get hospital location

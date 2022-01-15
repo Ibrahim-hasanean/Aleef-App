@@ -64,7 +64,7 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
 }
 
 export const getAppointments = async (req: Request, res: Response, next: NextFunction) => {
-    let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day } =
+    let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day, status } =
         req.query as
         {
             page: string,
@@ -75,6 +75,7 @@ export const getAppointments = async (req: Request, res: Response, next: NextFun
             paymentStatus: string,
             petId: string,
             day: string,
+            status: string,
         };
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;

@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import generateCode from "../../utils/GenerateCode";
 import uploadImageToStorage from "../../utils/uploadFileToFirebase";
+import facebookAccessTokenAuth from "../../utils/FacebookAccessTokenAuth";
+import GoogleAccessTokenAuth from "../../utils/GoogleAccessTokenAuth";
 require("dotenv").config();
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
@@ -11,17 +13,72 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     if (isExist) return res.status(409).json({ status: 409, msg: "phone number is used" });
     const code = generateCode();
     let newUser = await User.create({ fullName, phoneNumber, password, code });
+    let tokenSecret = process.env.USER_TOKEN_SECRET as string;
+    let token = jwt.sign(
+        { userId: newUser._id, phoneNumber: newUser.phoneNumber, email: newUser.email },
+        tokenSecret,
+        { expiresIn: "7 days" }
+    );
     //send sms to user
-    return res.status(201).json({ status: 201, msg: "user register successfully" });
+    return res.status(201).json({ status: 201, msg: "user register successfully", token });
 }
 
-export const socialLogin = async (req: Request, res: Response, next: NextFunction) => {
-    const { fullName, phoneNumber, email } = req.body;
-    const isExist: UserInterface | null = await User.findOne({ phoneNumber });
-    if (isExist) return res.status(409).json({ status: 409, msg: "phone number is used" });
-    let newUser = await User.create({ fullName, phoneNumber, email });
-    //send sms to user
-    return res.status(201).json({ status: 201, data: { user: newUser } });
+export const googleAuth = async (req: Request, res: Response, next: NextFunction) => {
+    const { accessToken } = req.body;
+    try {
+        const googaData = await GoogleAccessTokenAuth(accessToken);
+        const isExist: UserInterface | null = await User.findOne({ email: googaData.email });
+        if (isExist) {
+            let tokenSecret = process.env.USER_TOKEN_SECRET as string;
+            let token = jwt.sign(
+                { userId: isExist._id, email: isExist.email },
+                tokenSecret,
+                { expiresIn: "7 days" }
+            );
+            return res.status(200).json({ status: 200, msg: "login success", data: { token, user: isExist } });
+        }
+        let newUser = await User.create({ fullName: googaData.name, email: googaData.email, imageUrl: googaData.picture });
+        let tokenSecret = process.env.USER_TOKEN_SECRET as string;
+        let token = jwt.sign(
+            { userId: newUser._id, phoneNumber: newUser.phoneNumber, email: newUser.email },
+            tokenSecret,
+            { expiresIn: "7 days" }
+        );
+        return res.status(201).json({ status: 201, msg: "user registered successfully", data: { token, user: newUser } });
+
+    } catch (error: any) {
+        console.log(error.message)
+        return res.status(400).json({ status: 400, msg: error });
+    }
+}
+
+export const facebookAuth = async (req: Request, res: Response, next: NextFunction) => {
+    const { accessToken } = req.body;
+    try {
+        const facebookData = await facebookAccessTokenAuth(accessToken);
+        const isExist: UserInterface | null = await User.findOne({ email: facebookData.email });
+        if (isExist) {
+            let tokenSecret = process.env.USER_TOKEN_SECRET as string;
+            let token = jwt.sign(
+                { userId: isExist._id, email: isExist.email },
+                tokenSecret,
+                { expiresIn: "7 days" }
+            );
+            return res.status(200).json({ status: 200, msg: "login success", data: { token, user: isExist } });
+        }
+        let newUser = await User.create({ fullName: facebookData.name, email: facebookData.email, imageUrl: facebookData.picture?.data?.url });
+        let tokenSecret = process.env.USER_TOKEN_SECRET as string;
+        let token = jwt.sign(
+            { userId: newUser._id, phoneNumber: newUser.phoneNumber, email: newUser.email },
+            tokenSecret,
+            { expiresIn: "7 days" }
+        );
+        return res.status(201).json({ status: 201, msg: "user registered successfully", data: { token, user: newUser } });
+
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({ status: 400, msg: error });
+    }
 }
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {

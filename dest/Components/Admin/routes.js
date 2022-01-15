@@ -86,6 +86,7 @@ router.patch("/clients/:id", verifyStaffMember_1.default, uploadImage_1.default.
 router.get("/clients", verifyStaffMember_1.default, Users_1.getUsers);
 router.post("/clients/:id/suspend", verifyStaffMember_1.default, Users_1.suspendUser);
 router.get("/clients/:id", verifyStaffMember_1.default, Users_1.getUserById);
+router.delete("/clients/:id", verifyStaffMember_1.default, Users_1.deleteUser);
 // payments 
 router.get("/payments", verifyRecieption_1.default, Payments_1.getPayments);
 router.get("/payments/:id", verifyRecieption_1.default, Payments_1.getPaymentById);

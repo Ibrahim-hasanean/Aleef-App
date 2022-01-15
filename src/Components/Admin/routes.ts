@@ -15,7 +15,7 @@ import {
 } from "./controller/AppointmentsPayment/AppointmentsPayment";
 import { getPaymentById, getPayments } from "./controller/Payments/Payments";
 import { addOrder, getOrderById, getOrders, setStatus } from "./controller/Orders/Orders";
-import { getUsers, getUserById, addNewUser, updateUser, suspendUser } from "./controller/Users/Users";
+import { getUsers, getUserById, addNewUser, updateUser, suspendUser, deleteUser } from "./controller/Users/Users";
 import { getPets, addNewPet, getPetById, deletePet, updatePet } from "./controller/Pets/Pet";
 import { getProfile, updateProfile } from "./controller/Profile/Profile";
 import { login, verifyCode } from "./controller/auth/auth";
@@ -101,6 +101,7 @@ router.patch("/clients/:id", verifyStaffMember, upload.single('image'), validate
 router.get("/clients", verifyStaffMember, getUsers);
 router.post("/clients/:id/suspend", verifyStaffMember, suspendUser);
 router.get("/clients/:id", verifyStaffMember, getUserById);
+router.delete("/clients/:id", verifyStaffMember, deleteUser);
 
 // payments 
 router.get("/payments", verifyRecieption, getPayments);

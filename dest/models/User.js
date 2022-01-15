@@ -35,9 +35,9 @@ const mongoose_1 = __importStar(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const userSchema = new mongoose_1.Schema({
     fullName: { type: String, required: true },
-    phoneNumber: { type: String, required: true, unique: true },
+    phoneNumber: { type: String },
     email: { type: String, default: "" },
-    password: { type: String, required: true },
+    password: { type: String },
     code: { type: String },
     language: { type: String },
     isVerify: { type: Boolean, default: false },
@@ -76,4 +76,5 @@ userSchema.methods.comaprePassword = function (password) {
     });
 };
 const User = mongoose_1.default.model("users", userSchema);
+// User.collection.dropIndexes();
 exports.default = User;

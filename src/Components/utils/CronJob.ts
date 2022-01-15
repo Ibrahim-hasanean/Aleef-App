@@ -32,7 +32,7 @@ const appointmentsNotifications = async () => {
             .flat().filter(x => typeof x == "string");
         let after30MinAppointmentsUsersTokens = after30MinAppointmentsUsers
             .map((x: UserInterface) => x.registrationTokens)
-            .flat();
+            .flat().filter(x => typeof x == "string");
 
         if (nowAppointmentsUsersTokens.length > 0) await sendNotifications(
             nowAppointmentsUsersTokens,
@@ -55,7 +55,16 @@ const appointmentsNotifications = async () => {
             return notificationObject;
         });
 
-        await Notification.create(nowAppointmentNotifictions);
+        const after30AppointmentNotifictions = after_30min_Appointments.map((appointment: AppointmentsInterface) => {
+            const user: UserInterface = appointment.user as UserInterface;
+            const doctor: StafInterface = appointment.doctor as StafInterface;
+            let notificationObject =
+                { title: "Appointment meet", body: "You have appointments after 30 min", user: user._id, staffMemeber: doctor._id }
+            return notificationObject;
+        });
+
+        await Notification.create([...nowAppointmentNotifictions, ...after30AppointmentNotifictions]);
+        // await Notification.create(after30AppointmentNotifictions);
 
 
         // await sendNotifications(["c02ghdJLQkqN8r4R_NBqbK:APA91bEWmVsNGWnK7ZEWi8KMiXyoShi6vKwmYiN9slQsJU-ZuYXLV8COw1cdSkO6GBUlUINOOp2aEvYZoP1S-Vfq38HANGYAsE_Oj_p2_uW1IkDICEJcFBKq3nN0vtCIKRWMUeI02_jY"], { title: "test", body: "test msg test" })

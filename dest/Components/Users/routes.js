@@ -25,6 +25,7 @@ const Location_1 = require("./controller/Location");
 const ReadAbout_1 = require("./controller/ReadAbout");
 const uploadImage_1 = __importDefault(require("../middlewares/uploadImage"));
 const Notifications_1 = require("./controller/Notifications");
+const socialLoginValidation_1 = require("./middleware/socialLoginValidation");
 const router = (0, express_1.Router)();
 // router.post("/upload", upload.single("image"), async (req: Request, res: Response) => {
 //     let file = req.file;
@@ -38,6 +39,8 @@ router.post("/auth/login", (0, userAuthValidate_1.validate)(userAuthValidate_1.l
 router.post("/auth/forgetpassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.forgetPasswordSchema), UsersAuth_1.forgetPassword);
 router.post("/auth/resetPassword", (0, userAuthValidate_1.validate)(userAuthValidate_1.resetPasswordSchema), UsersAuth_1.resetPassword);
 router.post("/auth/verify", (0, userAuthValidate_1.validate)(userAuthValidate_1.verifyCodeSchema), UsersAuth_1.verifyCode);
+router.post("/auth/google", (0, userAuthValidate_1.validate)(socialLoginValidation_1.socialLoginSchema), UsersAuth_1.googleAuth);
+router.post("/auth/facebook", (0, userAuthValidate_1.validate)(socialLoginValidation_1.socialLoginSchema), UsersAuth_1.facebookAuth);
 router.post("/auth/logout", verifyUser_1.default, UsersAuth_1.logout);
 //get hospital location
 router.get("/location", verifyUser_1.default, Location_1.getLocation);
