@@ -8,11 +8,11 @@ import GoogleAccessTokenAuth from "../../utils/GoogleAccessTokenAuth";
 require("dotenv").config();
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
-    const { fullName, phoneNumber, password } = req.body;
+    const { fullName, phoneNumber, password, registrationToken } = req.body;
     const isExist: UserInterface | null = await User.findOne({ phoneNumber });
     if (isExist) return res.status(409).json({ status: 409, msg: "phone number is used" });
     const code = generateCode();
-    let newUser = await User.create({ fullName, phoneNumber, password, code });
+    let newUser = await User.create({ fullName, phoneNumber, password, code, registrationTokens: [registrationToken] });
     let tokenSecret = process.env.USER_TOKEN_SECRET as string;
     let token = jwt.sign(
         { userId: newUser._id, phoneNumber: newUser.phoneNumber, email: newUser.email },

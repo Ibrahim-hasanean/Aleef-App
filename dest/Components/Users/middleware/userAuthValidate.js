@@ -11,6 +11,7 @@ exports.registerSchema = {
         phoneNumber: celebrate_1.Joi.string().required(),
         fullName: celebrate_1.Joi.string().required(),
         password: celebrate_1.Joi.string().required(),
+        registrationToken: celebrate_1.Joi.string(),
     })
 };
 exports.loginSchema = {

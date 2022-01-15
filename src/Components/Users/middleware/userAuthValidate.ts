@@ -11,6 +11,7 @@ export const registerSchema = {
         phoneNumber: Joi.string().required(),
         fullName: Joi.string().required(),
         password: Joi.string().required(),
+        registrationToken: Joi.string(),
     })
 }
 

@@ -20,12 +20,12 @@ const FacebookAccessTokenAuth_1 = __importDefault(require("../../utils/FacebookA
 const GoogleAccessTokenAuth_1 = __importDefault(require("../../utils/GoogleAccessTokenAuth"));
 require("dotenv").config();
 const register = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fullName, phoneNumber, password } = req.body;
+    const { fullName, phoneNumber, password, registrationToken } = req.body;
     const isExist = yield User_1.default.findOne({ phoneNumber });
     if (isExist)
         return res.status(409).json({ status: 409, msg: "phone number is used" });
     const code = (0, GenerateCode_1.default)();
-    let newUser = yield User_1.default.create({ fullName, phoneNumber, password, code });
+    let newUser = yield User_1.default.create({ fullName, phoneNumber, password, code, registrationTokens: [registrationToken] });
     let tokenSecret = process.env.USER_TOKEN_SECRET;
     let token = jsonwebtoken_1.default.sign({ userId: newUser._id, phoneNumber: newUser.phoneNumber, email: newUser.email }, tokenSecret, { expiresIn: "7 days" });
     //send sms to user
