@@ -7,5 +7,6 @@ exports.validate = validate;
 exports.socialLoginSchema = {
     [celebrate_1.Segments.BODY]: celebrate_1.Joi.object().keys({
         accessToken: celebrate_1.Joi.string().required(),
+        registrationToken: celebrate_1.Joi.string().required(),
     })
 };

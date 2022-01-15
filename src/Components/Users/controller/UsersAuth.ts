@@ -24,7 +24,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 }
 
 export const googleAuth = async (req: Request, res: Response, next: NextFunction) => {
-    const { accessToken } = req.body;
+    const { accessToken, registrationToken } = req.body;
     try {
         const googaData = await GoogleAccessTokenAuth(accessToken);
         const isExist: UserInterface | null = await User.findOne({ email: googaData.email });
@@ -35,9 +35,11 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
                 tokenSecret,
                 { expiresIn: "7 days" }
             );
+            isExist.registrationTokens = [...isExist.registrationTokens, registrationToken];
+            await isExist.save();
             return res.status(200).json({ status: 200, msg: "login success", data: { token, user: isExist } });
         }
-        let newUser = await User.create({ fullName: googaData.name, email: googaData.email, imageUrl: googaData.picture });
+        let newUser = await User.create({ fullName: googaData.name, email: googaData.email, imageUrl: googaData.picture, registrationTokens: [registrationToken] });
         let tokenSecret = process.env.USER_TOKEN_SECRET as string;
         let token = jwt.sign(
             { userId: newUser._id, phoneNumber: newUser.phoneNumber, email: newUser.email },
@@ -53,7 +55,7 @@ export const googleAuth = async (req: Request, res: Response, next: NextFunction
 }
 
 export const facebookAuth = async (req: Request, res: Response, next: NextFunction) => {
-    const { accessToken } = req.body;
+    const { accessToken, registrationToken } = req.body;
     try {
         const facebookData = await facebookAccessTokenAuth(accessToken);
         const isExist: UserInterface | null = await User.findOne({ email: facebookData.email });
@@ -64,9 +66,11 @@ export const facebookAuth = async (req: Request, res: Response, next: NextFuncti
                 tokenSecret,
                 { expiresIn: "7 days" }
             );
+            isExist.registrationTokens = [...isExist.registrationTokens, registrationToken];
+            await isExist.save();
             return res.status(200).json({ status: 200, msg: "login success", data: { token, user: isExist } });
         }
-        let newUser = await User.create({ fullName: facebookData.name, email: facebookData.email, imageUrl: facebookData.picture?.data?.url });
+        let newUser = await User.create({ fullName: facebookData.name, email: facebookData.email, imageUrl: facebookData.picture?.data?.url, registrationTokens: [registrationToken] });
         let tokenSecret = process.env.USER_TOKEN_SECRET as string;
         let token = jwt.sign(
             { userId: newUser._id, phoneNumber: newUser.phoneNumber, email: newUser.email },

@@ -33,16 +33,18 @@ const register = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.register = register;
 const googleAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { accessToken } = req.body;
+    const { accessToken, registrationToken } = req.body;
     try {
         const googaData = yield (0, GoogleAccessTokenAuth_1.default)(accessToken);
         const isExist = yield User_1.default.findOne({ email: googaData.email });
         if (isExist) {
             let tokenSecret = process.env.USER_TOKEN_SECRET;
             let token = jsonwebtoken_1.default.sign({ userId: isExist._id, email: isExist.email }, tokenSecret, { expiresIn: "7 days" });
+            isExist.registrationTokens = [...isExist.registrationTokens, registrationToken];
+            yield isExist.save();
             return res.status(200).json({ status: 200, msg: "login success", data: { token, user: isExist } });
         }
-        let newUser = yield User_1.default.create({ fullName: googaData.name, email: googaData.email, imageUrl: googaData.picture });
+        let newUser = yield User_1.default.create({ fullName: googaData.name, email: googaData.email, imageUrl: googaData.picture, registrationTokens: [registrationToken] });
         let tokenSecret = process.env.USER_TOKEN_SECRET;
         let token = jsonwebtoken_1.default.sign({ userId: newUser._id, phoneNumber: newUser.phoneNumber, email: newUser.email }, tokenSecret, { expiresIn: "7 days" });
         return res.status(201).json({ status: 201, msg: "user registered successfully", data: { token, user: newUser } });
@@ -55,16 +57,18 @@ const googleAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 exports.googleAuth = googleAuth;
 const facebookAuth = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
-    const { accessToken } = req.body;
+    const { accessToken, registrationToken } = req.body;
     try {
         const facebookData = yield (0, FacebookAccessTokenAuth_1.default)(accessToken);
         const isExist = yield User_1.default.findOne({ email: facebookData.email });
         if (isExist) {
             let tokenSecret = process.env.USER_TOKEN_SECRET;
             let token = jsonwebtoken_1.default.sign({ userId: isExist._id, email: isExist.email }, tokenSecret, { expiresIn: "7 days" });
+            isExist.registrationTokens = [...isExist.registrationTokens, registrationToken];
+            yield isExist.save();
             return res.status(200).json({ status: 200, msg: "login success", data: { token, user: isExist } });
         }
-        let newUser = yield User_1.default.create({ fullName: facebookData.name, email: facebookData.email, imageUrl: (_b = (_a = facebookData.picture) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.url });
+        let newUser = yield User_1.default.create({ fullName: facebookData.name, email: facebookData.email, imageUrl: (_b = (_a = facebookData.picture) === null || _a === void 0 ? void 0 : _a.data) === null || _b === void 0 ? void 0 : _b.url, registrationTokens: [registrationToken] });
         let tokenSecret = process.env.USER_TOKEN_SECRET;
         let token = jsonwebtoken_1.default.sign({ userId: newUser._id, phoneNumber: newUser.phoneNumber, email: newUser.email }, tokenSecret, { expiresIn: "7 days" });
         return res.status(201).json({ status: 201, msg: "user registered successfully", data: { token, user: newUser } });

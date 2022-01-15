@@ -6,5 +6,6 @@ export const validate = (schema: SchemaOptions) => celebrate(schema, { abortEarl
 export const socialLoginSchema = {
     [Segments.BODY]: Joi.object().keys({
         accessToken: Joi.string().required(),
+        registrationToken: Joi.string().required(),
     })
 }
