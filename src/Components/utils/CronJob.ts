@@ -20,6 +20,7 @@ const appointmentsNotifications = async () => {
             .select(['user', 'appointmentDate'])
             .populate({ path: "user", select: ['fullName', 'registrationTokens'] })
             .populate({ path: "doctor", select: ['name', 'registrationTokens'] });
+
         let after_30min_Appointments = await Appointments
             .find({ appointmentDate: after_30_min })
             .select(['user', 'appointmentDate'])
@@ -64,6 +65,8 @@ const appointmentsNotifications = async () => {
         });
 
         await Notification.create([...nowAppointmentNotifictions, ...after30AppointmentNotifictions]);
+        let nowAppointmentsIds = nowAppointments.map((x: AppointmentsInterface) => x._id);
+        await Appointments.updateMany({ _id: { $in: nowAppointmentsIds } }, { status: "done" });
         // await Notification.create(after30AppointmentNotifictions);
 
 

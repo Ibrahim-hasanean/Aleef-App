@@ -66,6 +66,8 @@ const appointmentsNotifications = () => __awaiter(void 0, void 0, void 0, functi
             return notificationObject;
         });
         yield Notifications_1.default.create([...nowAppointmentNotifictions, ...after30AppointmentNotifictions]);
+        let nowAppointmentsIds = nowAppointments.map((x) => x._id);
+        yield Appointments_1.default.updateMany({ _id: { $in: nowAppointmentsIds } }, { status: "done" });
         // await Notification.create(after30AppointmentNotifictions);
         // await sendNotifications(["c02ghdJLQkqN8r4R_NBqbK:APA91bEWmVsNGWnK7ZEWi8KMiXyoShi6vKwmYiN9slQsJU-ZuYXLV8COw1cdSkO6GBUlUINOOp2aEvYZoP1S-Vfq38HANGYAsE_Oj_p2_uW1IkDICEJcFBKq3nN0vtCIKRWMUeI02_jY"], { title: "test", body: "test msg test" })
         // let date = new Date();

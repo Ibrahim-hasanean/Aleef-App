@@ -97,6 +97,7 @@ export const getAppointments = async (req: Request, res: Response, next: NextFun
         query.appointmentDate = { $gte: beginDay, $lte: endDay }
         console.log(query)
     }
+    if (status) query.status = status;
     const appointments = await Appointments.find(query)
         .sort({ appointmentDate: "desc" })
         .skip(skip)

@@ -109,6 +109,8 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         query.appointmentDate = { $gte: beginDay, $lte: endDay };
         console.log(query);
     }
+    if (status)
+        query.status = status;
     const appointments = yield Appointments_1.default.find(query)
         .sort({ appointmentDate: "desc" })
         .skip(skip)
