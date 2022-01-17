@@ -43,10 +43,13 @@ const Location_1 = require("./controller/Location/Location");
 const Invoice_1 = require("./controller/Invoice/Invoice");
 const validateInvoice_1 = require("./middleware/validateInvoice");
 const uploadImage_1 = __importDefault(require("../middlewares/uploadImage"));
+const home_1 = require("./controller/home/home");
 const router = (0, express_1.Router)();
 // auth routers
 router.post("/auth/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
 router.post("/auth/verify", (0, validateAuth_1.validate)(validateAuth_1.verifyCodeSchema), auth_1.verifyCode);
+//home page
+router.get("/admin-home", verifyAdmin_1.default, home_1.adminHome);
 // invoices routes
 router.post("/invoice", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateInvoice_1.InvoiceSchema), Invoice_1.addInvoice);
 router.get("/invoice", verifyStaffMember_1.default, Invoice_1.getInvoicements);

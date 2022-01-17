@@ -44,12 +44,16 @@ import { addLocation, getLocation } from "./controller/Location/Location";
 import { addInvoice, getInvoicements } from "./controller/Invoice/Invoice";
 import { InvoiceSchema } from "./middleware/validateInvoice"
 import upload from "../middlewares/uploadImage";
+import { adminHome } from "./controller/home/home";
 
 const router = Router();
 
 // auth routers
 router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
+
+//home page
+router.get("/admin-home", verifyAdmin, adminHome);
 
 // invoices routes
 router.post("/invoice", verifyStaffMember, validate(InvoiceSchema), addInvoice);

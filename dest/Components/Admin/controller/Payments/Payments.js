@@ -16,7 +16,7 @@ exports.getPaymentById = exports.getPayments = void 0;
 const Payment_1 = __importDefault(require("../../../../models/Payment"));
 const User_1 = __importDefault(require("../../../../models/User"));
 const getPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, limit, paymentType, text, from, to } = req.query;
+    let { page, limit, paymentType, text, from, to, type } = req.query;
     let query = {};
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
@@ -46,6 +46,10 @@ const getPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         handleToDate.setHours(23);
         query = Object.assign(Object.assign({}, query), { createdAt: Object.assign(Object.assign({}, query.createdAt), { $lte: handleToDate }) });
     }
+    if (type == "appointments")
+        query.appointment = { $ne: null };
+    if (type == "orders")
+        query.order = { $ne: null };
     let payments = yield Payment_1.default
         .find(query)
         .sort({ createdAt: "descending" })

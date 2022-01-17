@@ -3,7 +3,8 @@ import Payment, { PaymentInterFace } from "../../../../models/Payment";
 import User, { UserInterface } from "../../../../models/User";
 
 export const getPayments = async (req: Request, res: Response, next: NextFunction) => {
-    let { page, limit, paymentType, text, from, to } = req.query as { page: string, limit: string, paymentType: string, userId: string, text: string, from: string, to: string }
+    let { page, limit, paymentType, text, from, to, type } =
+        req.query as { page: string, limit: string, paymentType: string, userId: string, text: string, from: string, to: string, type: string }
     let query: any = {};
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
@@ -32,6 +33,8 @@ export const getPayments = async (req: Request, res: Response, next: NextFunctio
         handleToDate.setHours(23);
         query = { ...query, createdAt: { ...query.createdAt, $lte: handleToDate } };
     }
+    if (type == "appointments") query.appointment = { $ne: null };
+    if (type == "orders") query.order = { $ne: null };
     let payments: PaymentInterFace[] = await Payment
         .find(query)
         .sort({ createdAt: "descending" })
