@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import User, { UserInterface } from "../../../../models/User";
 import mongoose from "mongoose";
 import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
+import Appointments from "../../../../models/Appointments";
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
     let { page, limit, text, phoneNumber } = req.query as { page: string, limit: string, text: string, phoneNumber: string };
@@ -16,7 +17,15 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
         .limit(limitNumber)
         .select(['fullName', 'phoneNumber', 'email', 'isSuspend'])
         .populate({ path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'] });
-    return res.status(200).json({ status: 200, data: { users } });
+    var results = await Promise.all(users.map(async (user) => {
+        let lastUsetVisit = await Appointments.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
+        return { lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "", ...user.toJSON() }
+    }));
+    // let reponseUsers = users.map(async (user: UserInterface) => {
+    //     let lastUsetVisit = await Appointments.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
+    //     return { ...user.toJSON(), lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }
+    // })
+    return res.status(200).json({ status: 200, data: { users: results } });
 }
 
 export const getUserById = async (req: Request, res: Response, next: NextFunction) => {

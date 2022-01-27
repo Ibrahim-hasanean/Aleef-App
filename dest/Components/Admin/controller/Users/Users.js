@@ -16,6 +16,7 @@ exports.deleteUser = exports.updateUser = exports.addNewUser = exports.suspendUs
 const User_1 = __importDefault(require("../../../../models/User"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
+const Appointments_1 = __importDefault(require("../../../../models/Appointments"));
 const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { page, limit, text, phoneNumber } = req.query;
     const limitNumber = Number(limit) || 10;
@@ -31,7 +32,15 @@ const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         .limit(limitNumber)
         .select(['fullName', 'phoneNumber', 'email', 'isSuspend'])
         .populate({ path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'] });
-    return res.status(200).json({ status: 200, data: { users } });
+    var results = yield Promise.all(users.map((user) => __awaiter(void 0, void 0, void 0, function* () {
+        let lastUsetVisit = yield Appointments_1.default.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
+        return Object.assign({ lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }, user.toJSON());
+    })));
+    // let reponseUsers = users.map(async (user: UserInterface) => {
+    //     let lastUsetVisit = await Appointments.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
+    //     return { ...user.toJSON(), lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }
+    // })
+    return res.status(200).json({ status: 200, data: { users: results } });
 });
 exports.getUsers = getUsers;
 const getUserById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

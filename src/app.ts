@@ -5,8 +5,13 @@ import adminRoutes from "./Components/Admin/routes";
 import cron from "node-cron";
 import cors from "cors";
 import appointmentsNotifications from "./Components/utils/CronJob";
+import * as ioServer from "socket.io";
+import http from "http";
 const app = express();
+const server = http.createServer(app);
+const io = new ioServer.Server(server);
 const port = process.env.PORT || 3000;
+import socketIoEvents from "./socketIoEvents/socketIoEvents"
 require("./config/mongoose");
 
 cron.schedule("* * * * *", appointmentsNotifications);
@@ -26,7 +31,27 @@ app.use(errors());
 
 app.listen(port, () => {
     console.log("listen on", port);
-})
+});
+
+socketIoEvents(io);
+
+// io.use((socket, next) => {
+//     let token = socket.handshake.auth.token;
+//     console.log(token);
+// });
+
+// io.on('connection', (socket) => {
+//     console.log("socket connect");
+
+//     socket.on("connect", () => {
+//         socket.emit("connect successfully")
+//     });
+
+//     socket.on('user-message',({msg,doctorId})=>{
+
+//     })
+
+// })
 
 export default app;
 
