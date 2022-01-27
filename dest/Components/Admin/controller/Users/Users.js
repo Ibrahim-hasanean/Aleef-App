@@ -51,7 +51,9 @@ const getUserById = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     let user = yield User_1.default.findById(id)
         .select(['fullName', 'phoneNumber', 'email', 'isSuspend'])
         .populate({ path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'] });
-    return res.status(200).json({ status: 200, data: { user } });
+    let lastUsetVisit = yield Appointments_1.default.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
+    let userObject = Object.assign({ lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }, user.toJSON());
+    return res.status(200).json({ status: 200, data: { user: userObject } });
 });
 exports.getUserById = getUserById;
 const suspendUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

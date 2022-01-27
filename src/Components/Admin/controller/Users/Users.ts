@@ -35,8 +35,10 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
     }
     let user: UserInterface | null = await User.findById(id)
         .select(['fullName', 'phoneNumber', 'email', 'isSuspend'])
-        .populate({ path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'] });
-    return res.status(200).json({ status: 200, data: { user } });
+        .populate({ path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'] }) as UserInterface;
+    let lastUsetVisit = await Appointments.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
+    let userObject = { lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "", ...user.toJSON() }
+    return res.status(200).json({ status: 200, data: { user: userObject } });
 }
 
 export const suspendUser = async (req: Request, res: Response, next: NextFunction) => {
