@@ -29,29 +29,12 @@ app.use("/admins", adminRoutes);
 
 app.use(errors());
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log("listen on", port);
 });
 
 socketIoEvents(io);
 
-// io.use((socket, next) => {
-//     let token = socket.handshake.auth.token;
-//     console.log(token);
-// });
-
-// io.on('connection', (socket) => {
-//     console.log("socket connect");
-
-//     socket.on("connect", () => {
-//         socket.emit("connect successfully")
-//     });
-
-//     socket.on('user-message',({msg,doctorId})=>{
-
-//     })
-
-// })
 
 export default app;
 

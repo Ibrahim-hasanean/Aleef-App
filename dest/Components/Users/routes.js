@@ -26,6 +26,7 @@ const ReadAbout_1 = require("./controller/ReadAbout");
 const uploadImage_1 = __importDefault(require("../middlewares/uploadImage"));
 const Notifications_1 = require("./controller/Notifications");
 const socialLoginValidation_1 = require("./middleware/socialLoginValidation");
+const UserChat_1 = require("./controller/UserChat");
 const router = (0, express_1.Router)();
 // router.post("/upload", upload.single("image"), async (req: Request, res: Response) => {
 //     let file = req.file;
@@ -42,6 +43,9 @@ router.post("/auth/verify", (0, userAuthValidate_1.validate)(userAuthValidate_1.
 router.post("/auth/google", (0, userAuthValidate_1.validate)(socialLoginValidation_1.socialLoginSchema), UsersAuth_1.googleAuth);
 router.post("/auth/facebook", (0, userAuthValidate_1.validate)(socialLoginValidation_1.socialLoginSchema), UsersAuth_1.facebookAuth);
 router.post("/auth/logout", verifyUser_1.default, UsersAuth_1.logout);
+//chat routes 
+router.get("/conversations", verifyUser_1.default, UserChat_1.getConversations);
+router.get("/conversations/:id/messages", verifyUser_1.default, UserChat_1.getMessages);
 //get hospital location
 router.get("/location", verifyUser_1.default, Location_1.getLocation);
 //get notifications

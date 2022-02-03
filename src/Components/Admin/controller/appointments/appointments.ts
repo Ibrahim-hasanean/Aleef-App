@@ -16,8 +16,8 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
-    const isAppointmentOutOfWorkHours: boolean = isDateOutWorkTime(handleAppointmentDate);
-    if (isAppointmentOutOfWorkHours) return res.status(400).json({ status: 400, msg: "appointment date is out of work hours" });
+    // const isAppointmentOutOfWorkHours: boolean = isDateOutWorkTime(handleAppointmentDate);
+    // if (isAppointmentOutOfWorkHours) return res.status(400).json({ status: 400, msg: "appointment date is out of work hours" });
     const freeDoctors: StafInterface[] = await getFreeDoctors(appointmentDate, handleAppointmentDate);
     if (freeDoctors.length === 0) return res.status(409).json({ status: 409, msg: "there is no free doctors" });
     const newAppontment = await Appointments.create({
@@ -29,6 +29,8 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
         user: userId,
         report
     });
+    isPetExist.appointments = [...isPetExist.appointments, newAppontment._id];
+    await isPetExist.save();
     return res.status(201).json({
         status: 201, msg: "appointment created successfully",
         data: { newAppontment }

@@ -67,7 +67,7 @@ const updateStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.updateStaff = updateStaff;
 const getStaffMemebers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { text, cardNumber, phoneNumber } = req.query;
+    let { text, cardNumber, phoneNumber, role } = req.query;
     let query = {};
     if (text) {
         query = Object.assign(Object.assign({}, query), { $or: [{ name: { $regex: text, $options: "i" } }, { email: { $regex: text, $options: "i" } }] });
@@ -77,6 +77,8 @@ const getStaffMemebers = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         query.cardNumber = cardNumber;
     if (phoneNumber)
         query.phoneNumber = phoneNumber;
+    if (role)
+        query.role = role;
     const staffMembers = yield Staff_1.default.find(query);
     return res.status(200).json({ status: 200, data: { staffMembers } });
 });

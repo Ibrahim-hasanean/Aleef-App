@@ -68,24 +68,59 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
 }
 
 export const getPetById = async (req: Request, res: Response, next: NextFunction) => {
-    let id = req.params.id;
-    if (!mongoose.isValidObjectId(id)) {
+    let petId = req.params.id;
+    if (!mongoose.isValidObjectId(petId)) {
         return res.status(200).json({ status: 200, data: { pet: null } });
     }
     let date = new Date();
-    const pet: PetsInterface | null = await Pet.findById(id)
+    const pet: PetsInterface | null = await Pet.findById(petId)
+        .select(['-appointments', '-medacins'])
         .populate("type")
         .populate({ path: "vaccinations", sort: { createdAt: "desc" } })
-        .populate({ path: "medacins", sort: { createdAt: "desc" } })
+        // .populate({ path: "medacins", sort: { createdAt: "desc" } })
         .populate("gender")
         .populate({ path: "user", select: ["fullName", "phoneNumber", "email"] })
         .populate("breed") as PetsInterface;
 
     if (!pet) return res.status(200).json({ status: 200, pet: null });
+    let lastAppointment: AppointmentsInterface[] = await Appointments
+        .find({ pet: petId, appointmentDate: { $lte: date } })
+        .sort({ appointmentDate: "desc" })
+        .limit(10).select(["service", "appointmentDate", "doctor", 'reason']).populate({
+            path: "doctor",
+            select: ['name', 'phoneNumber'],
+        });
+
+    let appointment: AppointmentsInterface[] = await Appointments
+        .find({ pet: petId, appointmentDate: { $lte: date } })
+        .sort({ appointmentDate: "desc" })
+        .limit(1);
+
+    let grooming: AppointmentsInterface[] = await Appointments
+        .find({ pet: petId, appointmentDate: { $lte: date }, service: "grooming" })
+        .sort({ appointmentDate: "desc" })
+        .limit(1);
+
+    let medacin: PetsMedacins[] = await Medacin
+        .find({ pet: petId })
+        .sort({ createdAt: "desc" })
+        .limit(1);
+    let vaccination: PetsVaccination[] = await Vaccination
+        .find({ pet: petId, dates: { $elemMatch: { $gte: date } } });
+    let nextVaccination = getNextVaccination(vaccination);
+
     return res.status(200).json({
         status: 200,
         data: {
-            pet
+            pet: {
+                lastCheckUp: (appointment[0] && appointment[0].appointmentDate) || "",
+                lastGrooming: (grooming[0] && grooming[0].appointmentDate) || "",
+                lastPrescription: (medacin[0] && medacin[0].createdAt) || "",
+                nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination,
+                medicalRecord: lastAppointment,
+                ...pet?.toJSON(),
+
+            }
         }
     });
 }

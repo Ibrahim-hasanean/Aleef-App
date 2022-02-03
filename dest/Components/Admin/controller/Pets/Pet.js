@@ -19,6 +19,10 @@ const User_1 = __importDefault(require("../../../../models/User"));
 const PetsTypes_1 = __importDefault(require("../../../../models/PetsTypes"));
 const Breed_1 = __importDefault(require("../../../../models/Breed"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
+const Medacine_1 = __importDefault(require("../../../../models/Medacine"));
+const Vaccination_1 = __importDefault(require("../../../../models/Vaccination"));
+const Appointments_1 = __importDefault(require("../../../../models/Appointments"));
+const getNextVaccination_1 = __importDefault(require("../../../utils/getNextVaccination"));
 const addNewPet = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, serialNumber, age, typeId, breedId, gender, userId, duerming, nutried } = req.body;
     let image = req.file;
@@ -81,24 +85,47 @@ const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.getPets = getPets;
 const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let id = req.params.id;
-    if (!mongoose_1.default.isValidObjectId(id)) {
+    let petId = req.params.id;
+    if (!mongoose_1.default.isValidObjectId(petId)) {
         return res.status(200).json({ status: 200, data: { pet: null } });
     }
     let date = new Date();
-    const pet = yield Pets_1.default.findById(id)
+    const pet = yield Pets_1.default.findById(petId)
+        .select(['-appointments', '-medacins'])
         .populate("type")
         .populate({ path: "vaccinations", sort: { createdAt: "desc" } })
-        .populate({ path: "medacins", sort: { createdAt: "desc" } })
+        // .populate({ path: "medacins", sort: { createdAt: "desc" } })
         .populate("gender")
         .populate({ path: "user", select: ["fullName", "phoneNumber", "email"] })
         .populate("breed");
     if (!pet)
         return res.status(200).json({ status: 200, pet: null });
+    let lastAppointment = yield Appointments_1.default
+        .find({ pet: petId, appointmentDate: { $lte: date } })
+        .sort({ appointmentDate: "desc" })
+        .limit(10).select(["service", "appointmentDate", "doctor", 'reason']).populate({
+        path: "doctor",
+        select: ['name', 'phoneNumber'],
+    });
+    let appointment = yield Appointments_1.default
+        .find({ pet: petId, appointmentDate: { $lte: date } })
+        .sort({ appointmentDate: "desc" })
+        .limit(1);
+    let grooming = yield Appointments_1.default
+        .find({ pet: petId, appointmentDate: { $lte: date }, service: "grooming" })
+        .sort({ appointmentDate: "desc" })
+        .limit(1);
+    let medacin = yield Medacine_1.default
+        .find({ pet: petId })
+        .sort({ createdAt: "desc" })
+        .limit(1);
+    let vaccination = yield Vaccination_1.default
+        .find({ pet: petId, dates: { $elemMatch: { $gte: date } } });
+    let nextVaccination = (0, getNextVaccination_1.default)(vaccination);
     return res.status(200).json({
         status: 200,
         data: {
-            pet
+            pet: Object.assign({ lastCheckUp: (appointment[0] && appointment[0].appointmentDate) || "", lastGrooming: (grooming[0] && grooming[0].appointmentDate) || "", lastPrescription: (medacin[0] && medacin[0].createdAt) || "", nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination, medicalRecord: lastAppointment }, pet === null || pet === void 0 ? void 0 : pet.toJSON())
         }
     });
 });

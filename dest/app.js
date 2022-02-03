@@ -47,20 +47,8 @@ app.get("/", (req, res, next) => {
 app.use("/users", routes_1.default);
 app.use("/admins", routes_2.default);
 app.use((0, celebrate_1.errors)());
-app.listen(port, () => {
+server.listen(port, () => {
     console.log("listen on", port);
 });
 (0, socketIoEvents_1.default)(io);
-// io.use((socket, next) => {
-//     let token = socket.handshake.auth.token;
-//     console.log(token);
-// });
-// io.on('connection', (socket) => {
-//     console.log("socket connect");
-//     socket.on("connect", () => {
-//         socket.emit("connect successfully")
-//     });
-//     socket.on('user-message',({msg,doctorId})=>{
-//     })
-// })
 exports.default = app;

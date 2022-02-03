@@ -40,7 +40,7 @@ const petsSchema = new Schema({
     gender: { type: String },
     microshipNumber: { type: Number },
     weight: { type: Number },
-    notes: { type: String },
+    notes: { type: String, default: "" },
     // lastCheckUp: { type: Date }
     nutried: { type: Boolean },
     duerming: { type: Boolean }

@@ -26,6 +26,6 @@ const messagesSchema = new mongoose_1.Schema({
     doctorId: { type: mongoose_1.default.Types.ObjectId, ref: "staff" },
     userId: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
     conversation: { type: mongoose_1.default.Types.ObjectId, ref: "conversations" },
-});
+}, { timestamps: true });
 const Messages = mongoose_1.default.model("messages", messagesSchema);
 exports.default = Messages;

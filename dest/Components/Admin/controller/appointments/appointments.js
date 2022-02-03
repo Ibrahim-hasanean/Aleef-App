@@ -30,9 +30,8 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     const handleAppointmentDate = new Date(appointmentDate);
     handleAppointmentDate.setSeconds(0);
     handleAppointmentDate.setMilliseconds(0);
-    const isAppointmentOutOfWorkHours = (0, isDateOutWorkTime_1.default)(handleAppointmentDate);
-    if (isAppointmentOutOfWorkHours)
-        return res.status(400).json({ status: 400, msg: "appointment date is out of work hours" });
+    // const isAppointmentOutOfWorkHours: boolean = isDateOutWorkTime(handleAppointmentDate);
+    // if (isAppointmentOutOfWorkHours) return res.status(400).json({ status: 400, msg: "appointment date is out of work hours" });
     const freeDoctors = yield (0, getFreeDoctors_1.default)(appointmentDate, handleAppointmentDate);
     if (freeDoctors.length === 0)
         return res.status(409).json({ status: 409, msg: "there is no free doctors" });
@@ -45,6 +44,8 @@ const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         user: userId,
         report
     });
+    isPetExist.appointments = [...isPetExist.appointments, newAppontment._id];
+    yield isPetExist.save();
     return res.status(201).json({
         status: 201, msg: "appointment created successfully",
         data: { newAppontment }

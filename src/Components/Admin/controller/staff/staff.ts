@@ -50,13 +50,14 @@ export const updateStaff = async (req: Request, res: Response, next: NextFunctio
 }
 
 export const getStaffMemebers = async (req: Request, res: Response, next: NextFunction) => {
-    let { text, cardNumber, phoneNumber } = req.query;
+    let { text, cardNumber, phoneNumber, role } = req.query;
     let query: any = {};
     if (text) {
         query = { ...query, $or: [{ name: { $regex: text, $options: "i" } }, { email: { $regex: text, $options: "i" } }] }
     };
     if (cardNumber) query.cardNumber = cardNumber;
     if (phoneNumber) query.phoneNumber = phoneNumber;
+    if (role) query.role = role;
     const staffMembers = await Staff.find(query);
     return res.status(200).json({ status: 200, data: { staffMembers } });
 }

@@ -24,7 +24,8 @@ const conversationSchema = new mongoose_1.Schema({
     messages: [{ type: mongoose_1.default.Types.ObjectId, ref: "messages" }],
     doctorId: { type: mongoose_1.default.Types.ObjectId, ref: "staff" },
     userId: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
-    support: { type: Boolean }
+    receiptionSupport: { type: Boolean },
+    storeSupport: { type: Boolean }
 });
 const Conversation = mongoose_1.default.model("conversations", conversationSchema);
 exports.default = Conversation;

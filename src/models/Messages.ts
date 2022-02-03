@@ -6,7 +6,7 @@ export interface MessagesInterface extends mongoose.Document {
     by: string
     doctorId: ObjectId
     userId: ObjectId
-    conversation: ObjectId | ConversationsInterface
+    conversation: ObjectId | ConversationsInterface | null
 }
 
 const messagesSchema = new Schema({
@@ -15,7 +15,7 @@ const messagesSchema = new Schema({
     doctorId: { type: mongoose.Types.ObjectId, ref: "staff" },
     userId: { type: mongoose.Types.ObjectId, ref: "users" },
     conversation: { type: mongoose.Types.ObjectId, ref: "conversations" },
-});
+}, { timestamps: true });
 
 
 const Messages = mongoose.model<MessagesInterface>("messages", messagesSchema);
