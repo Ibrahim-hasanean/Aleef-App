@@ -3,10 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "engines": {
-    "node": "14.x",
-    "npm": "6.x"
-  },
   "dependencies": {
     "@google-cloud/storage": "^5.16.1",
     "axios": "^0.24.0",
@@ -23,7 +19,6 @@
     "mongoose": "^6.0.10",
     "multer": "^1.4.4",
     "node-cron": "^3.0.0",
-    "socket.io": "^4.4.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -36,7 +31,6 @@
     "@types/mongoose": "^5.11.97",
     "@types/multer": "^1.4.7",
     "@types/node-cron": "^3.0.0",
-    "@types/socket.io": "^3.0.2",
     "@types/uuid": "^8.3.3",
     "nodemon": "^2.0.13",
     "ts-node": "^10.2.1",
@@ -45,8 +39,7 @@
   "scripts": {
     "start": "node ./dest/app.js",
     "dev": "nodemon ./src/app.ts",
-    "build": "tsc -p .",
-    "heroku-postbuild": "npm run build"
+    "build": "tsc -p ."
   },
   "author": "",
   "license": "ISC"
