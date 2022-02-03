@@ -44,7 +44,7 @@ export const reviewItem = async (req: Request, res: Response, next: NextFunction
     if (!mongoose.isValidObjectId(itemId)) {
         return res.status(400).json({ status: 400, msg: "item not found" });
     }
-    const item: ItemInterface = await Item.findById(itemId);
+    const item: ItemInterface = await Item.findById(itemId) as ItemInterface;
     if (!item) {
         return res.status(400).json({ status: 400, msg: "item not found" });
     }
@@ -63,7 +63,7 @@ export const addToWishList = async (req: Request, res: Response, next: NextFunct
         if (!mongoose.isValidObjectId(itemId)) {
             return res.status(400).json({ status: 400, msg: "item not found" });
         }
-        const item: ItemInterface = await Item.findById(itemId);
+        const item: ItemInterface = await Item.findById(itemId) as ItemInterface;
         if (!item) {
             return res.status(400).json({ status: 400, msg: "item not found" });
         }
@@ -88,7 +88,7 @@ export const removeFromWishList = async (req: Request, res: Response, next: Next
     if (!mongoose.isValidObjectId(itemId)) {
         return res.status(400).json({ status: 400, msg: "item not found" });
     }
-    const item: ItemInterface = await Item.findById(itemId);
+    const item: ItemInterface = await Item.findById(itemId) as ItemInterface;
     if (!item) {
         return res.status(400).json({ status: 400, msg: "item not found" });
     }

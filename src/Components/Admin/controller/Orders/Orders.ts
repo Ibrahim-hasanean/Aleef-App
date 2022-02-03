@@ -67,7 +67,7 @@ export const getOrderById = async (req: Request, res: Response, next: NextFuncti
 export const setStatus = async (req: Request, res: Response, next: NextFunction) => {
     let { status } = req.body;
     let id = req.params.id;
-    let order: OrderInterface = await Order.findByIdAndUpdate(id, { status });
+    let order: OrderInterface = await Order.findByIdAndUpdate(id, { status }) as OrderInterface;
     return res.status(200).json({ status: 200, data: { order } });
 }
 
@@ -117,7 +117,7 @@ export const updateOrder = async (req: Request, res: Response, next: NextFunctio
     }
     //payment 
     const orderItemsCollection = await OrderItem.create(...orderItems);
-    const newOrder: OrderInterface = await Order.findByIdAndUpdate(id, { user: userId, totalPrice, itemsCount, items: orderItemsCollection, shippingFees, shippingAddress: shippingAddressId, cardNumber });
+    const newOrder: OrderInterface = await Order.findByIdAndUpdate(id, { user: userId, totalPrice, itemsCount, items: orderItemsCollection, shippingFees, shippingAddress: shippingAddressId, cardNumber }) as OrderInterface;
     // const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "cash", user: userId, order: newOrder._id })
     // newOrder.payment = payment._id;
     // await newOrder.save();

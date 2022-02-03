@@ -21,7 +21,7 @@ export const getMedacinById = async (req: Request, res: Response, next: NextFunc
     if (!mongoose.isValidObjectId(petId)) {
         return res.status(400).json({ status: 400, msg: "pet not found" });
     }
-    let medacin: PetsMedacins = await Medacin.findOne({ pet: petId, _id: medacinId });
+    let medacin: PetsMedacins = await Medacin.findOne({ pet: petId, _id: medacinId }) as PetsMedacins;
     return res.status(200).json({ status: 200, data: { medacin: medacin } });
 }
 
@@ -31,7 +31,7 @@ export const deleteMedacin = async (req: Request, res: Response, next: NextFunct
     if (!mongoose.isValidObjectId(petId)) {
         return res.status(400).json({ status: 400, msg: "pet not found" });
     }
-    let medacin: PetsMedacins = await Medacin.findOne({ pet: petId, _id: medacinId });
+    let medacin: PetsMedacins = await Medacin.findOne({ pet: petId, _id: medacinId }) as PetsMedacins;
     if (!medacin) return res.status(200).json({ status: 200, msg: "medacin deleted successfully" });
     await medacin.delete();
     return res.status(200).json({ status: 200, msg: "medacin deleted successfully" });
@@ -71,7 +71,7 @@ export const updateMedacin = async (req: Request, res: Response, next: NextFunct
     }
     let pet: PetsInterface = await Pets.findById(petId).populate("vaccinations") as PetsInterface;
     if (!pet) return res.status(400).json({ status: 400, msg: "pet not found" });
-    let newMedacin: PetsMedacins = await Medacin.findByIdAndUpdate(medacinId, { name, duration, repetition, notes });
+    let newMedacin: PetsMedacins = await Medacin.findByIdAndUpdate(medacinId, { name, duration, repetition, notes }) as PetsMedacins;
     return res.status(200).json({
         status: 200,
         msg: "medacin updated to pet  successfully",

@@ -20,7 +20,7 @@ export const getVaccinationById = async (req: Request, res: Response, next: Next
     if (!mongoose.isValidObjectId(petId)) {
         return res.status(400).json({ status: 400, msg: "pet not found" });
     }
-    let vaccination: PetsVaccination = await Vaccination.findOne({ pet: petId, _id: vaccinationId });
+    let vaccination: PetsVaccination = await Vaccination.findOne({ pet: petId, _id: vaccinationId }) as PetsVaccination;
     return res.status(200).json({ status: 200, data: { vaccinations: vaccination } });
 }
 
@@ -30,7 +30,7 @@ export const deleteVaccinationById = async (req: Request, res: Response, next: N
     if (!mongoose.isValidObjectId(petId)) {
         return res.status(400).json({ status: 400, msg: "pet not found" });
     }
-    let vaccination: PetsVaccination = await Vaccination.findOne({ pet: petId, _id: vaccinationId });
+    let vaccination: PetsVaccination = await Vaccination.findOne({ pet: petId, _id: vaccinationId }) as PetsVaccination;
     if (!vaccination) return res.status(200).json({ status: 200, msg: "vaccination deleted successfully" });
     await vaccination.delete();
     return res.status(200).json({ status: 200, msg: "vaccination deleted successfully" });
@@ -63,7 +63,7 @@ export const updateVaccination = async (req: Request, res: Response, next: NextF
     }
     let pet: PetsInterface = await Pets.findById(petId).populate("vaccinations") as PetsInterface;
     if (!pet) return res.status(400).json({ status: 400, msg: "pet not found" });
-    let newVaccinations: PetsVaccination = await Vaccination.findByIdAndUpdate(vaccinationId, { name, dates, repetition, notes });
+    let newVaccinations: PetsVaccination = await Vaccination.findByIdAndUpdate(vaccinationId, { name, dates, repetition, notes }) as PetsVaccination;
     return res.status(200).json({
         status: 200,
         msg: "vaccination updated to pet  successfully",
