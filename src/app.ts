@@ -11,7 +11,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new ioServer.Server(server);
 const port = process.env.PORT || 3000;
-import socketIoEvents from "./socketIoEvents/socketIoEvents"
+// import socketIoEvents from "./socketIoEvents/socketIoEvents"
 require("./config/mongoose");
 
 cron.schedule("* * * * *", appointmentsNotifications);
@@ -33,7 +33,7 @@ server.listen(port, () => {
     console.log("listen on", port);
 });
 
-socketIoEvents(io);
+// socketIoEvents(io);
 
 
 export default app;
