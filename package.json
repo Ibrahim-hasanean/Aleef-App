@@ -45,7 +45,8 @@
   "scripts": {
     "start": "node ./dest/app.js",
     "dev": "nodemon ./src/app.ts",
-    "build": "tsc -p ."
+    "build": "tsc -p .",
+    "heroku-postbuild": "npm run build"
   },
   "author": "",
   "license": "ISC"
