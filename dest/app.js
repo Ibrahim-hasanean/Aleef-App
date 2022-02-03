@@ -35,7 +35,7 @@ const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
 const io = new ioServer.Server(server);
 const port = process.env.PORT || 3000;
-const socketIoEvents_1 = __importDefault(require("./socketIoEvents/socketIoEvents"));
+// import socketIoEvents from "./socketIoEvents/socketIoEvents"
 require("./config/mongoose");
 node_cron_1.default.schedule("* * * * *", CronJob_1.default);
 app.use((0, cors_1.default)());
@@ -50,5 +50,5 @@ app.use((0, celebrate_1.errors)());
 server.listen(port, () => {
     console.log("listen on", port);
 });
-(0, socketIoEvents_1.default)(io);
+// socketIoEvents(io);
 exports.default = app;
