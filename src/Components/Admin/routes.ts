@@ -5,7 +5,7 @@ import { addItemCategory, getItemsCategory, deleteCategory } from "./controller/
 import { addItem, deleteItem, getItemById, getItems, updateItem, itemsHome } from "./controller/Items/items";
 import { addService, deleteService, getServiceById, getServices } from "./controller/services/services";
 import { addStaff, defaultAdmin, deleteStaffMember, getStaffMemeberById, getStaffMemebers, updateStaff, getWorkHoures, setWorkHoures } from "./controller/staff/staff";
-import { addAppointment, deleteAppointments, getAppointments, getAppointmentsById, getAvaliableTime, updateAppointment, getAvaliableDoctrs } from "./controller/appointments/appointments";
+import { addAppointment, deleteAppointments, getAppointments, getAppointmentsById, getAvaliableTime, updateAppointment, getAvaliableDoctrs, userAppointments } from "./controller/appointments/appointments";
 import {
     addAppointmentsPayment,
     deleteAppointmentsPayment,
@@ -131,6 +131,7 @@ router.post("/appointments", verifyStaffMember, validate(AppointmentSchema), add
 router.patch("/appointments/:id", verifyStaffMember, validate(AppointmentSchema), updateAppointment);
 router.get("/appointments/avaliable", verifyStaffMember, getAvaliableTime);
 router.get("/appointments/doctors", verifyStaffMember, getAvaliableDoctrs);
+router.get("/appointments/users/:id", verifyStaffMember, userAppointments);
 router.get("/appointments/:id", verifyStaffMember, getAppointmentsById);
 router.delete("/appointments/:id", verifyStaffMember, deleteAppointments);
 

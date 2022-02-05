@@ -6,6 +6,7 @@ import getFreeDoctors from "../../../utils/getFreeDoctors";
 import isDateOutWorkTime from "../../../utils/isDateOutWorkTime";
 import Pets, { PetsInterface } from "../../../../models/Pets";
 import User, { UserInterface } from "../../../../models/User";
+import mongoose, { ObjectId } from "mongoose";
 
 export const addAppointment = async (req: Request, res: Response, next: NextFunction) => {
     const { petId, service, appointmentDate, reason, userId, doctorId, report } = req.body;
@@ -145,4 +146,19 @@ export const getAvaliableDoctrs = async (req: Request, res: Response, next: Next
     handleAppointmentDate.setMilliseconds(0);
     let freeDoctors = await getFreeDoctors(date, handleAppointmentDate);
     return res.status(200).json({ status: 200, data: { doctors: freeDoctors } });
+}
+
+export const userAppointments = async (req: Request, res: Response, next: NextFunction) => {
+    let userId: string = req.params.id;
+    let { page, pageSize, } = req.query;
+    let numberPageSize = pageSize ? Number(pageSize) : 15;
+    let skip = (Number(page || 1) - 1) * numberPageSize;
+    let user: UserInterface = await User.findById(userId).select(['fullName', 'phoneNumber', 'email', 'imageUrl']) as UserInterface;
+    if (!user) return res.status(400).json({ status: 400, msg: `user with id ${userId} not found` });
+    let userAppointments: AppointmentsInterface[] = await Appointments.find({ user: user._id })
+        .skip(skip)
+        .limit(numberPageSize)
+        .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
+        .populate({ path: "pet", select: ['name', 'serialNumber', 'age'] });
+    return res.status(200).json({ status: 200, data: { user, appointments: userAppointments } });
 }

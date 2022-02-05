@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAvaliableDoctrs = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
+exports.userAppointments = exports.getAvaliableDoctrs = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
 const Appointments_1 = __importDefault(require("../../../../models/Appointments"));
 const getFreeTimes_1 = __importDefault(require("../../../utils/getFreeTimes"));
 const getFreeDoctors_1 = __importDefault(require("../../../utils/getFreeDoctors"));
@@ -157,3 +157,19 @@ const getAvaliableDoctrs = (req, res, next) => __awaiter(void 0, void 0, void 0,
     return res.status(200).json({ status: 200, data: { doctors: freeDoctors } });
 });
 exports.getAvaliableDoctrs = getAvaliableDoctrs;
+const userAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let userId = req.params.id;
+    let { page, pageSize, } = req.query;
+    let numberPageSize = pageSize ? Number(pageSize) : 15;
+    let skip = (Number(page || 1) - 1) * numberPageSize;
+    let user = yield User_1.default.findById(userId).select(['fullName', 'phoneNumber', 'email', 'imageUrl']);
+    if (!user)
+        return res.status(400).json({ status: 400, msg: `user with id ${userId} not found` });
+    let userAppointments = yield Appointments_1.default.find({ user: user._id })
+        .skip(skip)
+        .limit(numberPageSize)
+        .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
+        .populate({ path: "pet", select: ['name', 'serialNumber', 'age'] });
+    return res.status(200).json({ status: 200, data: { user, appointments: userAppointments } });
+});
+exports.userAppointments = userAppointments;
