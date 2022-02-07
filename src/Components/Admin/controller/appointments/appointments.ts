@@ -114,12 +114,23 @@ export const getAppointments = async (req: Request, res: Response, next: NextFun
 
 export const getAppointmentsById = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
-    const appointment = await Appointments.findById(id)
+    const appointment: AppointmentsInterface = await Appointments.findById(id)
         .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
-        .populate({ path: "pet" })
+        .populate({ path: "pet", select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes'] })
         .populate({ path: "medacin" })
-        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
-    return res.status(200).json({ status: 200, data: { appointment } });
+        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] }) as AppointmentsInterface;
+    let lastCheckUp = '';
+    let pet: PetsInterface = appointment.pet as PetsInterface;
+    if (pet) {
+        let lastAppointment: AppointmentsInterface[] = await Appointments
+            .find({ pet: pet._id, appointmentDate: { $lte: new Date() } })
+            .sort({ appointmentDate: "desc" })
+            .limit(1);
+        lastCheckUp = String(lastAppointment[0]?.appointmentDate || '');
+    } else {
+        return res.status(200).json({ status: 200, data: { appointment: null } });
+    }
+    return res.status(200).json({ status: 200, data: { appointment: { ...appointment?.toJSON(), pet: { ...pet.toJSON(), lastCheckUp } } } });
 }
 
 export const deleteAppointments = async (req: Request, res: Response, next: NextFunction) => {
