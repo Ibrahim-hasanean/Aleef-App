@@ -13,10 +13,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Appointments_1 = __importDefault(require("../models/Appointments"));
+const User_1 = __importDefault(require("../models/User"));
 const Conversations_1 = __importDefault(require("../models/Conversations"));
 const Messages_1 = __importDefault(require("../models/Messages"));
 const verifyUserTokenSocket_1 = __importDefault(require("./verifyUserTokenSocket"));
 const verifyStaffTokenSocket_1 = __importDefault(require("./verifyStaffTokenSocket"));
+const Staff_1 = __importDefault(require("../models/Staff"));
+const SendNotifications_1 = __importDefault(require("../Components/utils/SendNotifications"));
+let usersArray = [];
+let doctorsArray = [];
+let receiptionSupportArray = [];
+let storeSupportArray = [];
 const socketIoEvents = (io) => {
     io.use((socket, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -27,6 +34,8 @@ const socketIoEvents = (io) => {
                 if (user) {
                     socket.handshake.auth.user = user;
                     socket.id = String(user._id);
+                    socket.handshake.auth.role = "user";
+                    usersArray = [...new Set([...usersArray, String(socket.id)])];
                     next();
                 }
             }
@@ -34,17 +43,22 @@ const socketIoEvents = (io) => {
                 let staff = yield (0, verifyStaffTokenSocket_1.default)(staffToken);
                 if (staff) {
                     socket.handshake.auth.staffMember = staff;
-                    if (staff.role == "doctor")
-                        socket.id = String(staff._id);
+                    socket.id = String(staff._id);
+                    if (staff.role == "doctor") {
+                        doctorsArray = [...new Set([...doctorsArray, String(socket.id)])];
+                        socket.handshake.auth.role = "doctor";
+                    }
                     else if (staff.role == "receiption") {
                         // socket.id = "receiptionSupport";
-                        socket.id = String(staff._id);
                         socket.join("receiptionSupport");
+                        socket.handshake.auth.role = "receiption";
+                        receiptionSupportArray = [...new Set([...receiptionSupportArray, String(socket.id)])];
                     }
                     else if (staff.role == "storeManager") {
-                        // socket.id = "receiptionSupport";
-                        socket.id = String(staff._id);
+                        // socket.id = "receiptionSupport";                       
                         socket.join("storeSupport");
+                        socket.handshake.auth.role = "store";
+                        storeSupportArray = [...new Set([...storeSupportArray, String(socket.id)])];
                     }
                     next();
                 }
@@ -58,7 +72,11 @@ const socketIoEvents = (io) => {
     }));
     io.on('connection', (socket) => {
         console.log("socket connect");
-        console.log(socket.id);
+        console.log(socket.handshake.auth.role);
+        console.log(usersArray);
+        console.log(doctorsArray);
+        console.log(receiptionSupportArray);
+        console.log(storeSupportArray);
         socket.on("hello", (data, ack) => {
             console.log(data);
             // socket.emit("hello", "connect successfully");
@@ -67,7 +85,6 @@ const socketIoEvents = (io) => {
         });
         socket.on('user-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                console.log(data);
                 let { message, doctorId } = data;
                 let user = socket.handshake.auth.user;
                 let isThereAppointmentBetween = yield Appointments_1.default.findOne({ user: user._id, doctor: doctorId });
@@ -76,12 +93,20 @@ const socketIoEvents = (io) => {
                     if (!isConversationExist) {
                         isConversationExist = yield Conversations_1.default.create({ doctorId, userId: user._id });
                     }
-                    // socket.join(String(isConversationExist._id));
                     let newMessage = yield Messages_1.default.create({ userId: user._id, message, conversation: isConversationExist._id, by: "user" });
                     isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
                     yield isConversationExist.save();
                     //send message to doctor
-                    io.to(String(doctorId)).emit("new-message", { message, from: user.fullName, userId: user._id, conversationId: isConversationExist._id });
+                    let isOnline = doctorsArray.find(x => x == String(doctorId));
+                    if (isOnline)
+                        io.to(String(doctorId)).emit("new-message", { message, from: user.fullName, userId: user._id, conversationId: isConversationExist._id });
+                    else {
+                        let doctor = yield Staff_1.default.findById(doctorId);
+                        (0, SendNotifications_1.default)(doctor.registrationTokens, {
+                            title: "new message",
+                            body: { message, from: user.fullName, userId: user._id, conversationId: isConversationExist._id }
+                        });
+                    }
                     if (ack) {
                         ack({ status: 200, msg: "message sent successfully" });
                     }
@@ -111,7 +136,17 @@ const socketIoEvents = (io) => {
                     isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
                     yield isConversationExist.save();
                     //send message to doctor
-                    io.to(String(userId)).emit("new-message", { message, from: staff.name, doctorId: staff._id, conversationId: isConversationExist._id });
+                    let isOnline = usersArray.find(x => x == String(userId));
+                    if (isOnline)
+                        io.to(String(userId)).emit("new-message", { message, from: staff.name, doctorId: staff._id, conversationId: isConversationExist._id });
+                    else {
+                        let user = yield User_1.default.findById(userId);
+                        let registrationTokens = user.registrationTokens.filter(x => Boolean(x) != false);
+                        (0, SendNotifications_1.default)(registrationTokens, {
+                            title: "new message",
+                            body: JSON.stringify({ message, from: staff.name, doctorId: staff._id, conversationId: isConversationExist._id })
+                        });
+                    }
                     if (ack) {
                         ack({ status: 200, msg: "message sent successfully" });
                     }
@@ -137,7 +172,16 @@ const socketIoEvents = (io) => {
                 isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
                 yield isConversationExist.save();
                 //send message to doctor
-                io.to(String(userId)).emit("new-message", { message, from: "receiption-support", conversationId: isConversationExist._id });
+                let isOnline = usersArray.find(x => x == String(userId));
+                if (isOnline)
+                    io.to(String(userId)).emit("new-message", { message, from: "receiption-support", conversationId: isConversationExist._id });
+                else {
+                    let user = yield User_1.default.findById(userId);
+                    (0, SendNotifications_1.default)(user.registrationTokens, {
+                        title: "new message",
+                        body: { message, from: "receiption-support", conversationId: isConversationExist._id }
+                    });
+                }
                 if (ack) {
                     ack({ status: 200, msg: "message sent successfully" });
                 }
@@ -160,7 +204,17 @@ const socketIoEvents = (io) => {
                 isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
                 yield isConversationExist.save();
                 //send message to support
-                io.in('receiptionSupport').emit("new-message", { message, from: user.fullName, userId: user._id, conversationId: isConversationExist._id });
+                let isThereSupportOnline = receiptionSupportArray.length > 0;
+                if (isThereSupportOnline)
+                    io.in('receiptionSupport').emit("new-message", { message, from: user.fullName, userId: user._id, conversationId: isConversationExist._id });
+                else {
+                    const receptionSupportMemebers = yield Staff_1.default.find({ role: "receiption" });
+                    let receptionSupportMemebersTokens = receptionSupportMemebers.map(x => x.registrationTokens).flat();
+                    yield (0, SendNotifications_1.default)(receptionSupportMemebersTokens, {
+                        title: "new message",
+                        body: { message, from: user.fullName, userId: user._id, conversationId: isConversationExist._id }
+                    });
+                }
                 if (ack) {
                     ack({ status: 200, msg: "message sent successfully" });
                 }
@@ -182,7 +236,16 @@ const socketIoEvents = (io) => {
                 isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
                 yield isConversationExist.save();
                 //send message to doctor
-                io.to(String(userId)).emit("new-message", { message, from: "store-support", conversationId: isConversationExist._id });
+                let isOnline = usersArray.find(x => x == String(userId));
+                if (isOnline)
+                    io.to(String(userId)).emit("new-message", { message, from: "store-support", conversationId: isConversationExist._id });
+                else {
+                    let user = yield User_1.default.findById(userId);
+                    (0, SendNotifications_1.default)(user.registrationTokens, {
+                        title: "new message",
+                        body: { message, from: "store-support", conversationId: isConversationExist._id }
+                    });
+                }
                 if (ack) {
                     ack({ status: 200, msg: "message sent successfully" });
                 }
@@ -205,7 +268,17 @@ const socketIoEvents = (io) => {
                 isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
                 yield isConversationExist.save();
                 //send message to support
-                io.in('storeSupport').emit("new-message", { message, from: user.fullName, userId: user._id, conversationId: isConversationExist._id });
+                let isThereSupportOnline = storeSupportArray.length > 0;
+                if (isThereSupportOnline)
+                    io.in('receiptionSupport').emit("new-message", { message, from: user.fullName, userId: user._id, conversationId: isConversationExist._id });
+                else {
+                    const storeSupportMemebers = yield Staff_1.default.find({ role: "storeManager" });
+                    let storeSupportMemebersTokens = storeSupportMemebers.map(x => x.registrationTokens).flat();
+                    yield (0, SendNotifications_1.default)(storeSupportMemebersTokens, {
+                        title: "new message",
+                        body: { message, from: user.fullName, userId: user._id, conversationId: isConversationExist._id }
+                    });
+                }
                 if (ack) {
                     ack({ status: 200, msg: "message sent successfully" });
                 }
@@ -216,6 +289,20 @@ const socketIoEvents = (io) => {
             }
         }));
         socket.on("disconnect", () => {
+            let role = socket.handshake.auth.role;
+            let socketId = socket.id;
+            if (role == "user") {
+                usersArray = usersArray.filter(x => x != socketId);
+            }
+            else if (role == "doctor") {
+                doctorsArray = doctorsArray.filter(x => x != socketId);
+            }
+            else if (role == "receiption") {
+                receiptionSupportArray = receiptionSupportArray.filter(x => x != socketId);
+            }
+            else if (role == "store") {
+                storeSupportArray = storeSupportArray.filter(x => x != socketId);
+            }
             console.log("disconnect");
         });
     });
