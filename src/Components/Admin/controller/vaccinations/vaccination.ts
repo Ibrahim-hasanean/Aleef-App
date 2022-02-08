@@ -37,14 +37,14 @@ export const deleteVaccinationById = async (req: Request, res: Response, next: N
 }
 
 export const addVaccination = async (req: Request, res: Response, next: NextFunction) => {
-    let { name, dates, repetition, notes } = req.body;
+    let { name, date, repetition, durations, notes } = req.body;
     let petId = req.params.id;
     if (!mongoose.isValidObjectId(petId)) {
         return res.status(400).json({ status: 400, msg: "pet not found" });
     }
     let pet: PetsInterface = await Pets.findById(petId).populate("vaccinations") as PetsInterface;
     if (!pet) return res.status(400).json({ status: 400, msg: "pet not found" });
-    let newVaccinations: PetsVaccination = await Vaccination.create({ name, dates, pet: petId, repetition, notes });
+    let newVaccinations: PetsVaccination = await Vaccination.create({ name, date, pet: petId, repetition, durations, notes });
     pet.vaccinations = [...pet.vaccinations, newVaccinations._id];
     await pet.save();
     return res.status(201).json({
@@ -55,7 +55,7 @@ export const addVaccination = async (req: Request, res: Response, next: NextFunc
 }
 
 export const updateVaccination = async (req: Request, res: Response, next: NextFunction) => {
-    let { name, dates, repetition, notes } = req.body;
+    let { name, date, repetition, durations, notes } = req.body;
     let petId = req.params.id;
     let vaccinationId = req.params.vaccinationId;
     if (!mongoose.isValidObjectId(petId)) {
@@ -63,7 +63,7 @@ export const updateVaccination = async (req: Request, res: Response, next: NextF
     }
     let pet: PetsInterface = await Pets.findById(petId).populate("vaccinations") as PetsInterface;
     if (!pet) return res.status(400).json({ status: 400, msg: "pet not found" });
-    let newVaccinations: PetsVaccination = await Vaccination.findByIdAndUpdate(vaccinationId, { name, dates, repetition, notes }) as PetsVaccination;
+    let newVaccinations: PetsVaccination = await Vaccination.findByIdAndUpdate(vaccinationId, { name, date, pet: petId, repetition, durations, notes }) as PetsVaccination;
     return res.status(200).json({
         status: 200,
         msg: "vaccination updated to pet  successfully",

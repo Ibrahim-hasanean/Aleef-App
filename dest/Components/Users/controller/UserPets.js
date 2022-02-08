@@ -18,7 +18,6 @@ const PetsTypes_1 = __importDefault(require("../../../models/PetsTypes"));
 const Breed_1 = __importDefault(require("../../../models/Breed"));
 const Appointments_1 = __importDefault(require("../../../models/Appointments"));
 const Vaccination_1 = __importDefault(require("../../../models/Vaccination"));
-const getNextVaccination_1 = __importDefault(require("../../utils/getNextVaccination"));
 const Medacine_1 = __importDefault(require("../../../models/Medacine"));
 const uploadFileToFirebase_1 = __importDefault(require("../../utils/uploadFileToFirebase"));
 const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -98,6 +97,7 @@ const updatePet = (req, res, next) => __awaiter(void 0, void 0, void 0, function
 });
 exports.updatePet = updatePet;
 const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     const petId = req.params.id;
     let user = req.user;
     let pet = yield Pets_1.default.findOne({ user: user._id, _id: petId })
@@ -121,13 +121,17 @@ const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         .find({ pet: petId })
         .sort({ createdAt: "desc" })
         .limit(1);
+    // let vaccination: PetsVaccination[] = await Vaccination
+    //     .find({ pet: petId, dates: { $elemMatch: { $gte: date } } });
     let vaccination = yield Vaccination_1.default
-        .find({ pet: petId, dates: { $elemMatch: { $gte: date } } });
-    let nextVaccination = (0, getNextVaccination_1.default)(vaccination);
+        .find({ pet: petId, date: { $gte: date } }).sort({ date: "asc" }).limit(1);
+    // let nextVaccination = getNextVaccination(vaccination);
     return res.status(200).json({
         status: 200,
         data: {
-            pet: Object.assign(Object.assign({}, pet === null || pet === void 0 ? void 0 : pet.toJSON()), { lastCheckUp: (appointment[0] && appointment[0].appointmentDate) || "", lastGrooming: (grooming[0] && grooming[0].appointmentDate) || "", lastPrescription: (medacin[0] && medacin[0].createdAt) || "", nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination })
+            pet: Object.assign(Object.assign({}, pet === null || pet === void 0 ? void 0 : pet.toJSON()), { lastCheckUp: (appointment[0] && appointment[0].appointmentDate) || "", lastGrooming: (grooming[0] && grooming[0].appointmentDate) || "", lastPrescription: (medacin[0] && medacin[0].createdAt) || "", 
+                // nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination
+                nextVaccination: (_b = (_a = vaccination[0]) === null || _a === void 0 ? void 0 : _a.date) !== null && _b !== void 0 ? _b : "" })
         }
     });
 });

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userAppointments = exports.getAvaliableDoctrs = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
+exports.addReportToAppointment = exports.userAppointments = exports.getAvaliableDoctrs = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
 const Appointments_1 = __importDefault(require("../../../../models/Appointments"));
 const getFreeTimes_1 = __importDefault(require("../../../utils/getFreeTimes"));
 const getFreeDoctors_1 = __importDefault(require("../../../utils/getFreeDoctors"));
@@ -186,3 +186,14 @@ const userAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     return res.status(200).json({ status: 200, data: { user, appointments: userAppointments } });
 });
 exports.userAppointments = userAppointments;
+const addReportToAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let { report } = req.body;
+    let appointmentId = req.params.id;
+    let isAppointmentExist = yield Appointments_1.default.findById(appointmentId);
+    if (!isAppointmentExist)
+        return res.status(400).json({ status: 400, msg: `there not appointment with id ${appointmentId}` });
+    isAppointmentExist.report = report;
+    yield isAppointmentExist.save();
+    return res.status(200).json({ status: 200, msg: "report added successfully" });
+});
+exports.addReportToAppointment = addReportToAppointment;

@@ -207,7 +207,6 @@ export const getReminder = async (req: Request, res: Response, next: NextFunctio
     } else {
         appointmentsQuery = { $gte: beginDay };
     }
-    console.log(appointmentsQuery)
     let pets = await Pets.find({ user: user._id })
         .populate({
             path: "appointments",
@@ -220,23 +219,29 @@ export const getReminder = async (req: Request, res: Response, next: NextFunctio
         })
         .populate({
             path: "vaccinations",
-            select: "dates",
-            match: { dates: { $elemMatch: { $gte: beginDay, $lte: endDay } } },
+            select: "date",
+            match: { date: { $gte: beginDay, $lte: endDay } }, options: {
+                sort: { date: "asc" },
+                limit: 1
+            },
         });
 
     const nextVaccination = pets
         .filter(x => x.vaccinations.length > 0)
-        .map(pet => ({
-            name: pet.name,
-            date: pet.vaccinations
-                .map((x) => {
-                    let vacination: PetsVaccination = x as PetsVaccination;
-                    return vacination.dates;
-                })
-                .flat()
-                .filter(x => new Date(x) > beginDay && new Date(x) < endDay)
-                .sort((x: Date, b: Date) => (new Date(x).getTime() - new Date(b).getTime()))[0]
-        }));
+        .map(pet => {
+            let vaccination: PetsVaccination = pet.vaccinations[0] as PetsVaccination;
+            return ({
+                name: pet.name,
+                date: vaccination?.date ?? ""
+            })
+            // .map((x) => {
+            //     let vacination: PetsVaccination = x as PetsVaccination;
+            //     return vacination.dates;
+            // })
+            // .flat()
+            // .filter(x => new Date(x) > beginDay && new Date(x) < endDay)
+            // .sort((x: Date, b: Date) => (new Date(x).getTime() - new Date(b).getTime()))[0]
+        });
 
     let nextAppontments = pets.filter(x => x.appointments.length > 0).map(pet => ({ name: pet.name, date: pet.appointments }));
 

@@ -20,7 +20,8 @@ export interface AppointmentsInterface extends mongoose.Document {
     paymentStatus: string,
     payment: ObjectId | PaymentInterFace | null,
     paymentType: string
-    invoice: ObjectId[] | InvoiceInterface[]
+    invoice: ObjectId[] | InvoiceInterface[],
+    totalAmount: number
 }
 
 const appointmentSchema = new Schema({
@@ -36,6 +37,7 @@ const appointmentSchema = new Schema({
     paymentStatus: { type: String, default: "Not Completed" },
     payment: { type: mongoose.Types.ObjectId, ref: "payments" },
     paymentType: { type: String },
+    totalAmount: { type: Number },
     invoice: [{ type: mongoose.Types.ObjectId, ref: "invoices" }],
 
 }, { timestamps: true });

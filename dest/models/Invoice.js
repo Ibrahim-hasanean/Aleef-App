@@ -21,7 +21,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const invoiceSchema = new mongoose_1.Schema({
+    totalAmount: { type: Number, required: true },
     paymentAmount: { type: Number, required: true },
+    discount: { type: Number, default: 0 },
     reason: { type: String },
     appointment: { type: mongoose_1.default.Types.ObjectId, ref: "appointments" },
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },

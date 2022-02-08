@@ -33,6 +33,7 @@ const appointmentSchema = new mongoose_1.Schema({
     paymentStatus: { type: String, default: "Not Completed" },
     payment: { type: mongoose_1.default.Types.ObjectId, ref: "payments" },
     paymentType: { type: String },
+    totalAmount: { type: Number },
     invoice: [{ type: mongoose_1.default.Types.ObjectId, ref: "invoices" }],
 }, { timestamps: true });
 const Appointments = mongoose_1.default.model("appointments", appointmentSchema);

@@ -2,7 +2,7 @@ import { PetsVaccination } from "../../models/Vaccination";
 export default function (vaccinations: PetsVaccination[]) {
     let nextVaccination: any;
     let nowDate = new Date();
-    let dates = vaccinations.map(x => x.dates).join(",").split(",");
+    let dates = vaccinations.map(x => x.date).join(",").split(",");
     dates.forEach((vacination: any) => {
         let vacinationDate = new Date(String(vacination));
         if (!nextVaccination) {

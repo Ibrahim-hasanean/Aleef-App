@@ -49,7 +49,7 @@ const deleteVaccinationById = (req, res, next) => __awaiter(void 0, void 0, void
 });
 exports.deleteVaccinationById = deleteVaccinationById;
 const addVaccination = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { name, dates, repetition, notes } = req.body;
+    let { name, date, repetition, durations, notes } = req.body;
     let petId = req.params.id;
     if (!mongoose_1.default.isValidObjectId(petId)) {
         return res.status(400).json({ status: 400, msg: "pet not found" });
@@ -57,7 +57,7 @@ const addVaccination = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     let pet = yield Pets_1.default.findById(petId).populate("vaccinations");
     if (!pet)
         return res.status(400).json({ status: 400, msg: "pet not found" });
-    let newVaccinations = yield Vaccination_1.default.create({ name, dates, pet: petId, repetition, notes });
+    let newVaccinations = yield Vaccination_1.default.create({ name, date, pet: petId, repetition, durations, notes });
     pet.vaccinations = [...pet.vaccinations, newVaccinations._id];
     yield pet.save();
     return res.status(201).json({
@@ -68,7 +68,7 @@ const addVaccination = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.addVaccination = addVaccination;
 const updateVaccination = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { name, dates, repetition, notes } = req.body;
+    let { name, date, repetition, durations, notes } = req.body;
     let petId = req.params.id;
     let vaccinationId = req.params.vaccinationId;
     if (!mongoose_1.default.isValidObjectId(petId)) {
@@ -77,7 +77,7 @@ const updateVaccination = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     let pet = yield Pets_1.default.findById(petId).populate("vaccinations");
     if (!pet)
         return res.status(400).json({ status: 400, msg: "pet not found" });
-    let newVaccinations = yield Vaccination_1.default.findByIdAndUpdate(vaccinationId, { name, dates, repetition, notes });
+    let newVaccinations = yield Vaccination_1.default.findByIdAndUpdate(vaccinationId, { name, date, pet: petId, repetition, durations, notes });
     return res.status(200).json({
         status: 200,
         msg: "vaccination updated to pet  successfully",

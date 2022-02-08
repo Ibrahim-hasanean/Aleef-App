@@ -221,7 +221,6 @@ const getReminder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     else {
         appointmentsQuery = { $gte: beginDay };
     }
-    console.log(appointmentsQuery);
     let pets = yield Pets_1.default.find({ user: user._id })
         .populate({
         path: "appointments",
@@ -234,22 +233,29 @@ const getReminder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     })
         .populate({
         path: "vaccinations",
-        select: "dates",
-        match: { dates: { $elemMatch: { $gte: beginDay, $lte: endDay } } },
+        select: "date",
+        match: { date: { $gte: beginDay, $lte: endDay } }, options: {
+            sort: { date: "asc" },
+            limit: 1
+        },
     });
     const nextVaccination = pets
         .filter(x => x.vaccinations.length > 0)
-        .map(pet => ({
-        name: pet.name,
-        date: pet.vaccinations
-            .map((x) => {
-            let vacination = x;
-            return vacination.dates;
-        })
-            .flat()
-            .filter(x => new Date(x) > beginDay && new Date(x) < endDay)
-            .sort((x, b) => (new Date(x).getTime() - new Date(b).getTime()))[0]
-    }));
+        .map(pet => {
+        var _a;
+        let vaccination = pet.vaccinations[0];
+        return ({
+            name: pet.name,
+            date: (_a = vaccination === null || vaccination === void 0 ? void 0 : vaccination.date) !== null && _a !== void 0 ? _a : ""
+        });
+        // .map((x) => {
+        //     let vacination: PetsVaccination = x as PetsVaccination;
+        //     return vacination.dates;
+        // })
+        // .flat()
+        // .filter(x => new Date(x) > beginDay && new Date(x) < endDay)
+        // .sort((x: Date, b: Date) => (new Date(x).getTime() - new Date(b).getTime()))[0]
+    });
     let nextAppontments = pets.filter(x => x.appointments.length > 0).map(pet => ({ name: pet.name, date: pet.appointments }));
     return res.status(200).json({ status: 200, data: { nextVaccination, nextAppontments, pets } });
 });

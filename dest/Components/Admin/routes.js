@@ -52,6 +52,7 @@ router.post("/auth/verify", (0, validateAuth_1.validate)(validateAuth_1.verifyCo
 router.get("/admin-home", verifyAdmin_1.default, home_1.adminHome);
 // invoices routes
 router.post("/invoice", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateInvoice_1.InvoiceSchema), Invoice_1.addInvoice);
+router.post("/invoice/doctor", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateInvoice_1.doctorInvoiceSchema), Invoice_1.doctorAddInvoice);
 router.get("/invoice", verifyStaffMember_1.default, Invoice_1.getInvoicements);
 // profile
 router.patch("/profile", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);
@@ -111,6 +112,7 @@ router.patch("/appointments/:id", verifyStaffMember_1.default, (0, validateAuth_
 router.get("/appointments/avaliable", verifyStaffMember_1.default, appointments_1.getAvaliableTime);
 router.get("/appointments/doctors", verifyStaffMember_1.default, appointments_1.getAvaliableDoctrs);
 router.get("/appointments/users/:id", verifyStaffMember_1.default, appointments_1.userAppointments);
+router.post("/appointments/:id/report", verifyStaffMember_1.default, appointments_1.addReportToAppointment);
 router.get("/appointments/:id", verifyStaffMember_1.default, appointments_1.getAppointmentsById);
 router.delete("/appointments/:id", verifyStaffMember_1.default, appointments_1.deleteAppointments);
 // Staff routes

@@ -111,9 +111,12 @@ export const getPetById = async (req: Request, res: Response, next: NextFunction
         .sort({ createdAt: "desc" })
         .limit(1);
 
+    // let vaccination: PetsVaccination[] = await Vaccination
+    //     .find({ pet: petId, dates: { $elemMatch: { $gte: date } } });
+
     let vaccination: PetsVaccination[] = await Vaccination
-        .find({ pet: petId, dates: { $elemMatch: { $gte: date } } });
-    let nextVaccination = getNextVaccination(vaccination);
+        .find({ pet: petId, date: { $gte: date } }).sort({ date: "asc" }).limit(1);
+    // let nextVaccination = getNextVaccination(vaccination);
     return res.status(200).json({
         status: 200,
         data: {
@@ -122,7 +125,8 @@ export const getPetById = async (req: Request, res: Response, next: NextFunction
                 lastCheckUp: (appointment[0] && appointment[0].appointmentDate) || "",
                 lastGrooming: (grooming[0] && grooming[0].appointmentDate) || "",
                 lastPrescription: (medacin[0] && medacin[0].createdAt) || "",
-                nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination
+                // nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination
+                nextVaccination: vaccination[0]?.date ?? ""
             }
         }
     });

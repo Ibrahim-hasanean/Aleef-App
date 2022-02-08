@@ -6,7 +6,7 @@ export interface PetsMedacins extends mongoose.Document {
     name: string
     repetition: number
     duration: number
-    pet: ObjectId | PetsInterface
+    pet: ObjectId | PetsInterface | string
     appointment: ObjectId | AppointmentsInterface
     notes: string
     createdAt: Date
@@ -22,6 +22,6 @@ const medicinSchema = new Schema({
     notes: { type: String }
 }, { timestamps: true })
 
-const medicins = mongoose.model("medicins", medicinSchema);
+const medicins = mongoose.model<PetsMedacins>("medicins", medicinSchema);
 
 export default medicins;

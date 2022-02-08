@@ -5,7 +5,16 @@ import { addItemCategory, getItemsCategory, deleteCategory } from "./controller/
 import { addItem, deleteItem, getItemById, getItems, updateItem, itemsHome } from "./controller/Items/items";
 import { addService, deleteService, getServiceById, getServices } from "./controller/services/services";
 import { addStaff, defaultAdmin, deleteStaffMember, getStaffMemeberById, getStaffMemebers, updateStaff, getWorkHoures, setWorkHoures } from "./controller/staff/staff";
-import { addAppointment, deleteAppointments, getAppointments, getAppointmentsById, getAvaliableTime, updateAppointment, getAvaliableDoctrs, userAppointments } from "./controller/appointments/appointments";
+import {
+    addAppointment,
+    deleteAppointments,
+    getAppointments,
+    getAppointmentsById,
+    getAvaliableTime,
+    updateAppointment,
+    getAvaliableDoctrs,
+    userAppointments, addReportToAppointment
+} from "./controller/appointments/appointments";
 import {
     addAppointmentsPayment,
     deleteAppointmentsPayment,
@@ -41,8 +50,8 @@ import { addMedacin, updateMedacin, deleteMedacin, getMedacinById, getPetMedacin
 import { addHealthCareTip, getHealthCare } from "./controller/HealthCare/HealthCare";
 import { addReadAbout, getReadAboute } from "./controller/ReadAbout/ReadAbout";
 import { addLocation, getLocation } from "./controller/Location/Location";
-import { addInvoice, getInvoicements } from "./controller/Invoice/Invoice";
-import { InvoiceSchema } from "./middleware/validateInvoice"
+import { addInvoice, getInvoicements, doctorAddInvoice } from "./controller/Invoice/Invoice";
+import { InvoiceSchema, doctorInvoiceSchema } from "./middleware/validateInvoice"
 import upload from "../middlewares/uploadImage";
 import { adminHome } from "./controller/home/home";
 
@@ -57,6 +66,7 @@ router.get("/admin-home", verifyAdmin, adminHome);
 
 // invoices routes
 router.post("/invoice", verifyStaffMember, validate(InvoiceSchema), addInvoice);
+router.post("/invoice/doctor", verifyStaffMember, validate(doctorInvoiceSchema), doctorAddInvoice);
 router.get("/invoice", verifyStaffMember, getInvoicements);
 
 // profile
@@ -132,6 +142,7 @@ router.patch("/appointments/:id", verifyStaffMember, validate(AppointmentSchema)
 router.get("/appointments/avaliable", verifyStaffMember, getAvaliableTime);
 router.get("/appointments/doctors", verifyStaffMember, getAvaliableDoctrs);
 router.get("/appointments/users/:id", verifyStaffMember, userAppointments);
+router.post("/appointments/:id/report", verifyStaffMember, addReportToAppointment);
 router.get("/appointments/:id", verifyStaffMember, getAppointmentsById);
 router.delete("/appointments/:id", verifyStaffMember, deleteAppointments);
 

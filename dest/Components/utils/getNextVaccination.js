@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 function default_1(vaccinations) {
     let nextVaccination;
     let nowDate = new Date();
-    let dates = vaccinations.map(x => x.dates).join(",").split(",");
+    let dates = vaccinations.map(x => x.date).join(",").split(",");
     dates.forEach((vacination) => {
         let vacinationDate = new Date(String(vacination));
         if (!nextVaccination) {
