@@ -14,9 +14,9 @@ const port = process.env.PORT || 3000;
 import socketIoEvents from "./socketIoEvents/socketIoEvents"
 require("./config/mongoose");
 
-cron.schedule("* * * * *", appointmentsNotifications);
+app.use(cors({ origin: "*" }));
 
-app.use(cors());
+cron.schedule("* * * * *", appointmentsNotifications);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.get("/", (req: Request, res: Response, next: NextFunction) => {
