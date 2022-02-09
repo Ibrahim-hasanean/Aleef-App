@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 import socketIoEvents from "./socketIoEvents/socketIoEvents"
 require("./config/mongoose");
 
-app.use(cors({ origin: false }));
+app.use(cors({ origin: "http://localhost:3000" }));
 
 cron.schedule("* * * * *", appointmentsNotifications);
 app.use(express.json());
