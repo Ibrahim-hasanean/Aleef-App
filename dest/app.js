@@ -37,7 +37,7 @@ const io = new ioServer.Server(server);
 const port = process.env.PORT || 3000;
 const socketIoEvents_1 = __importDefault(require("./socketIoEvents/socketIoEvents"));
 require("./config/mongoose");
-app.use((0, cors_1.default)({ origin: "*" }));
+app.use((0, cors_1.default)({ origin: false }));
 node_cron_1.default.schedule("* * * * *", CronJob_1.default);
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
