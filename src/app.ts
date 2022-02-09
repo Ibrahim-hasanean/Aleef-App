@@ -13,8 +13,14 @@ const io = new ioServer.Server(server);
 const port = process.env.PORT || 3000;
 import socketIoEvents from "./socketIoEvents/socketIoEvents"
 require("./config/mongoose");
-
-app.use(cors({ origin: "http://localhost:3000" }));
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
+// app.use(cors());
+// app.use(cors({ origin: "http://localhost:3000" }));
 
 cron.schedule("* * * * *", appointmentsNotifications);
 app.use(express.json());
