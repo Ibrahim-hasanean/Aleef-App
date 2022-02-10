@@ -15,7 +15,7 @@ import socketIoEvents from "./socketIoEvents/socketIoEvents"
 require("./config/mongoose");
 
 
-app.use(cors({ origin: '*', preflightContinue: true }));
+app.use(cors({ origin: 'http://localhost:3000/', preflightContinue: true }));
 // app.use((req, res, next) => {
 //     res.setHeader('Access-Control-Allow-Origin', '*');
 //     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
