@@ -27,6 +27,7 @@ const celebrate_1 = require("celebrate");
 const routes_1 = __importDefault(require("./Components/Users/routes"));
 const routes_2 = __importDefault(require("./Components/Admin/routes"));
 const node_cron_1 = __importDefault(require("node-cron"));
+const cors_1 = __importDefault(require("cors"));
 const CronJob_1 = __importDefault(require("./Components/utils/CronJob"));
 const ioServer = __importStar(require("socket.io"));
 const http_1 = __importDefault(require("http"));
@@ -36,12 +37,13 @@ const io = new ioServer.Server(server);
 const port = process.env.PORT || 3000;
 const socketIoEvents_1 = __importDefault(require("./socketIoEvents/socketIoEvents"));
 require("./config/mongoose");
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
-});
+app.use((0, cors_1.default)({ origin: '*', preflightContinue: true }));
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+//     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//     next();
+// });
 // app.use(cors());
 // app.use(cors({ origin: "http://localhost:3000" }));
 node_cron_1.default.schedule("* * * * *", CronJob_1.default);
