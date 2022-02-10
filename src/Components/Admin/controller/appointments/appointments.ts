@@ -67,48 +67,53 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
 }
 
 export const getAppointments = async (req: Request, res: Response, next: NextFunction) => {
-    let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day, status } =
-        req.query as
-        {
-            page: string,
-            pageSize: string,
-            service: string,
-            doctorId: string,
-            userId: string,
-            paymentStatus: string,
-            petId: string,
-            day: string,
-            status: string,
-        };
-    let numberPageSize = pageSize ? Number(pageSize) : 15;
-    let skip = (Number(page || 1) - 1) * numberPageSize;
-    let query: any = {};
-    if (service) query.service = service;
-    if (userId) query.user = userId;
-    if (doctorId) query.doctor = doctorId;
-    if (petId) query.pet = petId;
-    if (paymentStatus) query.paymentStatus = paymentStatus;
-    if (day) {
-        let beginDay = new Date(day);
-        beginDay.setUTCHours(0);
-        beginDay.setMinutes(0);
-        beginDay.setUTCMilliseconds(0);
-        let endDay = new Date(day);
-        endDay.setUTCHours(24);
-        endDay.setMinutes(0);
-        endDay.setUTCMilliseconds(0);
-        query.appointmentDate = { $gte: beginDay, $lte: endDay }
-        console.log(query)
+    try {
+        let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day, status } =
+            req.query as
+            {
+                page: string,
+                pageSize: string,
+                service: string,
+                doctorId: string,
+                userId: string,
+                paymentStatus: string,
+                petId: string,
+                day: string,
+                status: string,
+            };
+        let numberPageSize = pageSize ? Number(pageSize) : 15;
+        let skip = (Number(page || 1) - 1) * numberPageSize;
+        let query: any = {};
+        if (service) query.service = service;
+        if (userId) query.user = userId;
+        if (doctorId) query.doctor = doctorId;
+        if (petId) query.pet = petId;
+        if (paymentStatus) query.paymentStatus = paymentStatus;
+        if (day) {
+            let beginDay = new Date(day);
+            beginDay.setUTCHours(0);
+            beginDay.setMinutes(0);
+            beginDay.setUTCMilliseconds(0);
+            let endDay = new Date(day);
+            endDay.setUTCHours(24);
+            endDay.setMinutes(0);
+            endDay.setUTCMilliseconds(0);
+            query.appointmentDate = { $gte: beginDay, $lte: endDay }
+            console.log(query)
+        }
+        if (status) query.status = status;
+        const appointments = await Appointments.find(query)
+            .sort({ appointmentDate: "desc" })
+            .skip(skip)
+            .limit(numberPageSize)
+            .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
+            .populate({ path: "pet", select: ['name', 'serialNumber', 'age'] })
+            .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
+        return res.status(200).json({ status: 200, data: { appointments } });
+    } catch (error: any) {
+        console.log(error);
+        return res.status(500).json({ status: 500, msg: error.message })
     }
-    if (status) query.status = status;
-    const appointments = await Appointments.find(query)
-        .sort({ appointmentDate: "desc" })
-        .skip(skip)
-        .limit(numberPageSize)
-        .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
-        .populate({ path: "pet", select: ['name', 'serialNumber', 'age'] })
-        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
-    return res.status(200).json({ status: 200, data: { appointments } });
 }
 
 

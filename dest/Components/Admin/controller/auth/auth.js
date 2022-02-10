@@ -31,18 +31,24 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 });
 exports.login = login;
 const verifyCode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { phoneNumber, code } = req.body;
-    const staffMember = yield Staff_1.default.findOne({ phoneNumber });
-    if (!staffMember)
-        return res.status(400).json({ status: 400, msg: `staff member with phonenumber ${phoneNumber} not exist` });
-    let isCodeEqual = staffMember.code === code;
-    if (isCodeEqual) {
-        const staffMembersToken = process.env.STAF_TOKEN_SECRET;
-        let token = jsonwebtoken_1.default.sign({ staffId: staffMember._id, phoneNumber: staffMember.phoneNumber }, staffMembersToken, { expiresIn: "7 days" });
-        staffMember.code = '';
-        yield staffMember.save();
-        return res.status(200).json({ status: 200, data: { staffMember: staffMember, token } });
+    try {
+        const { phoneNumber, code } = req.body;
+        const staffMember = yield Staff_1.default.findOne({ phoneNumber });
+        if (!staffMember)
+            return res.status(400).json({ status: 400, msg: `staff member with phonenumber ${phoneNumber} not exist` });
+        let isCodeEqual = staffMember.code === code;
+        if (isCodeEqual) {
+            const staffMembersToken = process.env.STAF_TOKEN_SECRET;
+            let token = jsonwebtoken_1.default.sign({ staffId: staffMember._id, phoneNumber: staffMember.phoneNumber }, staffMembersToken, { expiresIn: "7 days" });
+            staffMember.code = '';
+            yield staffMember.save();
+            return res.status(200).json({ status: 200, data: { staffMember: staffMember, token } });
+        }
+        return res.status(400).json({ status: 400, msg: "code is wrong" });
     }
-    return res.status(400).json({ status: 400, msg: "code is wrong" });
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, msg: error.message });
+    }
 });
 exports.verifyCode = verifyCode;
