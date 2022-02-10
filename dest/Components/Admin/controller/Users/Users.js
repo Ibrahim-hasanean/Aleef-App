@@ -18,29 +18,35 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const Appointments_1 = __importDefault(require("../../../../models/Appointments"));
 const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, limit, text, phoneNumber } = req.query;
-    const limitNumber = Number(limit) || 10;
-    const skip = (Number(page || 1) - 1) * limitNumber;
-    let query = {};
-    if (text)
-        query.fullName = { $regex: text, $options: "i" };
-    if (phoneNumber)
-        query.phoneNumber = phoneNumber;
-    const users = yield User_1.default.find(query)
-        .sort({ createdAt: "desc" })
-        .skip(skip)
-        .limit(limitNumber)
-        .select(['fullName', 'phoneNumber', 'email', 'isSuspend'])
-        .populate({ path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'] });
-    var results = yield Promise.all(users.map((user) => __awaiter(void 0, void 0, void 0, function* () {
-        let lastUsetVisit = yield Appointments_1.default.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
-        return Object.assign({ lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }, user.toJSON());
-    })));
-    // let reponseUsers = users.map(async (user: UserInterface) => {
-    //     let lastUsetVisit = await Appointments.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
-    //     return { ...user.toJSON(), lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }
-    // })
-    return res.status(200).json({ status: 200, data: { users: results } });
+    try {
+        let { page, limit, text, phoneNumber } = req.query;
+        const limitNumber = Number(limit) || 10;
+        const skip = (Number(page || 1) - 1) * limitNumber;
+        let query = {};
+        if (text)
+            query.fullName = { $regex: text, $options: "i" };
+        if (phoneNumber)
+            query.phoneNumber = phoneNumber;
+        const users = yield User_1.default.find(query)
+            .sort({ createdAt: "desc" })
+            .skip(skip)
+            .limit(limitNumber)
+            .select(['fullName', 'phoneNumber', 'email', 'isSuspend'])
+            .populate({ path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'] });
+        var results = yield Promise.all(users.map((user) => __awaiter(void 0, void 0, void 0, function* () {
+            let lastUsetVisit = yield Appointments_1.default.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
+            return Object.assign({ lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }, user.toJSON());
+        })));
+        // let reponseUsers = users.map(async (user: UserInterface) => {
+        //     let lastUsetVisit = await Appointments.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
+        //     return { ...user.toJSON(), lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }
+        // })
+        return res.status(200).json({ status: 200, data: { users: results } });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, msg: error.message });
+    }
 });
 exports.getUsers = getUsers;
 const getUserById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
