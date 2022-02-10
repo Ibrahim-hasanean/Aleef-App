@@ -130,25 +130,31 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 exports.getAppointments = getAppointments;
 const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    let id = req.params.id;
-    const appointment = yield Appointments_1.default.findById(id)
-        .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
-        .populate({ path: "pet", select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes'] })
-        .populate({ path: "medacin" })
-        .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
-    let lastCheckUp = '';
-    let pet = appointment.pet;
-    if (pet) {
-        let lastAppointment = yield Appointments_1.default
-            .find({ pet: pet._id, appointmentDate: { $lte: new Date() } })
-            .sort({ appointmentDate: "desc" })
-            .limit(1);
-        lastCheckUp = String(((_a = lastAppointment[0]) === null || _a === void 0 ? void 0 : _a.appointmentDate) || '');
+    try {
+        let id = req.params.id;
+        const appointment = yield Appointments_1.default.findById(id)
+            .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
+            .populate({ path: "pet", select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes'] })
+            .populate({ path: "medacin" })
+            .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
+        let lastCheckUp = '';
+        let pet = appointment.pet;
+        if (pet) {
+            let lastAppointment = yield Appointments_1.default
+                .find({ pet: pet._id, appointmentDate: { $lte: new Date() } })
+                .sort({ appointmentDate: "desc" })
+                .limit(1);
+            lastCheckUp = String(((_a = lastAppointment[0]) === null || _a === void 0 ? void 0 : _a.appointmentDate) || '');
+        }
+        else {
+            return res.status(200).json({ status: 200, data: { appointment: null } });
+        }
+        return res.status(200).json({ status: 200, data: { appointment: Object.assign(Object.assign({}, appointment === null || appointment === void 0 ? void 0 : appointment.toJSON()), { pet: Object.assign(Object.assign({}, pet.toJSON()), { lastCheckUp }) }) } });
     }
-    else {
-        return res.status(200).json({ status: 200, data: { appointment: null } });
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({ status: 500, msg: error.message });
     }
-    return res.status(200).json({ status: 200, data: { appointment: Object.assign(Object.assign({}, appointment === null || appointment === void 0 ? void 0 : appointment.toJSON()), { pet: Object.assign(Object.assign({}, pet.toJSON()), { lastCheckUp }) }) } });
 });
 exports.getAppointmentsById = getAppointmentsById;
 const deleteAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
