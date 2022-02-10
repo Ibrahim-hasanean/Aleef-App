@@ -35,7 +35,6 @@ const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
 const io = new ioServer.Server(server);
 const port = process.env.PORT || 3000;
-const socketIoEvents_1 = __importDefault(require("./socketIoEvents/socketIoEvents"));
 require("./config/mongoose");
 app.use((0, cors_1.default)({ origin: '*', preflightContinue: true }));
 // app.use((req, res, next) => {
@@ -55,8 +54,11 @@ app.get("/", (req, res, next) => {
 app.use("/users", routes_1.default);
 app.use("/admins", routes_2.default);
 app.use((0, celebrate_1.errors)());
-server.listen(port, () => {
+app.listen(port, () => {
     console.log("listen on", port);
 });
-(0, socketIoEvents_1.default)(io);
+// server.listen(port, () => {
+//     console.log("listen on", port);
+// });
+// socketIoEvents(io);
 exports.default = app;
