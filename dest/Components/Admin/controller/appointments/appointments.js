@@ -19,6 +19,7 @@ const getFreeDoctors_1 = __importDefault(require("../../../utils/getFreeDoctors"
 const isDateOutWorkTime_1 = __importDefault(require("../../../utils/isDateOutWorkTime"));
 const Pets_1 = __importDefault(require("../../../../models/Pets"));
 const User_1 = __importDefault(require("../../../../models/User"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { petId, service, appointmentDate, reason, userId, doctorId, report } = req.body;
     let isPetExist = yield Pets_1.default.findOne({ _id: petId, user: userId });
@@ -55,6 +56,12 @@ exports.addAppointment = addAppointment;
 const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { petId, service, appointmentDate, reason, doctorId, userId, report } = req.body;
     let appointmentId = req.params.id;
+    if (!mongoose_1.default.isValidObjectId(appointmentId))
+        return res.status(400).json({ status: 400, msg: `appointmentId ${appointmentId} not valid` });
+    if (!mongoose_1.default.isValidObjectId(petId))
+        return res.status(400).json({ status: 400, msg: `petId ${petId} not valid` });
+    if (!mongoose_1.default.isValidObjectId(userId))
+        return res.status(400).json({ status: 400, msg: `userId ${userId} not valid` });
     const appointment = yield Appointments_1.default.findById(appointmentId);
     if (!appointment)
         return res.status(400).json({ status: 400, msg: "apppointment not found" });
@@ -91,12 +98,18 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         let query = {};
         if (service)
             query.service = service;
-        if (userId)
+        if (userId && mongoose_1.default.isValidObjectId(userId))
             query.user = userId;
-        if (doctorId)
+        else if (userId)
+            return res.status(400).json({ status: 400, msg: `userId ${userId} not valid` });
+        if (doctorId && mongoose_1.default.isValidObjectId(doctorId))
             query.doctor = doctorId;
-        if (petId)
+        else if (doctorId)
+            return res.status(400).json({ status: 400, msg: `doctorId ${doctorId} not valid` });
+        if (petId && mongoose_1.default.isValidObjectId(petId))
             query.pet = petId;
+        else if (petId)
+            return res.status(400).json({ status: 400, msg: `petId ${petId} not valid` });
         if (paymentStatus)
             query.paymentStatus = paymentStatus;
         if (day) {
@@ -184,6 +197,8 @@ const getAvaliableDoctrs = (req, res, next) => __awaiter(void 0, void 0, void 0,
 exports.getAvaliableDoctrs = getAvaliableDoctrs;
 const userAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let userId = req.params.id;
+    if (!mongoose_1.default.isValidObjectId(userId))
+        return res.status(400).json({ status: 400, msg: `userId ${userId} not valid` });
     let { page, pageSize, } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
@@ -201,6 +216,8 @@ exports.userAppointments = userAppointments;
 const addReportToAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { report } = req.body;
     let appointmentId = req.params.id;
+    if (!mongoose_1.default.isValidObjectId(appointmentId))
+        return res.status(400).json({ status: 400, msg: `appointmentId ${appointmentId} not valid` });
     let isAppointmentExist = yield Appointments_1.default.findById(appointmentId);
     if (!isAppointmentExist)
         return res.status(400).json({ status: 400, msg: `there not appointment with id ${appointmentId}` });

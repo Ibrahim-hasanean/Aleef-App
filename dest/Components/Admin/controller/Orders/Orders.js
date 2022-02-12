@@ -93,7 +93,13 @@ const deleteOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 exports.deleteOrder = deleteOrder;
 const addOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { totalPrice, itemsCount, shippingFees, shippingAddressId, cardNumber, orderItems, userId, status } = req.body;
-    const orderItemsTotal = yield (0, calculateItemsPrice_1.default)(orderItems);
+    let orderItemsTotal;
+    try {
+        orderItemsTotal = yield (0, calculateItemsPrice_1.default)(orderItems);
+    }
+    catch (error) {
+        return res.status(400).json({ status: 400, msg: error.message });
+    }
     if (totalPrice != orderItemsTotal.totalCost) {
         return res.status(400).json({ status: 400, msg: "totalPrice not equal all items total price" });
     }

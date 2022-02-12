@@ -79,7 +79,12 @@ export const deleteOrder = async (req: Request, res: Response, next: NextFunctio
 
 export const addOrder = async (req: Request, res: Response, next: NextFunction) => {
     const { totalPrice, itemsCount, shippingFees, shippingAddressId, cardNumber, orderItems, userId, status } = req.body;
-    const orderItemsTotal = await caculateItemsPrice(orderItems);
+    let orderItemsTotal;
+    try {
+        orderItemsTotal = await caculateItemsPrice(orderItems);
+    } catch (error: any) {
+        return res.status(400).json({ status: 400, msg: error.message });
+    }
     if (totalPrice != orderItemsTotal.totalCost) {
         return res.status(400).json({ status: 400, msg: "totalPrice not equal all items total price" });
     }
@@ -103,6 +108,7 @@ export const addOrder = async (req: Request, res: Response, next: NextFunction) 
     await newOrder.save();
     await payment.save();
     return res.status(200).json({ status: 200, data: { order: newOrder } });
+
 }
 
 export const updateOrder = async (req: Request, res: Response, next: NextFunction) => {

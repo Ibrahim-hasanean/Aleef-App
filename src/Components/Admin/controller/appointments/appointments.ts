@@ -41,6 +41,9 @@ export const addAppointment = async (req: Request, res: Response, next: NextFunc
 export const updateAppointment = async (req: Request, res: Response, next: NextFunction) => {
     const { petId, service, appointmentDate, reason, doctorId, userId, report } = req.body;
     let appointmentId = req.params.id;
+    if (!mongoose.isValidObjectId(appointmentId)) return res.status(400).json({ status: 400, msg: `appointmentId ${appointmentId} not valid` });
+    if (!mongoose.isValidObjectId(petId)) return res.status(400).json({ status: 400, msg: `petId ${petId} not valid` });
+    if (!mongoose.isValidObjectId(userId)) return res.status(400).json({ status: 400, msg: `userId ${userId} not valid` });
     const appointment = await Appointments.findById(appointmentId);
     if (!appointment) return res.status(400).json({ status: 400, msg: "apppointment not found" });
     const handleAppointmentDate = new Date(appointmentDate);
@@ -85,9 +88,12 @@ export const getAppointments = async (req: Request, res: Response, next: NextFun
         let skip = (Number(page || 1) - 1) * numberPageSize;
         let query: any = {};
         if (service) query.service = service;
-        if (userId) query.user = userId;
-        if (doctorId) query.doctor = doctorId;
-        if (petId) query.pet = petId;
+        if (userId && mongoose.isValidObjectId(userId)) query.user = userId;
+        else if (userId) return res.status(400).json({ status: 400, msg: `userId ${userId} not valid` });
+        if (doctorId && mongoose.isValidObjectId(doctorId)) query.doctor = doctorId;
+        else if (doctorId) return res.status(400).json({ status: 400, msg: `doctorId ${doctorId} not valid` });
+        if (petId && mongoose.isValidObjectId(petId)) query.pet = petId;
+        else if (petId) return res.status(400).json({ status: 400, msg: `petId ${petId} not valid` });
         if (paymentStatus) query.paymentStatus = paymentStatus;
         if (day) {
             let beginDay = new Date(day);
@@ -172,6 +178,7 @@ export const getAvaliableDoctrs = async (req: Request, res: Response, next: Next
 
 export const userAppointments = async (req: Request, res: Response, next: NextFunction) => {
     let userId: string = req.params.id;
+    if (!mongoose.isValidObjectId(userId)) return res.status(400).json({ status: 400, msg: `userId ${userId} not valid` });
     let { page, pageSize, } = req.query;
     let numberPageSize = pageSize ? Number(pageSize) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
@@ -188,6 +195,7 @@ export const userAppointments = async (req: Request, res: Response, next: NextFu
 export const addReportToAppointment = async (req: Request, res: Response, next: NextFunction) => {
     let { report } = req.body;
     let appointmentId = req.params.id;
+    if (!mongoose.isValidObjectId(appointmentId)) return res.status(400).json({ status: 400, msg: `appointmentId ${appointmentId} not valid` });
     let isAppointmentExist: AppointmentsInterface = await Appointments.findById(appointmentId) as AppointmentsInterface;
     if (!isAppointmentExist) return res.status(400).json({ status: 400, msg: `there not appointment with id ${appointmentId}` });
     isAppointmentExist.report = report;
