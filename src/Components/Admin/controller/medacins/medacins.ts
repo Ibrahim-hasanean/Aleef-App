@@ -71,7 +71,7 @@ export const updateMedacin = async (req: Request, res: Response, next: NextFunct
     }
     let pet: PetsInterface = await Pets.findById(petId).populate("vaccinations") as PetsInterface;
     if (!pet) return res.status(400).json({ status: 400, msg: "pet not found" });
-    let newMedacin: PetsMedacins = await Medacin.findByIdAndUpdate(medacinId, { name, duration, repetition, notes }) as PetsMedacins;
+    let newMedacin: PetsMedacins = await Medacin.findByIdAndUpdate(medacinId, { name, duration, repetition, notes }, { new: true }) as PetsMedacins;
     return res.status(200).json({
         status: 200,
         msg: "medacin updated to pet  successfully",
