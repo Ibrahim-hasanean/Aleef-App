@@ -16,7 +16,7 @@ exports.getProfile = exports.updateProfile = void 0;
 const Staff_1 = __importDefault(require("../../../../models/Staff"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { name, email, phoneNumber,
+    let { name, email, phoneNumber, licenseNumber, cardNumber, staffMemberId
     // muteChat,
     // allowReceivingMessagesOutOfWorksHours,
     // newOrdersNotifications,
@@ -40,13 +40,16 @@ const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     staffMember.phoneNumber = phoneNumber;
     staffMember.email = email;
     staffMember.name = name;
+    staffMember.licenseNumber = licenseNumber;
+    staffMember.cardNumber = cardNumber;
+    staffMember.staffMemberId = staffMemberId;
+    staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
     // staffMember.muteChat = muteChat;
     // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
     // staffMember.newOrdersNotifications = newOrdersNotifications;
     // staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
     // staffMember.newReviewsNotifications = newReviewsNotifications;
     // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
-    staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
     yield staffMember.save();
     return res.status(200).json({ status: 200, msg: "profile updated successfully" });
 });

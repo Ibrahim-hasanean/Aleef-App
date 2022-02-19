@@ -4,14 +4,14 @@ import mongoose from "mongoose";
 import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
 
 export const addStaff = async (req: Request, res: Response, next: NextFunction) => {
-    const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
+    const { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber } = req.body;
     let image = req.file;
     let imageUrl = image ? await uploadImageToStorage(image) : "";
     const isPhoneNumberExist = await Staff.findOne({ phoneNumber });
     if (isPhoneNumberExist) return res.status(409).json({ status: 409, msg: "phone number is used before" });
     const isCardNumberExist = await Staff.findOne({ cardNumber });
     if (isCardNumberExist) return res.status(409).json({ status: 409, msg: "card number is used before" });
-    const newStaff = await Staff.create({ name, cardNumber, phoneNumber, email, role, staffMemberId, imageUrl });
+    const newStaff = await Staff.create({ name, cardNumber, phoneNumber, email, role, staffMemberId, imageUrl, licenseNumber });
     return res.status(201).json({
         status: 201, msg: "staff member added successfully", data: {
             staffMember: newStaff
@@ -21,7 +21,7 @@ export const addStaff = async (req: Request, res: Response, next: NextFunction) 
 
 export const updateStaff = async (req: Request, res: Response, next: NextFunction) => {
     const memberId = req.params.id;
-    const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
+    const { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber } = req.body;
     let image = req.file;
     let imageUrl;
     if (image) imageUrl = await uploadImageToStorage(image);
@@ -39,6 +39,7 @@ export const updateStaff = async (req: Request, res: Response, next: NextFunctio
     newStaff.phoneNumber = phoneNumber;
     newStaff.email = email;
     newStaff.staffMemberId = staffMemberId;
+    newStaff.licenseNumber = licenseNumber;
     newStaff.role = role;
     newStaff.imageUrl = imageUrl ? imageUrl : newStaff.imageUrl;
     await newStaff.save();

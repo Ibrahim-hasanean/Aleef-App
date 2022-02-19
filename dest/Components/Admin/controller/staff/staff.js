@@ -17,7 +17,7 @@ const Staff_1 = __importDefault(require("../../../../models/Staff"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const addStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
+    const { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber } = req.body;
     let image = req.file;
     let imageUrl = image ? yield (0, uploadFileToFirebase_1.default)(image) : "";
     const isPhoneNumberExist = yield Staff_1.default.findOne({ phoneNumber });
@@ -26,7 +26,7 @@ const addStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     const isCardNumberExist = yield Staff_1.default.findOne({ cardNumber });
     if (isCardNumberExist)
         return res.status(409).json({ status: 409, msg: "card number is used before" });
-    const newStaff = yield Staff_1.default.create({ name, cardNumber, phoneNumber, email, role, staffMemberId, imageUrl });
+    const newStaff = yield Staff_1.default.create({ name, cardNumber, phoneNumber, email, role, staffMemberId, imageUrl, licenseNumber });
     return res.status(201).json({
         status: 201, msg: "staff member added successfully", data: {
             staffMember: newStaff
@@ -36,7 +36,7 @@ const addStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 exports.addStaff = addStaff;
 const updateStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const memberId = req.params.id;
-    const { name, cardNumber, phoneNumber, email, role, staffMemberId } = req.body;
+    const { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber } = req.body;
     let image = req.file;
     let imageUrl;
     if (image)
@@ -56,6 +56,7 @@ const updateStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     newStaff.phoneNumber = phoneNumber;
     newStaff.email = email;
     newStaff.staffMemberId = staffMemberId;
+    newStaff.licenseNumber = licenseNumber;
     newStaff.role = role;
     newStaff.imageUrl = imageUrl ? imageUrl : newStaff.imageUrl;
     yield newStaff.save();

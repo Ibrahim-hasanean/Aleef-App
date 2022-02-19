@@ -12,6 +12,7 @@ exports.addStaffSchema = {
         email: celebrate_1.Joi.string().required(),
         role: celebrate_1.Joi.string().required().valid("admin", "doctor", "storeManager", "receiption"),
         staffMemberId: celebrate_1.Joi.string().required(),
+        licenseNumber: celebrate_1.Joi.string().required(),
         // password: Joi.string().required(),
     })
 };

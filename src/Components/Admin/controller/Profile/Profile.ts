@@ -8,6 +8,9 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
         name,
         email,
         phoneNumber,
+        licenseNumber,
+        cardNumber,
+        staffMemberId
         // muteChat,
         // allowReceivingMessagesOutOfWorksHours,
         // newOrdersNotifications,
@@ -30,13 +33,16 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     staffMember.phoneNumber = phoneNumber;
     staffMember.email = email;
     staffMember.name = name;
+    staffMember.licenseNumber = licenseNumber;
+    staffMember.cardNumber = cardNumber;
+    staffMember.staffMemberId = staffMemberId;
+    staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
     // staffMember.muteChat = muteChat;
     // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
     // staffMember.newOrdersNotifications = newOrdersNotifications;
     // staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
     // staffMember.newReviewsNotifications = newReviewsNotifications;
     // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
-    staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
     await staffMember.save();
     return res.status(200).json({ status: 200, msg: "profile updated successfully" });
 }
