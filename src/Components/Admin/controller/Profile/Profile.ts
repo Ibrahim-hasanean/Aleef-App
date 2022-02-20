@@ -18,33 +18,38 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
         // newReviewsNotifications,
         // itemsAlmostOutOfStockNotification
     } = req.body;
-    let staffMember: StafInterface = req.staff;
-    let image = req.file;
-    let imageUrl;
-    if (image) imageUrl = await uploadImageToStorage(image);
-    let isPhoneNumberExist: StafInterface | null = await Staff.findOne({ phoneNumber });
-    if (isPhoneNumberExist && String(isPhoneNumberExist?._id) !== String(staffMember._id)) {
-        return res.status(409).json({ status: 409, msg: "phone number is used by other staff member" });
+    try {
+        let staffMember: StafInterface = req.staff;
+        let image = req.file;
+        let imageUrl;
+        if (image) imageUrl = await uploadImageToStorage(image);
+        let isPhoneNumberExist: StafInterface | null = await Staff.findOne({ phoneNumber });
+        if (isPhoneNumberExist && String(isPhoneNumberExist?._id) !== String(staffMember._id)) {
+            return res.status(409).json({ status: 409, msg: "phone number is used by other staff member" });
+        }
+        let iEmailExist: StafInterface | null = await Staff.findOne({ email });
+        if (iEmailExist && String(iEmailExist?._id) !== String(staffMember._id)) {
+            return res.status(409).json({ status: 409, msg: "email is used by other staff member" });
+        }
+        staffMember.phoneNumber = phoneNumber;
+        staffMember.email = email;
+        staffMember.name = name;
+        staffMember.licenseNumber = licenseNumber;
+        staffMember.cardNumber = cardNumber;
+        staffMember.staffMemberId = staffMemberId;
+        staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
+        // staffMember.muteChat = muteChat;
+        // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
+        // staffMember.newOrdersNotifications = newOrdersNotifications;
+        // staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
+        // staffMember.newReviewsNotifications = newReviewsNotifications;
+        // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
+        await staffMember.save();
+        return res.status(200).json({ status: 200, msg: "profile updated successfully" });
+
+    } catch (error: any) {
+        return res.status(400).json({ status: 400, msg: error.message })
     }
-    let iEmailExist: StafInterface | null = await Staff.findOne({ email });
-    if (iEmailExist && String(iEmailExist?._id) !== String(staffMember._id)) {
-        return res.status(409).json({ status: 409, msg: "email is used by other staff member" });
-    }
-    staffMember.phoneNumber = phoneNumber;
-    staffMember.email = email;
-    staffMember.name = name;
-    staffMember.licenseNumber = licenseNumber;
-    staffMember.cardNumber = cardNumber;
-    staffMember.staffMemberId = staffMemberId;
-    staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
-    // staffMember.muteChat = muteChat;
-    // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
-    // staffMember.newOrdersNotifications = newOrdersNotifications;
-    // staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
-    // staffMember.newReviewsNotifications = newReviewsNotifications;
-    // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
-    await staffMember.save();
-    return res.status(200).json({ status: 200, msg: "profile updated successfully" });
 }
 
 export const getProfile = async (req: Request, res: Response, next: NextFunction) => {

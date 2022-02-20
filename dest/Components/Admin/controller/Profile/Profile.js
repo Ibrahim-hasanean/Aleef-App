@@ -24,34 +24,39 @@ const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     // newReviewsNotifications,
     // itemsAlmostOutOfStockNotification
      } = req.body;
-    let staffMember = req.staff;
-    let image = req.file;
-    let imageUrl;
-    if (image)
-        imageUrl = yield (0, uploadFileToFirebase_1.default)(image);
-    let isPhoneNumberExist = yield Staff_1.default.findOne({ phoneNumber });
-    if (isPhoneNumberExist && String(isPhoneNumberExist === null || isPhoneNumberExist === void 0 ? void 0 : isPhoneNumberExist._id) !== String(staffMember._id)) {
-        return res.status(409).json({ status: 409, msg: "phone number is used by other staff member" });
+    try {
+        let staffMember = req.staff;
+        let image = req.file;
+        let imageUrl;
+        if (image)
+            imageUrl = yield (0, uploadFileToFirebase_1.default)(image);
+        let isPhoneNumberExist = yield Staff_1.default.findOne({ phoneNumber });
+        if (isPhoneNumberExist && String(isPhoneNumberExist === null || isPhoneNumberExist === void 0 ? void 0 : isPhoneNumberExist._id) !== String(staffMember._id)) {
+            return res.status(409).json({ status: 409, msg: "phone number is used by other staff member" });
+        }
+        let iEmailExist = yield Staff_1.default.findOne({ email });
+        if (iEmailExist && String(iEmailExist === null || iEmailExist === void 0 ? void 0 : iEmailExist._id) !== String(staffMember._id)) {
+            return res.status(409).json({ status: 409, msg: "email is used by other staff member" });
+        }
+        staffMember.phoneNumber = phoneNumber;
+        staffMember.email = email;
+        staffMember.name = name;
+        staffMember.licenseNumber = licenseNumber;
+        staffMember.cardNumber = cardNumber;
+        staffMember.staffMemberId = staffMemberId;
+        staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
+        // staffMember.muteChat = muteChat;
+        // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
+        // staffMember.newOrdersNotifications = newOrdersNotifications;
+        // staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
+        // staffMember.newReviewsNotifications = newReviewsNotifications;
+        // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
+        yield staffMember.save();
+        return res.status(200).json({ status: 200, msg: "profile updated successfully" });
     }
-    let iEmailExist = yield Staff_1.default.findOne({ email });
-    if (iEmailExist && String(iEmailExist === null || iEmailExist === void 0 ? void 0 : iEmailExist._id) !== String(staffMember._id)) {
-        return res.status(409).json({ status: 409, msg: "email is used by other staff member" });
+    catch (error) {
+        return res.status(400).json({ status: 400, msg: error.message });
     }
-    staffMember.phoneNumber = phoneNumber;
-    staffMember.email = email;
-    staffMember.name = name;
-    staffMember.licenseNumber = licenseNumber;
-    staffMember.cardNumber = cardNumber;
-    staffMember.staffMemberId = staffMemberId;
-    staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
-    // staffMember.muteChat = muteChat;
-    // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
-    // staffMember.newOrdersNotifications = newOrdersNotifications;
-    // staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
-    // staffMember.newReviewsNotifications = newReviewsNotifications;
-    // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
-    yield staffMember.save();
-    return res.status(200).json({ status: 200, msg: "profile updated successfully" });
 });
 exports.updateProfile = updateProfile;
 const getProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
