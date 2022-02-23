@@ -93,11 +93,24 @@ export const getItems = async (req: Request, res: Response, next: NextFunction) 
 }
 
 export const itemsHome = async (req: Request, res: Response, next: NextFunction) => {
-    let totalRevenue = await Order.aggregate([{ $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } }]);
-    let totalOrders = await Order.count();
-    let totalClients = await User.count();
+    let { from, to } = req.query as { from: string, to: string };
+    let fromDate = new Date(from);
+    let toDate = new Date(to);
+    let query: any = {};
+    if (from || to) {
+        query.createdAt = {};
+        if (from) query.createdAt = { ...query.createdAt, $gte: fromDate }
+        if (to) query.createdAt = { ...query.createdAt, $lte: toDate }
+    }
+    let totalRevenue = await Order
+        .aggregate([
+            { $match: query },
+            { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } }
+        ]);
+    let totalOrders = await Order.find(query).count();
+    let totalClients = await User.find(query).count();
     let newOrders = await Order
-        .find()
+        .find(query)
         .sort({ createdAt: "desc" })
         .populate({
             path: "items",
@@ -113,7 +126,7 @@ export const itemsHome = async (req: Request, res: Response, next: NextFunction)
     let itemsAlmostOutOfStock = await Item.find().sort({ avaliableQuantity: "asc" }).limit(10);
     return res.status(200).json({
         status: 200, data: {
-            totalRevenue: totalRevenue[0].totalRevenue,
+            totalRevenue: totalRevenue[0]?.totalRevenue,
             totalClients,
             totalOrders,
             newOrders,

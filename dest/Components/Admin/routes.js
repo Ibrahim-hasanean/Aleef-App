@@ -113,6 +113,8 @@ router.get("/appointments/avaliable", verifyStaffMember_1.default, appointments_
 router.get("/appointments/doctors", verifyStaffMember_1.default, appointments_1.getAvaliableDoctrs);
 router.get("/appointments/users/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), appointments_1.userAppointments);
 router.post("/appointments/:id/report", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), appointments_1.addReportToAppointment);
+router.patch("/appointments/:id/report", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), appointments_1.addReportToAppointment);
+router.delete("/appointments/:id/report", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), appointments_1.deleteReportToAppointment);
 router.get("/appointments/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), appointments_1.getAppointmentsById);
 router.delete("/appointments/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), appointments_1.deleteAppointments);
 // Staff routes

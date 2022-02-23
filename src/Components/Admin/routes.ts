@@ -13,7 +13,7 @@ import {
     getAvaliableTime,
     updateAppointment,
     getAvaliableDoctrs,
-    userAppointments, addReportToAppointment
+    userAppointments, addReportToAppointment, deleteReportToAppointment
 } from "./controller/appointments/appointments";
 import {
     addAppointmentsPayment,
@@ -143,6 +143,8 @@ router.get("/appointments/avaliable", verifyStaffMember, getAvaliableTime);
 router.get("/appointments/doctors", verifyStaffMember, getAvaliableDoctrs);
 router.get("/appointments/users/:id", verifyStaffMember, validate(ValidateIdParam), userAppointments);
 router.post("/appointments/:id/report", verifyStaffMember, validate(ValidateIdParam), addReportToAppointment);
+router.patch("/appointments/:id/report", verifyStaffMember, validate(ValidateIdParam), addReportToAppointment);
+router.delete("/appointments/:id/report", verifyStaffMember, validate(ValidateIdParam), deleteReportToAppointment);
 router.get("/appointments/:id", verifyStaffMember, validate(ValidateIdParam), getAppointmentsById);
 router.delete("/appointments/:id", verifyStaffMember, validate(ValidateIdParam), deleteAppointments);
 

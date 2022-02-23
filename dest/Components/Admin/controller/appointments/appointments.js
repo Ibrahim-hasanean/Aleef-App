@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addReportToAppointment = exports.userAppointments = exports.getAvaliableDoctrs = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
+exports.deleteReportToAppointment = exports.addReportToAppointment = exports.userAppointments = exports.getAvaliableDoctrs = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
 const Appointments_1 = __importDefault(require("../../../../models/Appointments"));
 const getFreeTimes_1 = __importDefault(require("../../../utils/getFreeTimes"));
 const getFreeDoctors_1 = __importDefault(require("../../../utils/getFreeDoctors"));
@@ -226,3 +226,15 @@ const addReportToAppointment = (req, res, next) => __awaiter(void 0, void 0, voi
     return res.status(200).json({ status: 200, msg: "report added successfully" });
 });
 exports.addReportToAppointment = addReportToAppointment;
+const deleteReportToAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let appointmentId = req.params.id;
+    if (!mongoose_1.default.isValidObjectId(appointmentId))
+        return res.status(400).json({ status: 400, msg: `appointmentId ${appointmentId} not valid` });
+    let isAppointmentExist = yield Appointments_1.default.findById(appointmentId);
+    if (!isAppointmentExist)
+        return res.status(400).json({ status: 400, msg: `there not appointment with id ${appointmentId}` });
+    isAppointmentExist.report = '';
+    yield isAppointmentExist.save();
+    return res.status(200).json({ status: 200, msg: "report deleted successfully" });
+});
+exports.deleteReportToAppointment = deleteReportToAppointment;

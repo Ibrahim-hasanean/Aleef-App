@@ -89,11 +89,27 @@ const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.getItems = getItems;
 const itemsHome = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let totalRevenue = yield Order_1.default.aggregate([{ $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } }]);
-    let totalOrders = yield Order_1.default.count();
-    let totalClients = yield User_1.default.count();
+    var _a;
+    let { from, to } = req.query;
+    let fromDate = new Date(from);
+    let toDate = new Date(to);
+    let query = {};
+    if (from || to) {
+        query.createdAt = {};
+        if (from)
+            query.createdAt = Object.assign(Object.assign({}, query.createdAt), { $gte: fromDate });
+        if (to)
+            query.createdAt = Object.assign(Object.assign({}, query.createdAt), { $lte: toDate });
+    }
+    let totalRevenue = yield Order_1.default
+        .aggregate([
+        { $match: query },
+        { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } }
+    ]);
+    let totalOrders = yield Order_1.default.find(query).count();
+    let totalClients = yield User_1.default.find(query).count();
     let newOrders = yield Order_1.default
-        .find()
+        .find(query)
         .sort({ createdAt: "desc" })
         .populate({
         path: "items",
@@ -109,7 +125,7 @@ const itemsHome = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     let itemsAlmostOutOfStock = yield Item_1.default.find().sort({ avaliableQuantity: "asc" }).limit(10);
     return res.status(200).json({
         status: 200, data: {
-            totalRevenue: totalRevenue[0].totalRevenue,
+            totalRevenue: (_a = totalRevenue[0]) === null || _a === void 0 ? void 0 : _a.totalRevenue,
             totalClients,
             totalOrders,
             newOrders,

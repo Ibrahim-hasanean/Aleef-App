@@ -202,3 +202,13 @@ export const addReportToAppointment = async (req: Request, res: Response, next: 
     await isAppointmentExist.save();
     return res.status(200).json({ status: 200, msg: "report added successfully" });
 }
+
+export const deleteReportToAppointment = async (req: Request, res: Response, next: NextFunction) => {
+    let appointmentId = req.params.id;
+    if (!mongoose.isValidObjectId(appointmentId)) return res.status(400).json({ status: 400, msg: `appointmentId ${appointmentId} not valid` });
+    let isAppointmentExist: AppointmentsInterface = await Appointments.findById(appointmentId) as AppointmentsInterface;
+    if (!isAppointmentExist) return res.status(400).json({ status: 400, msg: `there not appointment with id ${appointmentId}` });
+    isAppointmentExist.report = '';
+    await isAppointmentExist.save();
+    return res.status(200).json({ status: 200, msg: "report deleted successfully" });
+}
