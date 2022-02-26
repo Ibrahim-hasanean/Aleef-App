@@ -77,7 +77,8 @@ const updateVaccination = (req, res, next) => __awaiter(void 0, void 0, void 0, 
     let pet = yield Pets_1.default.findById(petId).populate("vaccinations");
     if (!pet)
         return res.status(400).json({ status: 400, msg: "pet not found" });
-    let newVaccinations = yield Vaccination_1.default.findByIdAndUpdate(vaccinationId, { name, date, pet: petId, repetition, durations, notes });
+    let newVaccinations = yield Vaccination_1.default
+        .findByIdAndUpdate(vaccinationId, { name, date, pet: petId, repetition, durations, notes }, { new: true });
     return res.status(200).json({
         status: 200,
         msg: "vaccination updated to pet  successfully",
