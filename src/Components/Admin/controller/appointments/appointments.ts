@@ -200,7 +200,7 @@ export const addReportToAppointment = async (req: Request, res: Response, next: 
     if (!isAppointmentExist) return res.status(400).json({ status: 400, msg: `there not appointment with id ${appointmentId}` });
     isAppointmentExist.report = report;
     await isAppointmentExist.save();
-    return res.status(200).json({ status: 200, msg: "report added successfully" });
+    return res.status(200).json({ status: 200, data: { report } });
 }
 
 export const deleteReportToAppointment = async (req: Request, res: Response, next: NextFunction) => {

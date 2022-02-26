@@ -223,7 +223,7 @@ const addReportToAppointment = (req, res, next) => __awaiter(void 0, void 0, voi
         return res.status(400).json({ status: 400, msg: `there not appointment with id ${appointmentId}` });
     isAppointmentExist.report = report;
     yield isAppointmentExist.save();
-    return res.status(200).json({ status: 200, msg: "report added successfully" });
+    return res.status(200).json({ status: 200, data: { report } });
 });
 exports.addReportToAppointment = addReportToAppointment;
 const deleteReportToAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
