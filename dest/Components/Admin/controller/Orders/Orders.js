@@ -74,7 +74,7 @@ const getOrders = (req, res, next) => __awaiter(void 0, void 0, void 0, function
 exports.getOrders = getOrders;
 const getOrderById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
-    let order = yield Order_1.default.findById(id).populate("items");
+    let order = yield Order_1.default.findById(id).populate("items").populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { order } });
 });
 exports.getOrderById = getOrderById;
@@ -112,6 +112,7 @@ const addOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
         user: userId,
         totalPrice,
         itemsCount,
+        subTotal: totalPrice - shippingFees,
         items: orderItemsCollection,
         shippingFees,
         shippingAddress: shippingAddressId,
@@ -137,7 +138,17 @@ const updateOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     }
     //payment 
     const orderItemsCollection = yield OrderItems_1.default.create(...orderItems);
-    const newOrder = yield Order_1.default.findByIdAndUpdate(id, { user: userId, totalPrice, itemsCount, items: orderItemsCollection, shippingFees, shippingAddress: shippingAddressId, cardNumber });
+    const newOrder = yield Order_1.default
+        .findByIdAndUpdate(id, {
+        user: userId,
+        totalPrice,
+        itemsCount,
+        items: orderItemsCollection,
+        shippingFees,
+        shippingAddress: shippingAddressId,
+        cardNumber,
+        subTotal: totalPrice - shippingFees,
+    });
     // const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "cash", user: userId, order: newOrder._id })
     // newOrder.payment = payment._id;
     // await newOrder.save();

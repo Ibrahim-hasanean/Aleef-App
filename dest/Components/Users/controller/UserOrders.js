@@ -41,6 +41,7 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         totalPrice,
         itemsCount,
         items: orderItemsCollection,
+        subTotal: totalPrice - shippingFees,
         shippingFees,
         shippingAddress: shippingAddressId,
         cardNumber,

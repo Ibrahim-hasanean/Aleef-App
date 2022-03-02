@@ -10,6 +10,7 @@ export interface OrderInterface extends mongoose.Document {
     itemsCount: number,
     items: OrdersItemsInterface,
     shippingFees: number,
+    subTotal: number,
     shippingAddress: ObjectId | AddressInterface,
     cardNumber: string,
     cardHolderName: string,
@@ -26,6 +27,7 @@ const orderSchema = new Schema({
     itemsCount: { type: Number },
     items: [{ type: mongoose.Types.ObjectId, ref: "orderItems" }],
     shippingFees: { type: Number },
+    subTotal: { type: Number },
     shippingAddress: { type: mongoose.Types.ObjectId, ref: "addresses" },
     cardNumber: { type: String },
     cardHolderName: { type: String },
@@ -36,7 +38,8 @@ const orderSchema = new Schema({
     // paymentId: { type: String },
     payment: { type: mongoose.Types.ObjectId, ref: "payments" },
 
-}, { timestamps: true })
+}, { timestamps: true });
+
 
 const Order = mongoose.model("orders", orderSchema);
 

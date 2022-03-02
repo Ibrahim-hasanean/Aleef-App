@@ -60,7 +60,7 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
 
 export const getOrderById = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
-    let order = await Order.findById(id).populate("items");
+    let order = await Order.findById(id).populate("items").populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { order } });
 }
 
@@ -97,6 +97,7 @@ export const addOrder = async (req: Request, res: Response, next: NextFunction) 
         user: userId,
         totalPrice,
         itemsCount,
+        subTotal: totalPrice - shippingFees,
         items: orderItemsCollection,
         shippingFees,
         shippingAddress: shippingAddressId,
@@ -123,7 +124,18 @@ export const updateOrder = async (req: Request, res: Response, next: NextFunctio
     }
     //payment 
     const orderItemsCollection = await OrderItem.create(...orderItems);
-    const newOrder: OrderInterface = await Order.findByIdAndUpdate(id, { user: userId, totalPrice, itemsCount, items: orderItemsCollection, shippingFees, shippingAddress: shippingAddressId, cardNumber }) as OrderInterface;
+    const newOrder: OrderInterface = await Order
+        .findByIdAndUpdate(id,
+            {
+                user: userId,
+                totalPrice,
+                itemsCount,
+                items: orderItemsCollection,
+                shippingFees,
+                shippingAddress: shippingAddressId,
+                cardNumber,
+                subTotal: totalPrice - shippingFees,
+            }) as OrderInterface;
     // const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "cash", user: userId, order: newOrder._id })
     // newOrder.payment = payment._id;
     // await newOrder.save();

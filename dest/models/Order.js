@@ -25,6 +25,7 @@ const orderSchema = new mongoose_1.Schema({
     itemsCount: { type: Number },
     items: [{ type: mongoose_1.default.Types.ObjectId, ref: "orderItems" }],
     shippingFees: { type: Number },
+    subTotal: { type: Number },
     shippingAddress: { type: mongoose_1.default.Types.ObjectId, ref: "addresses" },
     cardNumber: { type: String },
     cardHolderName: { type: String },

@@ -37,6 +37,7 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
         totalPrice,
         itemsCount,
         items: orderItemsCollection,
+        subTotal: totalPrice - shippingFees,
         shippingFees,
         shippingAddress: shippingAddressId,
         cardNumber,
