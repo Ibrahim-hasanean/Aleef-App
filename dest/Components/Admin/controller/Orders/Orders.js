@@ -74,7 +74,7 @@ const getOrders = (req, res, next) => __awaiter(void 0, void 0, void 0, function
 exports.getOrders = getOrders;
 const getOrderById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
-    let order = yield Order_1.default.findById(id).populate("items").populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
+    let order = yield Order_1.default.findById(id).populate({ path: "items", populate: "item" }).populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { order } });
 });
 exports.getOrderById = getOrderById;

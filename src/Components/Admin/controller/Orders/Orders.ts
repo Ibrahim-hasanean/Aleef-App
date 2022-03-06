@@ -60,7 +60,7 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
 
 export const getOrderById = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
-    let order = await Order.findById(id).populate("items").populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
+    let order = await Order.findById(id).populate({ path: "items", populate: "item" }).populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { order } });
 }
 
