@@ -6,7 +6,7 @@ import isLikeITems from "../../utils/isLikeItem";
 export const getItems = async (req: Request, res: Response, next: NextFunction) => {
     const { page, limit, category, text } = req.query;
     let user = req.user;
-    let query: any = {};
+    let query: any = { allowed: true };
     if (category) query.category = category;
     if (text) {
         query.$or = [{ name: { $regex: text, $options: "i" } }, { description: { $regex: text, $options: "i" } }];
@@ -24,7 +24,7 @@ export const getItemById = async (req: Request, res: Response, next: NextFunctio
     if (!mongoose.isValidObjectId(itemId)) {
         return res.status(200).json({ status: 200, data: { item: null } });
     }
-    let item = await Item.findById(itemId);
+    let item = await Item.findOne({ _id: itemId, allowed: true });
     if (item) {
         let isLikeItem = user.wishList.some(x => x.toString() === String(item._id));
         item = { ...item._doc, isLikeItem };

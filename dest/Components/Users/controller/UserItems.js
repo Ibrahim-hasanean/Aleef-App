@@ -19,7 +19,7 @@ const isLikeItem_1 = __importDefault(require("../../utils/isLikeItem"));
 const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, category, text } = req.query;
     let user = req.user;
-    let query = {};
+    let query = { allowed: true };
     if (category)
         query.category = category;
     if (text) {
@@ -38,7 +38,7 @@ const getItemById = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     if (!mongoose_1.default.isValidObjectId(itemId)) {
         return res.status(200).json({ status: 200, data: { item: null } });
     }
-    let item = yield Item_1.default.findById(itemId);
+    let item = yield Item_1.default.findOne({ _id: itemId, allowed: true });
     if (item) {
         let isLikeItem = user.wishList.some(x => x.toString() === String(item._id));
         item = Object.assign(Object.assign({}, item._doc), { isLikeItem });

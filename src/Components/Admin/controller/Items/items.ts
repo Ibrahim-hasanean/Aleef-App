@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import Item from "../../../../models/Item";
+import Item, { ItemInterface } from "../../../../models/Item";
 import ItemsCategory from "../../../../models/ItemsCategory";
 import Order from "../../../../models/Order";
 import User from "../../../../models/User";
@@ -76,7 +76,7 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
 
 export const getItems = async (req: Request, res: Response, next: NextFunction) => {
     const { page, limit, category, text, sortBy } = req.query;
-    let query: any = {};
+    let query: any = { allowed: true };
     let sort: any = {};
     if (category) query.category = category;
     if (text) {
@@ -141,6 +141,15 @@ export const getItemById = async (req: Request, res: Response, next: NextFunctio
     const itemId = req.params.id;
     let item = await Item.findById(itemId);
     return res.status(200).json({ status: 200, data: { item } });
+}
+
+export const toggleHide = async (req: Request, res: Response, next: NextFunction) => {
+    const itemId = req.params.id;
+    let item: ItemInterface = await Item.findById(itemId) as ItemInterface;
+    if (!item) return res.status(400).json({ status: 400, msg: "item not found" });
+    item.allowed = !item.allowed;
+    await item.save();
+    return res.status(200).json({ status: 200, data: { item }, msg: "item isHide toggeled successfully" });
 }
 
 export const deleteItem = async (req: Request, res: Response, next: NextFunction) => {

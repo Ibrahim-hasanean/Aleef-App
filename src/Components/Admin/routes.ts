@@ -2,7 +2,7 @@ import { Router } from "express";
 import { getTypes, addPetsType, deleteType } from "./controller/Pets/PetsTypes";
 import { addBreed, deletebreed, getbreeds } from "./controller/Pets/Breeds";
 import { addItemCategory, getItemsCategory, deleteCategory } from "./controller/Items/ItemsCategory";
-import { addItem, deleteItem, getItemById, getItems, updateItem, itemsHome } from "./controller/Items/items";
+import { addItem, deleteItem, getItemById, getItems, updateItem, itemsHome, toggleHide } from "./controller/Items/items";
 import { addService, deleteService, getServiceById, getServices } from "./controller/services/services";
 import { addStaff, defaultAdmin, deleteStaffMember, getStaffMemeberById, getStaffMemebers, updateStaff, getWorkHoures, setWorkHoures } from "./controller/staff/staff";
 import {
@@ -162,6 +162,7 @@ router.delete("/staff/:id", verifyAdmin, validate(ValidateIdParam), deleteStaffM
 router.get("/items", verifyStoreManagement, getItems);
 router.get("/items/home", verifyStoreManagement, itemsHome);
 router.get("/items/:id", verifyStoreManagement, validate(ValidateIdParam), getItemById);
+router.post("/items/:id/toggle", verifyStoreManagement, validate(ValidateIdParam), toggleHide);
 router.post("/items",
     verifyStoreManagement,
     upload.fields([{ name: "mainImage", maxCount: 1 }, { name: "images" }]),

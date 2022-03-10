@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteItem = exports.getItemById = exports.itemsHome = exports.getItems = exports.updateItem = exports.addItem = void 0;
+exports.deleteItem = exports.toggleHide = exports.getItemById = exports.itemsHome = exports.getItems = exports.updateItem = exports.addItem = void 0;
 const Item_1 = __importDefault(require("../../../../models/Item"));
 const Order_1 = __importDefault(require("../../../../models/Order"));
 const User_1 = __importDefault(require("../../../../models/User"));
@@ -69,7 +69,7 @@ const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 exports.updateItem = updateItem;
 const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, category, text, sortBy } = req.query;
-    let query = {};
+    let query = { allowed: true };
     let sort = {};
     if (category)
         query.category = category;
@@ -141,6 +141,16 @@ const getItemById = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     return res.status(200).json({ status: 200, data: { item } });
 });
 exports.getItemById = getItemById;
+const toggleHide = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const itemId = req.params.id;
+    let item = yield Item_1.default.findById(itemId);
+    if (!item)
+        return res.status(400).json({ status: 400, msg: "item not found" });
+    item.allowed = !item.allowed;
+    yield item.save();
+    return res.status(200).json({ status: 200, data: { item }, msg: "item isHide toggeled successfully" });
+});
+exports.toggleHide = toggleHide;
 const deleteItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const itemId = req.params.id;
     let item = yield Item_1.default.findByIdAndDelete(itemId);

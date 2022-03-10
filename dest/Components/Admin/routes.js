@@ -130,6 +130,7 @@ router.delete("/staff/:id", verifyAdmin_1.default, (0, validateAuth_1.validate)(
 router.get("/items", verifyStoreManagement_1.default, items_1.getItems);
 router.get("/items/home", verifyStoreManagement_1.default, items_1.itemsHome);
 router.get("/items/:id", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), items_1.getItemById);
+router.post("/items/:id/toggle", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), items_1.toggleHide);
 router.post("/items", verifyStoreManagement_1.default, uploadImage_1.default.fields([{ name: "mainImage", maxCount: 1 }, { name: "images" }]), (0, validateAuth_1.validate)(validateItem_1.itemSchema), items_1.addItem);
 router.delete("/items/:id", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), items_1.deleteItem);
 router.patch("/items/:id", verifyStoreManagement_1.default, uploadImage_1.default.fields([{ name: "mainImage", maxCount: 1 }, { name: "images" }]), (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), (0, validateAuth_1.validate)(validateItem_1.itemSchema), items_1.updateItem);
