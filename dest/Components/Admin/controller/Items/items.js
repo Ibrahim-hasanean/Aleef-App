@@ -22,7 +22,7 @@ const addItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     let files = req.files;
     let { mainImage, images } = files;
     images = images ? images : [];
-    let mainImageUrl = mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : "";
+    let mainImageUrl = mainImage && mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : "";
     let uploadImagesFunctions = images.map((image) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, uploadFileToFirebase_1.default)(image); }));
     let imagesUrls = yield Promise.all(uploadImagesFunctions);
     let newItem = yield Item_1.default.create({
