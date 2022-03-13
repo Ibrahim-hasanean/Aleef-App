@@ -18,53 +18,65 @@ const Order_1 = __importDefault(require("../../../../models/Order"));
 const User_1 = __importDefault(require("../../../../models/User"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const addItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { name, description, price, category, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
-    let files = req.files;
-    let { mainImage, images } = files;
-    images = images ? images : [];
-    let mainImageUrl = mainImage && mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : "";
-    let uploadImagesFunctions = images.map((image) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, uploadFileToFirebase_1.default)(image); }));
-    let imagesUrls = yield Promise.all(uploadImagesFunctions);
-    let newItem = yield Item_1.default.create({
-        name,
-        description,
-        price,
-        category,
-        serialNumber,
-        avaliableQuantity,
-        allowed,
-        shippingPrice,
-        additionDate, mainImageUrl, images: imagesUrls
-    });
-    return res.status(201).json({ status: 201, data: { item: newItem } });
+    try {
+        let { name, description, price, category, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
+        let files = req.files;
+        let mainImage = files === null || files === void 0 ? void 0 : files.mainImage;
+        let images = files === null || files === void 0 ? void 0 : files.images;
+        images = images ? images : [];
+        let mainImageUrl = mainImage && mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : "";
+        let uploadImagesFunctions = images.map((image) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, uploadFileToFirebase_1.default)(image); }));
+        let imagesUrls = yield Promise.all(uploadImagesFunctions);
+        let newItem = yield Item_1.default.create({
+            name,
+            description,
+            price,
+            category,
+            serialNumber,
+            avaliableQuantity,
+            allowed,
+            shippingPrice,
+            additionDate, mainImageUrl, images: imagesUrls
+        });
+        return res.status(201).json({ status: 201, data: { item: newItem } });
+    }
+    catch (error) {
+        return res.status(500).json({ status: 500, msg: error.message });
+    }
 });
 exports.addItem = addItem;
 const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let itemId = req.params.id;
-    let { name, description, price, category, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
-    let body = {
-        name,
-        description,
-        price,
-        category,
-        serialNumber,
-        avaliableQuantity,
-        allowed,
-        shippingPrice,
-        additionDate
-    };
-    let files = req.files;
-    let { mainImage, images } = files;
-    images = images ? images : [];
-    let mainImageUrl = mainImage && mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : null;
-    let uploadImagesFunctions = images.map((image) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, uploadFileToFirebase_1.default)(image); }));
-    let imagesUrls = yield Promise.all(uploadImagesFunctions);
-    if (mainImageUrl)
-        body.mainImageUrl = mainImageUrl;
-    if (imagesUrls.length > 0)
-        body.images = imagesUrls;
-    let newItem = yield Item_1.default.findByIdAndUpdate(itemId, body, { new: true });
-    return res.status(200).json({ status: 200, data: { item: newItem } });
+    try {
+        let itemId = req.params.id;
+        let { name, description, price, category, serialNumber, avaliableQuantity, allowed, shippingPrice, additionDate } = req.body;
+        let body = {
+            name,
+            description,
+            price,
+            category,
+            serialNumber,
+            avaliableQuantity,
+            allowed,
+            shippingPrice,
+            additionDate
+        };
+        let files = req.files;
+        let mainImage = files === null || files === void 0 ? void 0 : files.mainImage;
+        let images = files === null || files === void 0 ? void 0 : files.images;
+        images = images ? images : [];
+        let mainImageUrl = mainImage && mainImage[0] ? yield (0, uploadFileToFirebase_1.default)(mainImage[0]) : null;
+        let uploadImagesFunctions = images.map((image) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, uploadFileToFirebase_1.default)(image); }));
+        let imagesUrls = yield Promise.all(uploadImagesFunctions);
+        if (mainImageUrl)
+            body.mainImageUrl = mainImageUrl;
+        if (imagesUrls.length > 0)
+            body.images = imagesUrls;
+        let newItem = yield Item_1.default.findByIdAndUpdate(itemId, body, { new: true });
+        return res.status(200).json({ status: 200, data: { item: newItem } });
+    }
+    catch (error) {
+        return res.status(500).json({ status: 500, msg: error.message });
+    }
 });
 exports.updateItem = updateItem;
 const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
