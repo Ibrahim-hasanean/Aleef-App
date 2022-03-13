@@ -22,7 +22,7 @@ export interface ItemInterface extends mongoose.Document {
 
 const itemSchema = new Schema({
     name: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String },
     price: { type: Number },
     review: { type: Number, default: 0 },
     numberOfReviews: { type: Number, default: 0 },

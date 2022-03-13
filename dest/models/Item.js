@@ -22,7 +22,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const itemSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String },
     price: { type: Number },
     review: { type: Number, default: 0 },
     numberOfReviews: { type: Number, default: 0 },
