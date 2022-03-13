@@ -12,6 +12,6 @@ exports.itemSchema = {
         avaliableQuantity: celebrate_1.Joi.number().required(),
         allowed: celebrate_1.Joi.boolean().required(),
         shippingPrice: celebrate_1.Joi.number().required(),
-        additionDate: celebrate_1.Joi.date().required()
+        additionDate: celebrate_1.Joi.date()
     })
 };

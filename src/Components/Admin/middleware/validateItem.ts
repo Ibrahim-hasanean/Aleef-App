@@ -10,6 +10,6 @@ export const itemSchema = {
         avaliableQuantity: Joi.number().required(),
         allowed: Joi.boolean().required(),
         shippingPrice: Joi.number().required(),
-        additionDate: Joi.date().required()
+        additionDate: Joi.date()
     })
 }
