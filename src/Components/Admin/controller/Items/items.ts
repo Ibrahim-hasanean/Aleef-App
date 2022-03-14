@@ -89,7 +89,7 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
 export const getItems = async (req: Request, res: Response, next: NextFunction) => {
     const { page, limit, category, text, sortBy } = req.query;
     let query: any = { allowed: true };
-    let sort: any = {};
+    let sort: any = { createdAt: "desc" };
     if (category) query.category = category;
     if (text) {
         query.$or = [{ name: { $regex: text, $options: "i" } }, { description: { $regex: text, $options: "i" } }];
@@ -98,7 +98,7 @@ export const getItems = async (req: Request, res: Response, next: NextFunction) 
     const skip = (Number(page || 1) - 1) * limitNumber;
     if (sortBy) {
         if (sortBy == "soldQuantity") sort = { soldQuantity: "desc" }
-        if (sortBy == "almostOutOfStock") sort = { avaliableQuantity: "asc" }
+        else if (sortBy == "almostOutOfStock") sort = { avaliableQuantity: "asc" }
     }
     const items = await Item.find(query).skip(skip).limit(limitNumber).sort(sort);
     return res.status(200).json({ status: 200, data: { items } });

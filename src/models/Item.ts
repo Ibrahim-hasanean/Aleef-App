@@ -37,7 +37,7 @@ const itemSchema = new Schema({
     soldQuantity: { type: Number, default: 0 },
     mainImageUrl: { type: String },
     images: [{ type: String }]
-})
+}, { timestamps: true })
 
 const Item = mongoose.model("items", itemSchema);
 

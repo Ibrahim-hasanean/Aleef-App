@@ -82,7 +82,7 @@ exports.updateItem = updateItem;
 const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, category, text, sortBy } = req.query;
     let query = { allowed: true };
-    let sort = {};
+    let sort = { createdAt: "desc" };
     if (category)
         query.category = category;
     if (text) {
@@ -93,7 +93,7 @@ const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
     if (sortBy) {
         if (sortBy == "soldQuantity")
             sort = { soldQuantity: "desc" };
-        if (sortBy == "almostOutOfStock")
+        else if (sortBy == "almostOutOfStock")
             sort = { avaliableQuantity: "asc" };
     }
     const items = yield Item_1.default.find(query).skip(skip).limit(limitNumber).sort(sort);

@@ -37,6 +37,6 @@ const itemSchema = new mongoose_1.Schema({
     soldQuantity: { type: Number, default: 0 },
     mainImageUrl: { type: String },
     images: [{ type: String }]
-});
+}, { timestamps: true });
 const Item = mongoose_1.default.model("items", itemSchema);
 exports.default = Item;
