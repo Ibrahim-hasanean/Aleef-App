@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProfile = exports.updateProfile = void 0;
+exports.setProfileNotifications = exports.getProfileNotifications = exports.getProfile = exports.updateProfile = void 0;
 const Staff_1 = __importDefault(require("../../../../models/Staff"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,3 +68,43 @@ const getProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     });
 });
 exports.getProfile = getProfile;
+const getProfileNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let staffMember = req.staff;
+    return res.status(200).json({
+        status: 200, data: {
+            settings: {
+                muteChat: staffMember.muteChat,
+                allowReceivingMessagesOutOfWorksHours: staffMember.allowReceivingMessagesOutOfWorksHours,
+                newOrdersNotifications: staffMember.newOrdersNotifications,
+                canceledOrdersNotifications: staffMember.canceledOrdersNotifications,
+                newReviewsNotifications: staffMember.newReviewsNotifications,
+                itemsAlmostOutOfStockNotification: staffMember.itemsAlmostOutOfStockNotification,
+            }
+        }
+    });
+});
+exports.getProfileNotifications = getProfileNotifications;
+const setProfileNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let { muteChat, allowReceivingMessagesOutOfWorksHours, newOrdersNotifications, canceledOrdersNotifications, newReviewsNotifications, itemsAlmostOutOfStockNotification } = req.body;
+    let staffMember = req.staff;
+    staffMember.muteChat = muteChat;
+    staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
+    staffMember.newOrdersNotifications = newOrdersNotifications;
+    staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
+    staffMember.newReviewsNotifications = newReviewsNotifications;
+    staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
+    yield staffMember.save();
+    return res.status(200).json({
+        status: 200, data: {
+            settings: {
+                muteChat: muteChat,
+                allowReceivingMessagesOutOfWorksHours: allowReceivingMessagesOutOfWorksHours,
+                newOrdersNotifications: newOrdersNotifications,
+                canceledOrdersNotifications: canceledOrdersNotifications,
+                newReviewsNotifications: newReviewsNotifications,
+                itemsAlmostOutOfStockNotification: itemsAlmostOutOfStockNotification,
+            }
+        }
+    });
+});
+exports.setProfileNotifications = setProfileNotifications;

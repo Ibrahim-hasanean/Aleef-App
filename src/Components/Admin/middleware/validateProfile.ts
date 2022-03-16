@@ -17,3 +17,14 @@ export const profileSchema = {
         // itemsAlmostOutOfStockNotification: Joi.boolean().required(),
     })
 }
+
+export const profileNotificationsSchema = {
+    [Segments.BODY]: Joi.object().keys({
+        muteChat: Joi.boolean().required(),
+        allowReceivingMessagesOutOfWorksHours: Joi.boolean().required(),
+        newOrdersNotifications: Joi.boolean().required(),
+        canceledOrdersNotifications: Joi.boolean().required(),
+        newReviewsNotifications: Joi.boolean().required(),
+        itemsAlmostOutOfStockNotification: Joi.boolean().required(),
+    })
+}

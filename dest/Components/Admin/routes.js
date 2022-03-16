@@ -57,6 +57,8 @@ router.get("/invoice", verifyStaffMember_1.default, (0, validateAuth_1.validate)
 // profile
 router.patch("/profile", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);
 router.get("/profile", verifyStaffMember_1.default, Profile_1.getProfile);
+router.patch("/profile/notifications", verifyStaffMember_1.default, Profile_1.setProfileNotifications);
+router.get("/profile/notifications", verifyStaffMember_1.default, Profile_1.getProfileNotifications);
 // hospital locations
 router.post("/location", verifyStaffMember_1.default, Location_1.addLocation);
 router.get("/location", verifyStaffMember_1.default, Location_1.getLocation);
@@ -86,7 +88,9 @@ router.get("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, (0, validate
 router.delete("/pets/:id/medacins/:medacinId", verifyDoctor_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), medacins_1.deleteMedacin);
 // clients 
 router.post("/clients", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.addNewUser);
+// router.post("/clients", verifyStaffMember, upload.fields([{ name: 'petsImages' }, { name: "image", maxCount: 1 }]), addNewUserWithPets);
 router.patch("/clients/:id", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), (0, validateAuth_1.validate)(validateClient_1.addClientSchema), Users_1.updateUser);
+// router.patch("/clients/:id", verifyStaffMember, upload.fields([{ name: 'petsImages' }, { name: "image", maxCount: 1 }]), validate(ValidateIdParam), updateUserWithPets);
 router.get("/clients", verifyStaffMember_1.default, Users_1.getUsers);
 router.post("/clients/:id/suspend", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), Users_1.suspendUser);
 router.get("/clients/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), Users_1.getUserById);

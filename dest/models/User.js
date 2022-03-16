@@ -43,7 +43,7 @@ const userSchema = new mongoose_1.Schema({
     isVerify: { type: Boolean, default: false },
     socialMediaLoggedIn: { type: Boolean },
     isSuspend: { type: Boolean, default: false },
-    imageUrl: { type: String },
+    imageUrl: { type: String, default: "" },
     muteAllNotification: { type: Boolean, default: false },
     muteChat: { type: Boolean, default: false },
     vaccinationReminder: { type: Boolean, default: true },

@@ -60,3 +60,52 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
         }
     });
 }
+
+export const getProfileNotifications = async (req: Request, res: Response, next: NextFunction) => {
+    let staffMember: StafInterface = req.staff;
+    return res.status(200).json({
+        status: 200, data: {
+            settings: {
+                muteChat: staffMember.muteChat,
+                allowReceivingMessagesOutOfWorksHours: staffMember.allowReceivingMessagesOutOfWorksHours,
+                newOrdersNotifications: staffMember.newOrdersNotifications,
+                canceledOrdersNotifications: staffMember.canceledOrdersNotifications,
+                newReviewsNotifications: staffMember.newReviewsNotifications,
+                itemsAlmostOutOfStockNotification: staffMember.itemsAlmostOutOfStockNotification,
+            }
+        }
+    });
+}
+
+export const setProfileNotifications = async (req: Request, res: Response, next: NextFunction) => {
+    let {
+        muteChat,
+        allowReceivingMessagesOutOfWorksHours,
+        newOrdersNotifications,
+        canceledOrdersNotifications,
+        newReviewsNotifications,
+        itemsAlmostOutOfStockNotification
+    } = req.body;
+    let staffMember: StafInterface = req.staff;
+    staffMember.muteChat = muteChat;
+    staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
+    staffMember.newOrdersNotifications = newOrdersNotifications;
+    staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
+    staffMember.newReviewsNotifications = newReviewsNotifications;
+    staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
+    await staffMember.save();
+    return res.status(200).json({
+        status: 200, data: {
+            settings: {
+                muteChat: muteChat,
+                allowReceivingMessagesOutOfWorksHours: allowReceivingMessagesOutOfWorksHours,
+                newOrdersNotifications: newOrdersNotifications,
+                canceledOrdersNotifications: canceledOrdersNotifications,
+                newReviewsNotifications: newReviewsNotifications,
+                itemsAlmostOutOfStockNotification: itemsAlmostOutOfStockNotification,
+            }
+        }
+    });
+}
+
+

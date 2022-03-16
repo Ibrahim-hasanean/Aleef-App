@@ -24,9 +24,9 @@ import {
 } from "./controller/AppointmentsPayment/AppointmentsPayment";
 import { getPaymentById, getPayments } from "./controller/Payments/Payments";
 import { addOrder, getOrderById, getOrders, setStatus } from "./controller/Orders/Orders";
-import { getUsers, getUserById, addNewUser, updateUser, suspendUser, deleteUser } from "./controller/Users/Users";
+import { getUsers, getUserById, addNewUser, updateUser, suspendUser, deleteUser, addNewUserWithPets, updateUserWithPets } from "./controller/Users/Users";
 import { getPets, addNewPet, getPetById, deletePet, updatePet } from "./controller/Pets/Pet";
-import { getProfile, updateProfile } from "./controller/Profile/Profile";
+import { getProfile, updateProfile, getProfileNotifications, setProfileNotifications } from "./controller/Profile/Profile";
 import { login, verifyCode } from "./controller/auth/auth";
 import { loginSchema, validate, verifyCodeSchema } from "./middleware/validateAuth";
 import { addStaffSchema, workHouresSchema } from "./middleware/validateStaff";
@@ -72,6 +72,8 @@ router.get("/invoice", verifyStaffMember, validate(appointmentsQuerySchema), get
 // profile
 router.patch("/profile", verifyStaffMember, upload.single('image'), validate(profileSchema), updateProfile);
 router.get("/profile", verifyStaffMember, getProfile);
+router.patch("/profile/notifications", verifyStaffMember, setProfileNotifications);
+router.get("/profile/notifications", verifyStaffMember, getProfileNotifications);
 
 // hospital locations
 router.post("/location", verifyStaffMember, addLocation);
@@ -111,7 +113,9 @@ router.delete("/pets/:id/medacins/:medacinId", verifyDoctor, validate(ValidateId
 
 // clients 
 router.post("/clients", verifyStaffMember, upload.single('image'), validate(addClientSchema), addNewUser);
+// router.post("/clients", verifyStaffMember, upload.fields([{ name: 'petsImages' }, { name: "image", maxCount: 1 }]), addNewUserWithPets);
 router.patch("/clients/:id", verifyStaffMember, upload.single('image'), validate(ValidateIdParam), validate(addClientSchema), updateUser);
+// router.patch("/clients/:id", verifyStaffMember, upload.fields([{ name: 'petsImages' }, { name: "image", maxCount: 1 }]), validate(ValidateIdParam), updateUserWithPets);
 router.get("/clients", verifyStaffMember, getUsers);
 router.post("/clients/:id/suspend", verifyStaffMember, validate(ValidateIdParam), suspendUser);
 router.get("/clients/:id", verifyStaffMember, validate(ValidateIdParam), getUserById);
