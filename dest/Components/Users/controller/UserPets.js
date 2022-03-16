@@ -35,8 +35,9 @@ const getPets = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         .populate({
         path: "appointments",
         select: "appointmentDate",
+        match: { appointmentDate: { $lte: date } },
         options: {
-            sort: { appointmentDate: "desc" }, match: { appointmentDate: { $lte: date } },
+            sort: { appointmentDate: "desc" },
         },
         limit: 1
     });

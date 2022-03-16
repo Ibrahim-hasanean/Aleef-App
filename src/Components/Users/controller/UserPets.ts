@@ -13,7 +13,7 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
     let numberPageSize = limit ? Number(limit) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let user = req.user;
-    let date = new Date();
+    let date: Date = new Date();
     // .skip(skip)
     // .limit(numberPageSize)
     let pets = await Pets.find({ user: user._id })
@@ -23,8 +23,9 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
         .populate({
             path: "appointments",
             select: "appointmentDate",
+            match: { appointmentDate: { $lte: date } },
             options: {
-                sort: { appointmentDate: "desc" }, match: { appointmentDate: { $lte: date } },
+                sort: { appointmentDate: "desc" },
             },
             limit: 1
         });
