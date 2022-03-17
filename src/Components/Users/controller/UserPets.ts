@@ -22,12 +22,12 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
         .populate("breed")
         .populate({
             path: "appointments",
-            select: ["appointmentDate"],
-            match: { appointmentDate: { $lte: date } },
             options: {
+                select: ["appointmentDate"],
+                match: { appointmentDate: { $lte: date } },
                 sort: { appointmentDate: "desc" },
+                limit: 1
             },
-            limit: 1
         }) as PetsInterface[];
     let petsObjects = pets.map((x: PetsInterface) => {
         let appoinments: AppointmentsInterface[] = x.appointments as AppointmentsInterface[];
