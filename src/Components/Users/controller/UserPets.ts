@@ -22,7 +22,7 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
         .populate("breed")
         .populate({
             path: "appointments",
-            select: "appointmentDate",
+            select: ["appointmentDate"],
             match: { appointmentDate: { $lte: date } },
             options: {
                 sort: { appointmentDate: "desc" },
