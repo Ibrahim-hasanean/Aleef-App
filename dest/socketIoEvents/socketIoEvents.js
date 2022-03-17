@@ -38,6 +38,9 @@ const socketIoEvents = (io) => {
                     usersArray = [...new Set([...usersArray, String(socket.id)])];
                     next();
                 }
+                else {
+                    next(new Error("unauthorize"));
+                }
             }
             else if (staffToken) {
                 let staff = yield (0, verifyStaffTokenSocket_1.default)(staffToken);
@@ -62,6 +65,8 @@ const socketIoEvents = (io) => {
                     }
                     next();
                 }
+                else
+                    next(new Error("unauthorize"));
             }
             else
                 next(new Error("token is required"));

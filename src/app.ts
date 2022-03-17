@@ -37,15 +37,15 @@ app.use("/admins", adminRoutes);
 
 app.use(errors());
 
-app.listen(port, () => {
+// app.listen(port, () => {
 
-    console.log("listen on", port);
-});
-// server.listen(port, () => {
 //     console.log("listen on", port);
 // });
+server.listen(port, () => {
+    console.log("listen on", port);
+});
 
-// socketIoEvents(io);
+socketIoEvents(io);
 
 
 export default app;

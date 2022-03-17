@@ -27,6 +27,8 @@ const socketIoEvents = (io: Server) => {
                     socket.handshake.auth.role = "user";
                     usersArray = [... new Set([...usersArray, String(socket.id)])];
                     next();
+                } else {
+                    next(new Error("unauthorize"));
                 }
             } else if (staffToken) {
                 let staff = await verifyStaff(staffToken);
@@ -50,7 +52,7 @@ const socketIoEvents = (io: Server) => {
                         storeSupportArray = [... new Set([...storeSupportArray, String(socket.id)])]
                     }
                     next();
-                }
+                } else next(new Error("unauthorize"));
             } else
                 next(new Error("token is required"));
         } catch (error: any) {
