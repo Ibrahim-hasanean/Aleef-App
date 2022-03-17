@@ -16,7 +16,7 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
     let date: Date = new Date();
     // .skip(skip)
     // .limit(numberPageSize)
-    let pets = await Pets.find({ user: user._id })
+    let pets: PetsInterface[] = await Pets.find({ user: user._id })
         .populate("type")
         .populate("gender")
         .populate("breed")
@@ -28,7 +28,7 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
                 sort: { appointmentDate: "desc" },
             },
             limit: 1
-        });
+        }) as PetsInterface[];
     let petsObjects = pets.map((x: PetsInterface) => {
         let appoinments: AppointmentsInterface[] = x.appointments as AppointmentsInterface[];
         return ({
