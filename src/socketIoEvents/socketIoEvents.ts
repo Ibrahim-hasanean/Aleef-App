@@ -73,7 +73,8 @@ const socketIoEvents = (io: Server) => {
             if (ack) ack({ status: 200, msg: "helllo" });
         });
 
-        socket.on('user-message', async (data: any, ack: any) => {
+        //user new message to doctor
+        socket.on('user-doctor-message', async (data: any, ack: any) => {
             try {
                 let { message, doctorId } = data as { message: string, doctorId: ObjectId };
                 let user: UserInterface = socket.handshake.auth.user;
@@ -110,6 +111,7 @@ const socketIoEvents = (io: Server) => {
             }
         });
 
+        //doctor new message to user
         socket.on('doctor-message', async (data: any, ack: any) => {
             try {
                 console.log(data);
@@ -148,7 +150,7 @@ const socketIoEvents = (io: Server) => {
                 ack({ status: 500, msg: error.message });
             }
         });
-
+        // reciption support new message to user
         socket.on('receiption-support-message', async (data: any, ack: any) => {
             try {
                 let { message, userId } = data as { message: string, userId: ObjectId };
@@ -162,7 +164,7 @@ const socketIoEvents = (io: Server) => {
                 await isConversationExist.save();
                 //send message to doctor
                 let isOnline = usersArray.find(x => x == String(userId));
-                if (isOnline) io.to(String(userId)).emit("new-message", { message, from: "receiption-support", conversationId: isConversationExist._id });
+                if (isOnline) io.to(String(userId)).emit("new-receiption-support-message", { message, conversationId: isConversationExist._id });
                 else {
                     let user: UserInterface = await User.findById(userId) as UserInterface;
                     sendNotifications(user.registrationTokens, {
@@ -178,7 +180,7 @@ const socketIoEvents = (io: Server) => {
                 ack({ status: 500, msg: error.message });
             }
         });
-
+        //user new message to  reciption support
         socket.on('user-receiption-message', async (data: any, ack: any) => {
             try {
                 let { message } = data as { message: string, };
@@ -211,7 +213,7 @@ const socketIoEvents = (io: Server) => {
 
             }
         });
-
+        //store support new message to user
         socket.on('store-support-message', async (data: any, ack: any) => {
             try {
                 let { message, userId } = data as { message: string, userId: ObjectId };
@@ -225,7 +227,7 @@ const socketIoEvents = (io: Server) => {
                 await isConversationExist.save();
                 //send message to doctor
                 let isOnline = usersArray.find(x => x == String(userId));
-                if (isOnline) io.to(String(userId)).emit("new-message", { message, from: "store-support", conversationId: isConversationExist._id });
+                if (isOnline) io.to(String(userId)).emit("new-store-support-message", { message, conversationId: isConversationExist._id });
                 else {
                     let user: UserInterface = await User.findById(userId) as UserInterface;
                     sendNotifications(user.registrationTokens, {
@@ -241,7 +243,7 @@ const socketIoEvents = (io: Server) => {
                 ack({ status: 500, msg: error.message });
             }
         });
-
+        //user new message to store support
         socket.on('user-store-message', async (data: any, ack: any) => {
             try {
                 let { message } = data as { message: string, };
@@ -274,7 +276,6 @@ const socketIoEvents = (io: Server) => {
 
             }
         });
-
 
         socket.on("disconnect", () => {
             let role = socket.handshake.auth.role;

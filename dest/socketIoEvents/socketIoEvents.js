@@ -88,7 +88,8 @@ const socketIoEvents = (io) => {
             if (ack)
                 ack({ status: 200, msg: "helllo" });
         });
-        socket.on('user-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
+        //user new message to doctor
+        socket.on('user-doctor-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 let { message, doctorId } = data;
                 let user = socket.handshake.auth.user;
@@ -125,6 +126,7 @@ const socketIoEvents = (io) => {
                 ack({ status: 500, msg: error.message });
             }
         }));
+        //doctor new message to user
         socket.on('doctor-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 console.log(data);
@@ -165,6 +167,7 @@ const socketIoEvents = (io) => {
                 ack({ status: 500, msg: error.message });
             }
         }));
+        // reciption support new message to user
         socket.on('receiption-support-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 let { message, userId } = data;
@@ -179,7 +182,7 @@ const socketIoEvents = (io) => {
                 //send message to doctor
                 let isOnline = usersArray.find(x => x == String(userId));
                 if (isOnline)
-                    io.to(String(userId)).emit("new-message", { message, from: "receiption-support", conversationId: isConversationExist._id });
+                    io.to(String(userId)).emit("new-receiption-support-message", { message, conversationId: isConversationExist._id });
                 else {
                     let user = yield User_1.default.findById(userId);
                     (0, SendNotifications_1.default)(user.registrationTokens, {
@@ -196,6 +199,7 @@ const socketIoEvents = (io) => {
                 ack({ status: 500, msg: error.message });
             }
         }));
+        //user new message to  reciption support
         socket.on('user-receiption-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 let { message } = data;
@@ -229,6 +233,7 @@ const socketIoEvents = (io) => {
                 ack({ status: 500, msg: error.message });
             }
         }));
+        //store support new message to user
         socket.on('store-support-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 let { message, userId } = data;
@@ -243,7 +248,7 @@ const socketIoEvents = (io) => {
                 //send message to doctor
                 let isOnline = usersArray.find(x => x == String(userId));
                 if (isOnline)
-                    io.to(String(userId)).emit("new-message", { message, from: "store-support", conversationId: isConversationExist._id });
+                    io.to(String(userId)).emit("new-store-support-message", { message, conversationId: isConversationExist._id });
                 else {
                     let user = yield User_1.default.findById(userId);
                     (0, SendNotifications_1.default)(user.registrationTokens, {
@@ -260,6 +265,7 @@ const socketIoEvents = (io) => {
                 ack({ status: 500, msg: error.message });
             }
         }));
+        //user new message to store support
         socket.on('user-store-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 let { message } = data;
