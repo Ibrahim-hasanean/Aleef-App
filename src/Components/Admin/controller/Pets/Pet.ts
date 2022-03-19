@@ -64,7 +64,8 @@ export const getPets = async (req: Request, res: Response, next: NextFunction) =
     if (userId) query.user = userId;
     const pets: PetsInterface[] = await Pet.find(query).skip(skip).limit(limitNumber)
         .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
-    return res.status(200).json({ status: 200, data: { pets } });
+    const petsCount = await Pet.find(query).count();
+    return res.status(200).json({ status: 200, data: { pets, petsCount, page: page || 1, limit: limit || 10, } });
 }
 
 export const getPetById = async (req: Request, res: Response, next: NextFunction) => {

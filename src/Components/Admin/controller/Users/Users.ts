@@ -24,11 +24,12 @@ export const getUsers = async (req: Request, res: Response, next: NextFunction) 
             let lastUsetVisit = await Appointments.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
             return { lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "", ...user.toJSON() }
         }));
+        const usersCount = await User.find(query).count();
         // let reponseUsers = users.map(async (user: UserInterface) => {
         //     let lastUsetVisit = await Appointments.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
         //     return { ...user.toJSON(), lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }
         // })
-        return res.status(200).json({ status: 200, data: { users: results } });
+        return res.status(200).json({ status: 200, data: { users: results, page: page || 1, limit: limit || 10, usersCount } });
     } catch (error: any) {
         console.log(error);
         return res.status(500).json({ status: 500, msg: error.message })

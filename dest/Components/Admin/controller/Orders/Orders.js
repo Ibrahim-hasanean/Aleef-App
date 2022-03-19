@@ -69,7 +69,8 @@ const getOrders = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         .skip(skip)
         .limit(limitNumber)
         .exec();
-    return res.status(200).json({ status: 200, data: { orders } });
+    let ordersCount = yield Order_1.default.find(query).count();
+    return res.status(200).json({ status: 200, data: { orders, page: page || 1, limit: limit || 10, ordersCount } });
 });
 exports.getOrders = getOrders;
 const getOrderById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

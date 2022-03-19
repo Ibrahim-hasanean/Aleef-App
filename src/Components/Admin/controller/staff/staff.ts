@@ -51,7 +51,9 @@ export const updateStaff = async (req: Request, res: Response, next: NextFunctio
 }
 
 export const getStaffMemebers = async (req: Request, res: Response, next: NextFunction) => {
-    let { text, cardNumber, phoneNumber, role } = req.query;
+    let { text, cardNumber, phoneNumber, role, page, limit } = req.query;
+    const limitNumber = Number(limit) || 10;
+    const skip = (Number(page || 1) - 1) * limitNumber;
     let query: any = {};
     if (text) {
         query = { ...query, $or: [{ name: { $regex: text, $options: "i" } }, { email: { $regex: text, $options: "i" } }] }
@@ -59,8 +61,9 @@ export const getStaffMemebers = async (req: Request, res: Response, next: NextFu
     if (cardNumber) query.cardNumber = cardNumber;
     if (phoneNumber) query.phoneNumber = phoneNumber;
     if (role) query.role = role;
-    const staffMembers = await Staff.find(query);
-    return res.status(200).json({ status: 200, data: { staffMembers } });
+    const staffMembers = await Staff.find(query).skip(skip).limit(limitNumber);
+    const staffMembersCount = await Staff.find(query).count();
+    return res.status(200).json({ status: 200, data: { staffMembers, page: page || 1, limit: limit || 10, staffMembersCount } });
 }
 
 export const getStaffMemeberById = async (req: Request, res: Response, next: NextFunction) => {

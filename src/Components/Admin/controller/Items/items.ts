@@ -101,7 +101,8 @@ export const getItems = async (req: Request, res: Response, next: NextFunction) 
         else if (sortBy == "almostOutOfStock") sort = { avaliableQuantity: "asc" }
     }
     const items = await Item.find(query).skip(skip).limit(limitNumber).sort(sort);
-    return res.status(200).json({ status: 200, data: { items } });
+    const itemsCount = await Item.find(query).count();
+    return res.status(200).json({ status: 200, data: { items, page: page || 1, limit: limit || 10, itemsCount } });
 }
 
 export const itemsHome = async (req: Request, res: Response, next: NextFunction) => {

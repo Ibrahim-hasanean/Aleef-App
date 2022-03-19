@@ -38,11 +38,12 @@ const getUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
             let lastUsetVisit = yield Appointments_1.default.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
             return Object.assign({ lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }, user.toJSON());
         })));
+        const usersCount = yield User_1.default.find(query).count();
         // let reponseUsers = users.map(async (user: UserInterface) => {
         //     let lastUsetVisit = await Appointments.find({ user: user._id }).sort({ appointmentDate: "desc" }).limit(1);
         //     return { ...user.toJSON(), lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }
         // })
-        return res.status(200).json({ status: 200, data: { users: results } });
+        return res.status(200).json({ status: 200, data: { users: results, page: page || 1, limit: limit || 10, usersCount } });
     }
     catch (error) {
         console.log(error);

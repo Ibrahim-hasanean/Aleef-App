@@ -115,7 +115,8 @@ export const getAppointments = async (req: Request, res: Response, next: NextFun
             .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
             .populate({ path: "pet", select: ['name', 'serialNumber', 'age'] })
             .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
-        return res.status(200).json({ status: 200, data: { appointments } });
+        const appointmentsCount = await Appointments.find(query).count();
+        return res.status(200).json({ status: 200, data: { appointments, page: page || 1, limit: pageSize || 10, appointmentsCount } });
     } catch (error: any) {
         console.log(error);
         return res.status(500).json({ status: 500, msg: error.message })

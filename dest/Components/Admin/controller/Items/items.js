@@ -97,7 +97,8 @@ const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
             sort = { avaliableQuantity: "asc" };
     }
     const items = yield Item_1.default.find(query).skip(skip).limit(limitNumber).sort(sort);
-    return res.status(200).json({ status: 200, data: { items } });
+    const itemsCount = yield Item_1.default.find(query).count();
+    return res.status(200).json({ status: 200, data: { items, page: page || 1, limit: limit || 10, itemsCount } });
 });
 exports.getItems = getItems;
 const itemsHome = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

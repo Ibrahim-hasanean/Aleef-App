@@ -55,7 +55,8 @@ export const getOrders = async (req: Request, res: Response, next: NextFunction)
         .skip(skip)
         .limit(limitNumber)
         .exec();
-    return res.status(200).json({ status: 200, data: { orders } });
+    let ordersCount = await Order.find(query).count();
+    return res.status(200).json({ status: 200, data: { orders, page: page || 1, limit: limit || 10, ordersCount } });
 }
 
 export const getOrderById = async (req: Request, res: Response, next: NextFunction) => {
