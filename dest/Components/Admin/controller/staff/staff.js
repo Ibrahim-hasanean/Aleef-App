@@ -18,6 +18,10 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const addStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber } = req.body;
+    let staffMemeber = req.staff;
+    if (staffMemeber.role === 'receiption' && role !== "doctor") {
+        return res.status(400).json({ status: 400, msg: "receiption can add vets only" });
+    }
     let image = req.file;
     let imageUrl = image ? yield (0, uploadFileToFirebase_1.default)(image) : "";
     const isPhoneNumberExist = yield Staff_1.default.findOne({ phoneNumber });
@@ -37,6 +41,10 @@ exports.addStaff = addStaff;
 const updateStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const memberId = req.params.id;
     const { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber } = req.body;
+    let staffMemeber = req.staff;
+    if (staffMemeber.role === 'receiption' && role !== "doctor") {
+        return res.status(400).json({ status: 400, msg: "receiption can update vets only" });
+    }
     let image = req.file;
     let imageUrl;
     if (image)
@@ -69,6 +77,10 @@ const updateStaff = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 exports.updateStaff = updateStaff;
 const getStaffMemebers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { text, cardNumber, phoneNumber, role, page, limit } = req.query;
+    let staffMemeber = req.staff;
+    if (staffMemeber.role === 'receiption') {
+        role = "doctor";
+    }
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
     let query = {};

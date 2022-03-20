@@ -37,14 +37,7 @@ const io = new ioServer.Server(server);
 const port = process.env.PORT || 3000;
 const socketIoEvents_1 = __importDefault(require("./socketIoEvents/socketIoEvents"));
 require("./config/mongoose");
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', '*');
-//     next();
-// });
 app.use((0, cors_1.default)());
-// app.use(cors({ origin: "http://localhost:3000" }));
 node_cron_1.default.schedule("* * * * *", CronJob_1.default);
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
@@ -54,9 +47,6 @@ app.get("/", (req, res, next) => {
 app.use("/users", routes_1.default);
 app.use("/admins", routes_2.default);
 app.use((0, celebrate_1.errors)());
-// app.listen(port, () => {
-//     console.log("listen on", port);
-// });
 server.listen(port, () => {
     console.log("listen on", port);
 });

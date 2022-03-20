@@ -154,9 +154,9 @@ router.delete("/appointments/:id", verifyStaffMember, validate(ValidateIdParam),
 
 // Staff routes
 router.post("/defaultAdmin", defaultAdmin);
-router.post("/staff", verifyAdmin, upload.single('image'), validate(addStaffSchema), addStaff);
-router.patch("/staff/:id", verifyAdmin, upload.single('image'), validate(ValidateIdParam), validate(addStaffSchema), updateStaff);
-router.get("/staff", verifyAdmin, getStaffMemebers);
+router.post("/staff", verifyRecieption, upload.single('image'), validate(addStaffSchema), addStaff);
+router.patch("/staff/:id", verifyRecieption, upload.single('image'), validate(ValidateIdParam), validate(addStaffSchema), updateStaff);
+router.get("/staff", verifyRecieption, getStaffMemebers);
 router.get("/staff/:id", verifyAdmin, validate(ValidateIdParam), getStaffMemeberById);
 router.get("/staff/:id/workHoures", verifyAdmin, validate(ValidateIdParam), getWorkHoures);
 router.post("/staff/:id/workHoures", verifyAdmin, validate(ValidateIdParam), validate(workHouresSchema), setWorkHoures);

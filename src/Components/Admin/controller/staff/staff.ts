@@ -5,6 +5,10 @@ import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
 
 export const addStaff = async (req: Request, res: Response, next: NextFunction) => {
     const { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber } = req.body;
+    let staffMemeber = req.staff;
+    if (staffMemeber.role === 'receiption' && role !== "doctor") {
+        return res.status(400).json({ status: 400, msg: "receiption can add vets only" });
+    }
     let image = req.file;
     let imageUrl = image ? await uploadImageToStorage(image) : "";
     const isPhoneNumberExist = await Staff.findOne({ phoneNumber });
@@ -22,6 +26,10 @@ export const addStaff = async (req: Request, res: Response, next: NextFunction) 
 export const updateStaff = async (req: Request, res: Response, next: NextFunction) => {
     const memberId = req.params.id;
     const { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber } = req.body;
+    let staffMemeber = req.staff;
+    if (staffMemeber.role === 'receiption' && role !== "doctor") {
+        return res.status(400).json({ status: 400, msg: "receiption can update vets only" });
+    }
     let image = req.file;
     let imageUrl;
     if (image) imageUrl = await uploadImageToStorage(image);
@@ -52,6 +60,10 @@ export const updateStaff = async (req: Request, res: Response, next: NextFunctio
 
 export const getStaffMemebers = async (req: Request, res: Response, next: NextFunction) => {
     let { text, cardNumber, phoneNumber, role, page, limit } = req.query;
+    let staffMemeber = req.staff;
+    if (staffMemeber.role === 'receiption') {
+        role = "doctor";
+    }
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
     let query: any = {};

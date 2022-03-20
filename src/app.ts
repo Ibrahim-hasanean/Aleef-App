@@ -15,14 +15,7 @@ import socketIoEvents from "./socketIoEvents/socketIoEvents"
 require("./config/mongoose");
 
 
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-//     res.setHeader('Access-Control-Allow-Headers', '*');
-//     next();
-// });
 app.use(cors());
-// app.use(cors({ origin: "http://localhost:3000" }));
 
 cron.schedule("* * * * *", appointmentsNotifications);
 app.use(express.json());
@@ -37,10 +30,6 @@ app.use("/admins", adminRoutes);
 
 app.use(errors());
 
-// app.listen(port, () => {
-
-//     console.log("listen on", port);
-// });
 server.listen(port, () => {
     console.log("listen on", port);
 });
