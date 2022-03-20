@@ -80,33 +80,55 @@ export const getStaffMemebers = async (req: Request, res: Response, next: NextFu
 
 export const getStaffMemeberById = async (req: Request, res: Response, next: NextFunction) => {
     const staffId = req.params.id;
+    let staffMemeber = req.staff;
     if (!mongoose.isValidObjectId(staffId))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
-    const staffMember = await Staff.findById(staffId);
+    let query: any = { _id: staffId };
+    if (staffMemeber.role === 'receiption') {
+        query.role = "doctor"
+    }
+    const staffMember = await Staff.findOne(query);
     return res.status(200).json({ status: 200, data: { staffMember } });
 }
 
 export const deleteStaffMember = async (req: Request, res: Response, next: NextFunction) => {
     const staffId = req.params.id;
-    const staffMember = await Staff.findByIdAndDelete(staffId);
+    let staffMemeber = req.staff;
+    if (!mongoose.isValidObjectId(staffId))
+        return res.status(200).json({ status: 200, data: { staffMember: null } });
+    let query: any = { _id: staffId };
+    if (staffMemeber.role === 'receiption') {
+        query.role = "doctor"
+    }
+    const staffMember = await Staff.findOneAndDelete(query);
     return res.status(200).json({ status: 200, msg: "staff member deleted sucessfully" });
 }
 
 export const getWorkHoures = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
+    let staffMemeber = req.staff;
     if (!mongoose.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
-    let staff: StafInterface | null = await Staff.findById(id);
+    let query: any = { _id: id };
+    if (staffMemeber.role === 'receiption') {
+        query.role = "doctor"
+    }
+    let staff: StafInterface | null = await Staff.findOne(query);
     return res.status(200).json({ status: 200, data: { workHoures: staff ? staff.workHoures : null } });
 }
 
 
 export const setWorkHoures = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
+    let staffMemeber = req.staff;
     let { saturday, sunday, monday, tuesday, wednesday, thursday, friday } = req.body;
     if (!mongoose.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
-    let staff: StafInterface | null = await Staff.findById(id) as StafInterface;
+    let query: any = { _id: id };
+    if (staffMemeber.role === 'receiption') {
+        query.role = "doctor"
+    }
+    let staff: StafInterface | null = await Staff.findOne(query) as StafInterface;
     if (!staff) return res.status(400).json({ status: 400, msg: "staff memeber not found" });
     let workHoures = staff?.workHoures
     workHoures.saturday = { isActive: saturday.isActive, from: saturday.from, to: saturday.to };

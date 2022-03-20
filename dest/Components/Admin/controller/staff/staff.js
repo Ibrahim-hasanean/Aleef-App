@@ -101,32 +101,54 @@ const getStaffMemebers = (req, res, next) => __awaiter(void 0, void 0, void 0, f
 exports.getStaffMemebers = getStaffMemebers;
 const getStaffMemeberById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const staffId = req.params.id;
+    let staffMemeber = req.staff;
     if (!mongoose_1.default.isValidObjectId(staffId))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
-    const staffMember = yield Staff_1.default.findById(staffId);
+    let query = { _id: staffId };
+    if (staffMemeber.role === 'receiption') {
+        query.role = "doctor";
+    }
+    const staffMember = yield Staff_1.default.findOne(query);
     return res.status(200).json({ status: 200, data: { staffMember } });
 });
 exports.getStaffMemeberById = getStaffMemeberById;
 const deleteStaffMember = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const staffId = req.params.id;
-    const staffMember = yield Staff_1.default.findByIdAndDelete(staffId);
+    let staffMemeber = req.staff;
+    if (!mongoose_1.default.isValidObjectId(staffId))
+        return res.status(200).json({ status: 200, data: { staffMember: null } });
+    let query = { _id: staffId };
+    if (staffMemeber.role === 'receiption') {
+        query.role = "doctor";
+    }
+    const staffMember = yield Staff_1.default.findOneAndDelete(query);
     return res.status(200).json({ status: 200, msg: "staff member deleted sucessfully" });
 });
 exports.deleteStaffMember = deleteStaffMember;
 const getWorkHoures = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
+    let staffMemeber = req.staff;
     if (!mongoose_1.default.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
-    let staff = yield Staff_1.default.findById(id);
+    let query = { _id: id };
+    if (staffMemeber.role === 'receiption') {
+        query.role = "doctor";
+    }
+    let staff = yield Staff_1.default.findOne(query);
     return res.status(200).json({ status: 200, data: { workHoures: staff ? staff.workHoures : null } });
 });
 exports.getWorkHoures = getWorkHoures;
 const setWorkHoures = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
+    let staffMemeber = req.staff;
     let { saturday, sunday, monday, tuesday, wednesday, thursday, friday } = req.body;
     if (!mongoose_1.default.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
-    let staff = yield Staff_1.default.findById(id);
+    let query = { _id: id };
+    if (staffMemeber.role === 'receiption') {
+        query.role = "doctor";
+    }
+    let staff = yield Staff_1.default.findOne(query);
     if (!staff)
         return res.status(400).json({ status: 400, msg: "staff memeber not found" });
     let workHoures = staff === null || staff === void 0 ? void 0 : staff.workHoures;

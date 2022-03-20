@@ -157,10 +157,10 @@ router.post("/defaultAdmin", defaultAdmin);
 router.post("/staff", verifyRecieption, upload.single('image'), validate(addStaffSchema), addStaff);
 router.patch("/staff/:id", verifyRecieption, upload.single('image'), validate(ValidateIdParam), validate(addStaffSchema), updateStaff);
 router.get("/staff", verifyRecieption, getStaffMemebers);
-router.get("/staff/:id", verifyAdmin, validate(ValidateIdParam), getStaffMemeberById);
-router.get("/staff/:id/workHoures", verifyAdmin, validate(ValidateIdParam), getWorkHoures);
-router.post("/staff/:id/workHoures", verifyAdmin, validate(ValidateIdParam), validate(workHouresSchema), setWorkHoures);
-router.delete("/staff/:id", verifyAdmin, validate(ValidateIdParam), deleteStaffMember);
+router.get("/staff/:id", verifyRecieption, validate(ValidateIdParam), getStaffMemeberById);
+router.get("/staff/:id/workHoures", verifyRecieption, validate(ValidateIdParam), getWorkHoures);
+router.post("/staff/:id/workHoures", verifyRecieption, validate(ValidateIdParam), validate(workHouresSchema), setWorkHoures);
+router.delete("/staff/:id", verifyRecieption, validate(ValidateIdParam), deleteStaffMember);
 
 // items and items variables
 router.get("/items", verifyStoreManagement, getItems);
