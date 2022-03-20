@@ -128,10 +128,16 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
     try {
         let id = req.params.id;
         const appointment: AppointmentsInterface = await Appointments.findById(id)
-            .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
-            .populate({ path: "pet", select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes'] })
+            .populate({ path: "doctor" })//select: ['name', 'phoneNumber', 'email', 'role']
+            .populate({
+                path: "pet",
+                populate: {
+                    path: 'medacins vaccinations'
+                }
+            })//select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes']
             .populate({ path: "medacin" })
-            .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] }) as AppointmentsInterface;
+            .populate({ path: "user", }) as AppointmentsInterface;// select: ['fullName', 'phoneNumber', 'email']
+
         let lastCheckUp = '';
         let pet: PetsInterface = appointment.pet as PetsInterface;
         if (pet) {

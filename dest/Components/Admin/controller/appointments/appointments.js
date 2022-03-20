@@ -147,10 +147,15 @@ const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0
     try {
         let id = req.params.id;
         const appointment = yield Appointments_1.default.findById(id)
-            .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
-            .populate({ path: "pet", select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes'] })
+            .populate({ path: "doctor" }) //select: ['name', 'phoneNumber', 'email', 'role']
+            .populate({
+            path: "pet",
+            populate: {
+                path: 'medacins vaccinations'
+            }
+        }) //select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes']
             .populate({ path: "medacin" })
-            .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
+            .populate({ path: "user", }); // select: ['fullName', 'phoneNumber', 'email']
         let lastCheckUp = '';
         let pet = appointment.pet;
         if (pet) {
