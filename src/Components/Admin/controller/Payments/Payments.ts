@@ -43,7 +43,8 @@ export const getPayments = async (req: Request, res: Response, next: NextFunctio
         .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
         .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
         .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
-    return res.status(200).json({ status: 200, data: { payments } });
+    let paymentsCount = await Payment.find(query).count();
+    return res.status(200).json({ status: 200, data: { payments, page: page || 1, limit: limit || 10, paymentsCount } });
 }
 
 export const getPaymentById = async (req: Request, res: Response, next: NextFunction) => {

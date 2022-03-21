@@ -58,7 +58,8 @@ const getPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
         .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
         .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
-    return res.status(200).json({ status: 200, data: { payments } });
+    let paymentsCount = yield Payment_1.default.find(query).count();
+    return res.status(200).json({ status: 200, data: { payments, page: page || 1, limit: limit || 10, paymentsCount } });
 });
 exports.getPayments = getPayments;
 const getPaymentById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
