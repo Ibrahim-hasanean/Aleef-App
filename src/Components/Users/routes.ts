@@ -33,7 +33,7 @@ import upload from "../middlewares/uploadImage";
 import uploadFileToFirebase from "../utils/uploadFileToFirebase";
 import { getNotifications } from "./controller/Notifications";
 import { socialLoginSchema } from "./middleware/socialLoginValidation";
-import { getMessages, getConversations } from "./controller/UserChat"
+import { getMessages, getConversations, getConversation } from "./controller/UserChat"
 
 const router = Router();
 
@@ -59,6 +59,7 @@ router.post("/auth/logout", verifyUser, logout);
 
 //chat routes 
 router.get("/conversations", verifyUser, getConversations);
+router.get("/conversations/:id", verifyUser, getConversation);
 router.get("/conversations/:id/messages", verifyUser, getMessages);
 
 //get hospital location

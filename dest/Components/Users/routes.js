@@ -45,6 +45,7 @@ router.post("/auth/facebook", (0, userAuthValidate_1.validate)(socialLoginValida
 router.post("/auth/logout", verifyUser_1.default, UsersAuth_1.logout);
 //chat routes 
 router.get("/conversations", verifyUser_1.default, UserChat_1.getConversations);
+router.get("/conversations/:id", verifyUser_1.default, UserChat_1.getConversation);
 router.get("/conversations/:id/messages", verifyUser_1.default, UserChat_1.getMessages);
 //get hospital location
 router.get("/location", verifyUser_1.default, Location_1.getLocation);

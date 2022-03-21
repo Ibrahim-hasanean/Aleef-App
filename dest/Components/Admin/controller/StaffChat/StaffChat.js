@@ -13,16 +13,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getConversation = exports.getConversations = exports.getMessages = void 0;
-const Messages_1 = __importDefault(require("../../../models/Messages"));
+const Messages_1 = __importDefault(require("../../../../models/Messages"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const Conversations_1 = __importDefault(require("../../../models/Conversations"));
+const Conversations_1 = __importDefault(require("../../../../models/Conversations"));
 const getMessages = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let user = req.user;
+    let staff = req.staff;
     let { page, limit } = req.query;
     let conversationId = req.params.id;
     let numberPageSize = limit ? Number(limit) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
-    let isConversationExist = yield Conversations_1.default.findOne({ _id: conversationId, userId: user._id });
+    let isConversationExist = yield Conversations_1.default.findOne({ _id: conversationId, doctorId: staff._id });
     if (!isConversationExist)
         return res.status(400).json({ status: 400, msg: `you do not have conversation with id ${conversationId}` });
     let messages = yield Messages_1.default.find({ conversation: isConversationExist._id }).skip(skip).limit(numberPageSize);
@@ -30,11 +30,11 @@ const getMessages = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.getMessages = getMessages;
 const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let user = req.user;
+    let staff = req.staff;
     let { page, limit } = req.query;
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
-    let conversations = yield Conversations_1.default.find({ userId: user._id })
+    let conversations = yield Conversations_1.default.find({ doctorId: staff._id })
         .skip(skip)
         .limit(limitNumber)
         .select(['-messages'])
@@ -45,11 +45,11 @@ const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, f
 exports.getConversations = getConversations;
 const getConversation = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
-    let user = req.user;
+    let staff = req.staff;
     if (!mongoose_1.default.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { conversation: null } });
     let conversation = yield Conversations_1.default
-        .findOne({ _id: id, userId: user._id })
+        .findOne({ _id: id, doctorId: staff._id })
         .select(['-messages'])
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });

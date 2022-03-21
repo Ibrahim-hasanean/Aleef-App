@@ -54,12 +54,19 @@ import { addInvoice, getInvoicements, doctorAddInvoice } from "./controller/Invo
 import { InvoiceSchema, doctorInvoiceSchema } from "./middleware/validateInvoice"
 import upload from "../middlewares/uploadImage";
 import { adminHome } from "./controller/home/home";
+import { getMessages, getConversations, getConversation } from "./controller/StaffChat/StaffChat";
 
 const router = Router();
 
 // auth routers
 router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
+
+
+//chat routes 
+router.get("/conversations", verifyStaffMember, getConversations);
+router.get("/conversations/:id", verifyStaffMember, getConversation);
+router.get("/conversations/:id/messages", verifyStaffMember, getMessages);
 
 //home page
 router.get("/admin-home", verifyAdmin, adminHome);
