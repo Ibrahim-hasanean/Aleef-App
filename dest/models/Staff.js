@@ -45,7 +45,7 @@ const staffSchema = new mongoose_1.Schema({
     code: { type: String },
     imageUrl: { type: String },
     cardNumber: { type: String, required: true },
-    licenseNumber: { type: String },
+    licenseNumber: { type: String, default: "" },
     staffMemberId: { type: Number, required: true },
     phoneNumber: { type: String, required: true },
     email: { type: String, required: true },

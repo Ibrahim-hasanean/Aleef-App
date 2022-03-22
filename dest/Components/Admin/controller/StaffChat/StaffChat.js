@@ -34,11 +34,12 @@ const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     let { page, limit } = req.query;
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
+    // .select(['-messages'])
     let conversations = yield Conversations_1.default.find({ doctorId: staff._id })
         .skip(skip)
         .limit(limitNumber)
-        .select(['-messages'])
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
+        .populate({ path: "messages", options: { limit: 10 } })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, conversations });
 });

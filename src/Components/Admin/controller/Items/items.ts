@@ -87,10 +87,11 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
 }
 
 export const getItems = async (req: Request, res: Response, next: NextFunction) => {
-    const { page, limit, category, text, sortBy } = req.query;
-    let query: any = { allowed: true };
+    const { page, limit, category, text, sortBy, allowed } = req.query;
+    let query: any = {};
     let sort: any = { createdAt: "desc" };
     if (category) query.category = category;
+    if (allowed) query.allowed = allowed;
     if (text) {
         query.$or = [{ name: { $regex: text, $options: "i" } }, { description: { $regex: text, $options: "i" } }];
     }

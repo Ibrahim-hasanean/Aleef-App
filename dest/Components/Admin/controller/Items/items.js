@@ -80,11 +80,13 @@ const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.updateItem = updateItem;
 const getItems = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const { page, limit, category, text, sortBy } = req.query;
-    let query = { allowed: true };
+    const { page, limit, category, text, sortBy, allowed } = req.query;
+    let query = {};
     let sort = { createdAt: "desc" };
     if (category)
         query.category = category;
+    if (allowed)
+        query.allowed = allowed;
     if (text) {
         query.$or = [{ name: { $regex: text, $options: "i" } }, { description: { $regex: text, $options: "i" } }];
     }
