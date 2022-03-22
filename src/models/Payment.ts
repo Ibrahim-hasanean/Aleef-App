@@ -9,12 +9,14 @@ export interface PaymentInterFace extends mongoose.Document {
     paymentAmmount: number,
     exchange: number,
     paymentType: string,
+    paymentIntentId: string
     user: ObjectId | UserInterface | null
     appointment: AppointmentsInterface | ObjectId | null
     order: OrderInterface | ObjectId | null
 }
 
 const payemntSchema = new Schema({
+    paymentIntentId: { type: String },
     totalAmount: { type: Number, required: true },
     discount: { type: Number },
     paymentAmmount: { type: Number, required: true },

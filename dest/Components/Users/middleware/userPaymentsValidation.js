@@ -13,6 +13,8 @@ exports.paymentSchema = {
         ExperitionDate: celebrate_1.Joi.string(),
         SecurityCode: celebrate_1.Joi.string(),
         status: celebrate_1.Joi.string().valid("pending", "arrived", "in the way", "canceled"),
+        currency: celebrate_1.Joi.string().default("usd"),
+        paymentMethodId: celebrate_1.Joi.string().required(),
         orderItems: celebrate_1.Joi.array().required().items(celebrate_1.Joi.object().keys({
             count: celebrate_1.Joi.number().required(),
             item: celebrate_1.Joi.string().required()

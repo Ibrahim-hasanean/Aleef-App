@@ -4,53 +4,65 @@ import Order, { OrderInterface } from "../../../models/Order";
 import caculateItemsPrice from "../../utils/calculateItemsPrice";
 import Payment, { PaymentInterFace } from "../../../models/Payment";
 import mongoose from "mongoose";
+import { paymentMethod, cancelPayment } from "../../utils/paymentMethod";
 
 export const payItem = async (req: Request, res: Response, next: NextFunction) => {
-    const {
-        totalPrice,
-        itemsCount,
-        shippingFees,
-        shippingAddressId,
-        cardNumber,
-        orderItems,
-        cardHolderName,
-        ExperitionDate,
-        SecurityCode
-    } = req.body;
-    const user = req.user;
-    let orderItemsTotal;
     try {
-        orderItemsTotal = await caculateItemsPrice(orderItems);
+
+        const {
+            totalPrice,
+            itemsCount,
+            shippingFees,
+            shippingAddressId,
+            cardNumber,
+            orderItems,
+            cardHolderName,
+            ExperitionDate,
+            SecurityCode,
+            currency,
+            paymentMethodId
+        } = req.body;
+        const user = req.user;
+        let orderItemsTotal;
+        try {
+            orderItemsTotal = await caculateItemsPrice(orderItems);
+        } catch (error: any) {
+            return res.status(400).json({ status: 400, msg: error.message });
+        }
+        if (totalPrice != orderItemsTotal.totalCost) {
+            return res.status(400).json({ status: 400, msg: "totalPrice not equal all items total price" });
+        }
+        if (shippingFees != orderItemsTotal.shippingCost) {
+            return res.status(400).json({ status: 400, msg: "shippingFees not equal all items total shipping fees" });
+        }
+        //payment 
+        const orderItemsCollection = await OrderItem.create(...orderItems);
+        const newOrder: OrderInterface = new Order({
+            user: user._id,
+            totalPrice,
+            itemsCount,
+            items: orderItemsCollection,
+            subTotal: totalPrice - shippingFees,
+            shippingFees,
+            shippingAddress: shippingAddressId,
+            cardNumber,
+            cardHolderName,
+            ExperitionDate,
+            SecurityCode,
+            currency,
+            status: "to be shipped"
+        });
+        let paymentIntent = await paymentMethod(totalPrice, currency, "new order payment", paymentMethodId);
+        const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id, })
+        newOrder.payment = payment._id;
+        newOrder.paymentIntentId = paymentIntent.id;
+        payment.paymentIntentId = paymentIntent.id;
+        await newOrder.save();
+        await payment.save();
+        return res.status(200).json({ status: 200, data: { order: newOrder } });
     } catch (error: any) {
-        return res.status(400).json({ status: 400, msg: error.message });
+        return res.status(400).json({ status: 400, msg: error.message ?? error });
     }
-    if (totalPrice != orderItemsTotal.totalCost) {
-        return res.status(400).json({ status: 400, msg: "totalPrice not equal all items total price" });
-    }
-    if (shippingFees != orderItemsTotal.shippingCost) {
-        return res.status(400).json({ status: 400, msg: "shippingFees not equal all items total shipping fees" });
-    }
-    //payment 
-    const orderItemsCollection = await OrderItem.create(...orderItems);
-    const newOrder: OrderInterface = new Order({
-        user: user._id,
-        totalPrice,
-        itemsCount,
-        items: orderItemsCollection,
-        subTotal: totalPrice - shippingFees,
-        shippingFees,
-        shippingAddress: shippingAddressId,
-        cardNumber,
-        cardHolderName,
-        ExperitionDate,
-        SecurityCode,
-        status: "to be shipped"
-    });
-    const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id })
-    newOrder.payment = payment._id;
-    await newOrder.save();
-    await payment.save();
-    return res.status(200).json({ status: 200, data: { order: newOrder } });
 }
 
 export const getPayments = async (req: Request, res: Response, next: NextFunction) => {
@@ -94,8 +106,13 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
     if (!mongoose.isValidObjectId(paymentsId)) {
         return res.status(400).json({ status: 400, msg: "order not found" });
     }
-    let userOrders = await Order.findOneAndUpdate({ user: user._id, _id: paymentsId }, { status: "canceled" });
-    return res.status(200).json({ status: 200, data: { order: userOrders } });
+    let userOrder: OrderInterface = await Order.findOne({ user: user._id, _id: paymentsId }) as OrderInterface;
+    if (!userOrder) return res.status(400).json({ status: 400, msg: "order not found" });
+    if (userOrder.status == "shipped") return res.status(400).json({ status: 400, msg: "can not cancel order , order is shipped" });
+    let cancelPaymentIntent = await cancelPayment(userOrder.paymentIntentId);
+    userOrder.status = "canceled";
+    await userOrder.save();
+    return res.status(200).json({ status: 200, data: { order: userOrder } });
 }
 
 

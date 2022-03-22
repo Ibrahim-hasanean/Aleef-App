@@ -12,6 +12,8 @@ export const paymentSchema = {
         ExperitionDate: Joi.string(),
         SecurityCode: Joi.string(),
         status: Joi.string().valid("pending", "arrived", "in the way", "canceled"),
+        currency: Joi.string().default("usd"),
+        paymentMethodId: Joi.string().required(),
         orderItems: Joi.array().required().items(Joi.object().keys({
             count: Joi.number().required(),
             item: Joi.string().required()

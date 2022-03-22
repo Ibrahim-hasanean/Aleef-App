@@ -12,13 +12,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.cancelPayment = exports.paymentMethod = void 0;
 const stripe_1 = __importDefault(require("stripe"));
 require("dotenv").config();
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-console.log("stripeSecretKeyyy", stripeSecretKey);
 const stripe = new stripe_1.default(stripeSecretKey, {
     apiVersion: '2020-08-27',
 });
-const paymentMethod = () => __awaiter(void 0, void 0, void 0, function* () {
+const paymentMethod = (amount, currency, description, payment_method) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let payment = yield stripe.paymentIntents.create({
+            amount, currency, description, payment_method, confirm: true
+        });
+        return payment;
+    }
+    catch (error) {
+        console.log("error", error);
+        return Promise.reject(`payment failed, ${error.message}`);
+    }
 });
-exports.default = paymentMethod;
+exports.paymentMethod = paymentMethod;
+const cancelPayment = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        let payment = yield stripe.paymentIntents.cancel(id);
+        return payment;
+    }
+    catch (error) {
+        console.log("error", error);
+        return Promise.reject(`cancel payment failed, ${error.message}`);
+    }
+});
+exports.cancelPayment = cancelPayment;

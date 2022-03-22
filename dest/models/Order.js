@@ -23,6 +23,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const orderSchema = new mongoose_1.Schema({
     totalPrice: { type: Number },
     itemsCount: { type: Number },
+    paymentIntentId: { type: String },
     items: [{ type: mongoose_1.default.Types.ObjectId, ref: "orderItems" }],
     shippingFees: { type: Number },
     subTotal: { type: Number },
@@ -33,7 +34,7 @@ const orderSchema = new mongoose_1.Schema({
     SecurityCode: { type: String },
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users", required: true },
     status: { type: String },
-    // paymentId: { type: String },
+    currency: { type: String },
     payment: { type: mongoose_1.default.Types.ObjectId, ref: "payments" },
 }, { timestamps: true });
 const Order = mongoose_1.default.model("orders", orderSchema);
