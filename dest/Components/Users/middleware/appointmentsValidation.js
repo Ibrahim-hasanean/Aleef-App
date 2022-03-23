@@ -18,5 +18,7 @@ exports.appointmentPaymentSchema = {
         paymentAmmount: celebrate_1.Joi.number().required(),
         exchange: celebrate_1.Joi.number().required(),
         appointmentId: celebrate_1.Joi.string().required(),
+        currency: celebrate_1.Joi.string().default("usd"),
+        paymentIntentId: celebrate_1.Joi.string().required(),
     })
 };

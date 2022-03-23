@@ -10,6 +10,7 @@ import { InvoiceInterface } from "./Invoice";
 export interface AppointmentsInterface extends mongoose.Document {
     pet: ObjectId | PetsInterface | string,
     service: string,
+    paymentIntentId: string,
     appointmentDate: Date | string,
     reason: string,
     doctor: ObjectId | StafInterface,
@@ -27,6 +28,7 @@ export interface AppointmentsInterface extends mongoose.Document {
 const appointmentSchema = new Schema({
     pet: { type: mongoose.Types.ObjectId, ref: "pets" },
     service: { type: String },
+    paymentIntentId: { type: String },
     appointmentDate: { type: Date },
     reason: { type: String },
     doctor: { type: mongoose.Types.ObjectId, ref: "staff" },

@@ -8,7 +8,7 @@ const stripe = new Stripe(stripeSecretKey, {
 export const paymentMethod = async (amount: number, currency: string, description: string, payment_method: string) => {
     try {
         let payment = await stripe.paymentIntents.create({
-            amount, currency, description, payment_method, confirm: true
+            amount: amount * 1000, currency, description, payment_method, confirm: true
         });
         return payment;
 

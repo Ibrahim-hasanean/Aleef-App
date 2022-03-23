@@ -18,5 +18,7 @@ export const appointmentPaymentSchema = {
         paymentAmmount: Joi.number().required(),
         exchange: Joi.number().required(),
         appointmentId: Joi.string().required(),
+        currency: Joi.string().default("usd"),
+        paymentIntentId: Joi.string().required(),
     })
 }

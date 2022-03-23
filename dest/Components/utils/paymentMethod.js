@@ -22,7 +22,7 @@ const stripe = new stripe_1.default(stripeSecretKey, {
 const paymentMethod = (amount, currency, description, payment_method) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let payment = yield stripe.paymentIntents.create({
-            amount, currency, description, payment_method, confirm: true
+            amount: amount * 1000, currency, description, payment_method, confirm: true
         });
         return payment;
     }

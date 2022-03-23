@@ -20,6 +20,7 @@ const isDateOutWorkTime_1 = __importDefault(require("../../utils/isDateOutWorkTi
 const Payment_1 = __importDefault(require("../../../models/Payment"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const Pets_1 = __importDefault(require("../../../models/Pets"));
+const paymentMethod_1 = require("../../utils/paymentMethod");
 const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { petId, service, appointmentDate, reason } = req.body;
     const user = req.user;
@@ -166,24 +167,32 @@ const getAvaliableTime = (req, res, next) => __awaiter(void 0, void 0, void 0, f
 });
 exports.getAvaliableTime = getAvaliableTime;
 const payAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { totalAmount, discount, paymentAmmount, exchange, appointmentId } = req.body;
-    let user = req.user;
-    const isAppointmentExist = yield Appointments_1.default.findById(appointmentId);
-    if (!isAppointmentExist)
-        return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
-    let newPayment = yield Payment_1.default.create({
-        totalAmount,
-        discount,
-        paymentAmmount,
-        exchange,
-        paymentType: "visa",
-        user: user._id,
-        appointment: appointmentId
-    });
-    isAppointmentExist.payment = newPayment._id;
-    isAppointmentExist.paymentStatus = "Completed";
-    yield isAppointmentExist.save();
-    return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
+    var _a;
+    try {
+        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, paymentIntentId } = req.body;
+        let user = req.user;
+        const isAppointmentExist = yield Appointments_1.default.findById(appointmentId);
+        if (!isAppointmentExist)
+            return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
+        let newPayment = yield Payment_1.default.create({
+            totalAmount,
+            discount,
+            paymentAmmount,
+            exchange,
+            paymentType: "visa",
+            user: user._id,
+            appointment: appointmentId
+        });
+        let paymentIntent = yield (0, paymentMethod_1.paymentMethod)(totalAmount, currency, "new order payment", paymentIntentId);
+        isAppointmentExist.paymentIntentId = paymentIntent.id;
+        isAppointmentExist.payment = newPayment._id;
+        isAppointmentExist.paymentStatus = "Completed";
+        yield isAppointmentExist.save();
+        return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
+    }
+    catch (error) {
+        return res.status(400).json({ status: 400, msg: (_a = error.message) !== null && _a !== void 0 ? _a : error });
+    }
 });
 exports.payAppointment = payAppointment;
 const getAppointmentPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

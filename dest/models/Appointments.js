@@ -23,6 +23,7 @@ const mongoose_1 = __importStar(require("mongoose"));
 const appointmentSchema = new mongoose_1.Schema({
     pet: { type: mongoose_1.default.Types.ObjectId, ref: "pets" },
     service: { type: String },
+    paymentIntentId: { type: String },
     appointmentDate: { type: Date },
     reason: { type: String },
     doctor: { type: mongoose_1.default.Types.ObjectId, ref: "staff" },

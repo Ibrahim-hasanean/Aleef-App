@@ -8,7 +8,7 @@ import Payment, { PaymentInterFace } from "../../../models/Payment";
 import mongoose from "mongoose";
 import Pets, { PetsInterface } from "../../../models/Pets";
 import { PetsVaccination } from "../../../models/Vaccination";
-
+import { paymentMethod } from "../../utils/paymentMethod";
 export const addAppointment = async (req: Request, res: Response, next: NextFunction) => {
     const { petId, service, appointmentDate, reason } = req.body;
     const user = req.user;
@@ -154,23 +154,29 @@ export const getAvaliableTime = async (req: Request, res: Response, next: NextFu
 }
 
 export const payAppointment = async (req: Request, res: Response, next: NextFunction) => {
-    let { totalAmount, discount, paymentAmmount, exchange, appointmentId } = req.body;
-    let user = req.user;
-    const isAppointmentExist: AppointmentsInterface | null = await Appointments.findById(appointmentId);
-    if (!isAppointmentExist) return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` })
-    let newPayment: PaymentInterFace = await Payment.create({
-        totalAmount,
-        discount,
-        paymentAmmount,
-        exchange,
-        paymentType: "visa",
-        user: user._id,
-        appointment: appointmentId
-    })
-    isAppointmentExist.payment = newPayment._id;
-    isAppointmentExist.paymentStatus = "Completed";
-    await isAppointmentExist.save();
-    return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
+    try {
+        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, paymentIntentId } = req.body;
+        let user = req.user;
+        const isAppointmentExist: AppointmentsInterface | null = await Appointments.findById(appointmentId);
+        if (!isAppointmentExist) return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
+        let newPayment: PaymentInterFace = await Payment.create({
+            totalAmount,
+            discount,
+            paymentAmmount,
+            exchange,
+            paymentType: "visa",
+            user: user._id,
+            appointment: appointmentId
+        })
+        let paymentIntent = await paymentMethod(totalAmount, currency, "new order payment", paymentIntentId);
+        isAppointmentExist.paymentIntentId = paymentIntent.id;
+        isAppointmentExist.payment = newPayment._id;
+        isAppointmentExist.paymentStatus = "Completed";
+        await isAppointmentExist.save();
+        return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
+    } catch (error: any) {
+        return res.status(400).json({ status: 400, msg: error.message ?? error });
+    }
 }
 
 export const getAppointmentPayments = async (req: Request, res: Response, next: NextFunction) => {
