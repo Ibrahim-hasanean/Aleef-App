@@ -79,6 +79,7 @@ export const updateItem = async (req: Request, res: Response, next: NextFunction
         if (mainImageUrl) body.mainImageUrl = mainImageUrl;
         if (imagesUrls.length > 0) body.images = imagesUrls;
         let newItem = await Item.findByIdAndUpdate(itemId, body, { new: true });
+        if (!newItem) return res.status(400).json({ status: 400, msg: "item not found" });
         return res.status(200).json({ status: 200, data: { item: newItem } });
     } catch (error: any) {
         return res.status(500).json({ status: 500, msg: error.message });

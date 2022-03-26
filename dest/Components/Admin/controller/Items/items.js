@@ -72,6 +72,8 @@ const updateItem = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         if (imagesUrls.length > 0)
             body.images = imagesUrls;
         let newItem = yield Item_1.default.findByIdAndUpdate(itemId, body, { new: true });
+        if (!newItem)
+            return res.status(400).json({ status: 400, msg: "item not found" });
         return res.status(200).json({ status: 200, data: { item: newItem } });
     }
     catch (error) {
