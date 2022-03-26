@@ -51,7 +51,7 @@ const getConversation = (req, res) => __awaiter(void 0, void 0, void 0, function
         return res.status(200).json({ status: 200, data: { conversation: null } });
     let conversation = yield Conversations_1.default
         .findOne({ _id: id, doctorId: staff._id })
-        .select(['-messages'])
+        .populate({ path: "messages", options: { limit: 10, sort: { createdAt: "desc" } } })
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
     return res.status(200).json({ status: 200, data: { conversation } });
