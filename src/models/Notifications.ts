@@ -16,5 +16,5 @@ const notificationsSchema = new Schema({
     staffMemeber: { type: mongoose.Types.ObjectId, ref: "staff" },
 }, { timestamps: true });
 
-const Notification = mongoose.model("notification", notificationsSchema);
+const Notification = mongoose.model<NotificationsInterface>("notification", notificationsSchema);
 export default Notification;

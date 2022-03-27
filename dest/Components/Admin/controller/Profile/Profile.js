@@ -41,9 +41,9 @@ const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         staffMember.phoneNumber = phoneNumber;
         staffMember.email = email;
         staffMember.name = name;
-        staffMember.licenseNumber = licenseNumber;
-        staffMember.cardNumber = cardNumber;
-        staffMember.staffMemberId = staffMemberId;
+        staffMember.licenseNumber = licenseNumber || staffMember.licenseNumber;
+        staffMember.cardNumber = cardNumber || staffMember.cardNumber;
+        staffMember.staffMemberId = staffMemberId || staffMember.staffMemberId;
         staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
         // staffMember.muteChat = muteChat;
         // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
@@ -52,7 +52,7 @@ const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         // staffMember.newReviewsNotifications = newReviewsNotifications;
         // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
         yield staffMember.save();
-        return res.status(200).json({ status: 200, msg: "profile updated successfully" });
+        return res.status(200).json({ status: 200, msg: "profile updated successfully", data: { staffMember } });
     }
     catch (error) {
         return res.status(400).json({ status: 400, msg: error.message });

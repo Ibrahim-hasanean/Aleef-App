@@ -34,9 +34,9 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
         staffMember.phoneNumber = phoneNumber;
         staffMember.email = email;
         staffMember.name = name;
-        staffMember.licenseNumber = licenseNumber;
-        staffMember.cardNumber = cardNumber;
-        staffMember.staffMemberId = staffMemberId;
+        staffMember.licenseNumber = licenseNumber || staffMember.licenseNumber;
+        staffMember.cardNumber = cardNumber || staffMember.cardNumber;
+        staffMember.staffMemberId = staffMemberId || staffMember.staffMemberId;
         staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
         // staffMember.muteChat = muteChat;
         // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
@@ -45,7 +45,7 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
         // staffMember.newReviewsNotifications = newReviewsNotifications;
         // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
         await staffMember.save();
-        return res.status(200).json({ status: 200, msg: "profile updated successfully" });
+        return res.status(200).json({ status: 200, msg: "profile updated successfully", data: { staffMember } });
 
     } catch (error: any) {
         return res.status(400).json({ status: 400, msg: error.message })

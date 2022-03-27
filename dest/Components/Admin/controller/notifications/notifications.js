@@ -13,13 +13,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNotifications = void 0;
-const Notifications_1 = __importDefault(require("../../../models/Notifications"));
+const Notifications_1 = __importDefault(require("../../../../models/Notifications"));
 const getNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit } = req.query;
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
-    let user = req.user;
-    let notifications = yield Notifications_1.default.find({ user: user._id }).skip(skip).limit(limitNumber);
-    return res.status(200).json({ status: 200, data: { notifications } });
+    let staffMemeber = req.staff;
+    let notifications = yield Notifications_1.default.find({ staffMemeber: staffMemeber._id }).skip(skip).limit(limitNumber);
+    let notificationsCount = yield Notifications_1.default.find({ staffMemeber: staffMemeber._id }).count();
+    return res.status(200).json({ status: 200, data: { notifications, page: page || 1, limit: limit || 10, notificationsCount } });
 });
 exports.getNotifications = getNotifications;

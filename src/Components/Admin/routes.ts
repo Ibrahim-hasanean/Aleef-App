@@ -55,6 +55,7 @@ import { InvoiceSchema, doctorInvoiceSchema } from "./middleware/validateInvoice
 import upload from "../middlewares/uploadImage";
 import { adminHome } from "./controller/home/home";
 import { getMessages, getConversations, getConversation } from "./controller/StaffChat/StaffChat";
+import { getNotifications } from "./controller/notifications/notifications";
 
 const router = Router();
 
@@ -67,6 +68,9 @@ router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 router.get("/conversations", verifyStaffMember, getConversations);
 router.get("/conversations/:id", verifyStaffMember, getConversation);
 router.get("/conversations/:id/messages", verifyStaffMember, getMessages);
+
+//Notifications
+router.get("/notifications", verifyStaffMember, getNotifications);
 
 //home page
 router.get("/admin-home", verifyAdmin, adminHome);
