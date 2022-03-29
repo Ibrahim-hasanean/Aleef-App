@@ -84,9 +84,8 @@ const socketIoEvents = (io) => {
         console.log(storeSupportArray);
         socket.on("hello", (data, ack) => {
             console.log(data);
-            // socket.emit("hello", "connect successfully");
-            if (ack)
-                ack({ status: 200, msg: "helllo" });
+            socket.emit("hello", "helllo");
+            // if (ack) ack({ status: 200, msg: "helllo" });
         });
         //user new message to doctor
         socket.on('user-doctor-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {

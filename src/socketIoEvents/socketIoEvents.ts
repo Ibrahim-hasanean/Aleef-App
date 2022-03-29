@@ -69,8 +69,8 @@ const socketIoEvents = (io: Server) => {
         console.log(storeSupportArray);
         socket.on("hello", (data: any, ack: any) => {
             console.log(data);
-            // socket.emit("hello", "connect successfully");
-            if (ack) ack({ status: 200, msg: "helllo" });
+            socket.emit("hello", "helllo");
+            // if (ack) ack({ status: 200, msg: "helllo" });
         });
 
         //user new message to doctor
