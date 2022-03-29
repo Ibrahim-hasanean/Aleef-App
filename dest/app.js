@@ -33,7 +33,7 @@ const ioServer = __importStar(require("socket.io"));
 const http_1 = __importDefault(require("http"));
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
-const io = new ioServer.Server(server);
+const io = new ioServer.Server(server, { cors: { origin: "*" } });
 const port = process.env.PORT || 3000;
 const socketIoEvents_1 = __importDefault(require("./socketIoEvents/socketIoEvents"));
 require("./config/mongoose");
