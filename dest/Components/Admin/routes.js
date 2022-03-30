@@ -135,8 +135,8 @@ router.post("/staff", verifyRecieption_1.default, uploadImage_1.default.single('
 router.patch("/staff/:id", verifyRecieption_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), (0, validateAuth_1.validate)(validateStaff_1.addStaffSchema), staff_1.updateStaff);
 router.get("/staff", verifyRecieption_1.default, staff_1.getStaffMemebers);
 router.get("/staff/:id", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), staff_1.getStaffMemeberById);
-router.get("/staff/:id/workHoures", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), staff_1.getWorkHoures);
-router.post("/staff/:id/workHoures", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), (0, validateAuth_1.validate)(validateStaff_1.workHouresSchema), staff_1.setWorkHoures);
+router.get("/staff/:id/workHoures", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), staff_1.getWorkHoures);
+router.post("/staff/:id/workHoures", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), (0, validateAuth_1.validate)(validateStaff_1.workHouresSchema), staff_1.setWorkHoures);
 router.delete("/staff/:id", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), staff_1.deleteStaffMember);
 // items and items variables
 router.get("/items", verifyStoreManagement_1.default, items_1.getItems);
