@@ -26,10 +26,10 @@ let receiptionSupportArray = [];
 let storeSupportArray = [];
 const socketIoEvents = (io) => {
     io.use((socket, next) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log("check tokennn");
         try {
             let userToken = socket.handshake.headers.usertoken;
-            let staffToken = socket.handshake.headers.stafftoken;
+            let staffToken = socket.handshake.query.stafftoken;
+            console.log("check tokennn", staffToken);
             if (userToken) {
                 let user = yield (0, verifyUserTokenSocket_1.default)(userToken);
                 if (user) {
