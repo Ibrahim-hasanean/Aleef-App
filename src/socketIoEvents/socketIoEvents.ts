@@ -19,7 +19,8 @@ const socketIoEvents = (io: Server) => {
         try {
             let userToken: string = socket.handshake.headers.usertoken as string;
             let staffToken: string = socket.handshake.query.stafftoken as string;
-            console.log("check tokennn", staffToken)
+            console.log("check tokennn", staffToken);
+            console.log("socket.handshakeeee", socket.handshake)
             if (userToken) {
                 let user = await verifyUser(userToken);
                 if (user) {
@@ -143,6 +144,7 @@ const socketIoEvents = (io: Server) => {
                         ack({ status: 200, msg: "message sent successfully" });
                     }
                 } else {
+                    console.log("has nooo appointment");
                     ack({ status: 400, msg: "can not send message to user not have appointment with" });
 
                 }

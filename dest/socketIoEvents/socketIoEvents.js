@@ -30,6 +30,7 @@ const socketIoEvents = (io) => {
             let userToken = socket.handshake.headers.usertoken;
             let staffToken = socket.handshake.query.stafftoken;
             console.log("check tokennn", staffToken);
+            console.log("socket.handshakeeee", socket.handshake);
             if (userToken) {
                 let user = yield (0, verifyUserTokenSocket_1.default)(userToken);
                 if (user) {
@@ -159,6 +160,7 @@ const socketIoEvents = (io) => {
                     }
                 }
                 else {
+                    console.log("has nooo appointment");
                     ack({ status: 400, msg: "can not send message to user not have appointment with" });
                 }
             }
