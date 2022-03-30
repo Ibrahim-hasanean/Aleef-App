@@ -16,6 +16,7 @@ let storeSupportArray: string[] = [];
 const socketIoEvents = (io: Server) => {
 
     io.use(async (socket: any, next) => {
+        console.log("check tokennn")
         try {
             let userToken: string = socket.handshake.headers.usertoken as string;
             let staffToken: string = socket.handshake.headers.stafftoken as string;

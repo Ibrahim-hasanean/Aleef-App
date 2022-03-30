@@ -9,7 +9,12 @@ import * as ioServer from "socket.io";
 import http from "http";
 const app = express();
 const server = http.createServer(app);
-const io = new ioServer.Server(server, { cors: { origin: "*" } });
+const io = new ioServer.Server(server, {
+    cors: { origin: "*" },
+    // origin: "https://example.com",
+    // methods: ["GET", "POST"],
+    // allowedHeaders: ["userToken", "staffToken"],
+});
 const port = process.env.PORT || 3000;
 import socketIoEvents from "./socketIoEvents/socketIoEvents"
 require("./config/mongoose");
