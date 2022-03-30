@@ -30,7 +30,6 @@ const socketIoEvents = (io) => {
             let userToken = socket.handshake.headers.usertoken;
             let staffToken = socket.handshake.query.stafftoken;
             console.log("check tokennn", staffToken);
-            console.log("socket.handshakeeee", socket.handshake);
             if (userToken) {
                 let user = yield (0, verifyUserTokenSocket_1.default)(userToken);
                 if (user) {
