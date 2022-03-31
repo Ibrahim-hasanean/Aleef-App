@@ -26,5 +26,9 @@ export const profileNotificationsSchema = {
         canceledOrdersNotifications: Joi.boolean().required(),
         newReviewsNotifications: Joi.boolean().required(),
         itemsAlmostOutOfStockNotification: Joi.boolean().required(),
+        allowReceivingNotificationsOutOfWorksHours: Joi.boolean().required(),
+        muteChatNotifications: Joi.boolean().required(),
+        newAppointmentsNotifications: Joi.boolean().required(),
+        canceledAppointmentsNotifications: Joi.boolean().required(),
     })
 }

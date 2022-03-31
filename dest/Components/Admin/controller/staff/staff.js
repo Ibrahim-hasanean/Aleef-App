@@ -128,6 +128,9 @@ exports.deleteStaffMember = deleteStaffMember;
 const getWorkHoures = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
     let staffMemeber = req.staff;
+    if (staffMemeber.role !== "admin" && staffMemeber.role !== "receiption" && staffMemeber._id != id) {
+        return res.status(400).json({ status: 400, msg: "not allow to see other memebers workhoures" });
+    }
     if (!mongoose_1.default.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
     let query = { _id: id };
@@ -142,6 +145,9 @@ const setWorkHoures = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     let id = req.params.id;
     let staffMemeber = req.staff;
     let { saturday, sunday, monday, tuesday, wednesday, thursday, friday } = req.body;
+    if (staffMemeber.role !== "admin" && staffMemeber.role !== "receiption" && staffMemeber._id != id) {
+        return res.status(400).json({ status: 400, msg: "not allow to set other memebers workhoures" });
+    }
     if (!mongoose_1.default.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
     let query = { _id: id };

@@ -56,6 +56,11 @@ const staffSchema = new mongoose_1.Schema({
     canceledOrdersNotifications: { type: Boolean, default: false },
     newReviewsNotifications: { type: Boolean, default: false },
     itemsAlmostOutOfStockNotification: { type: Boolean, default: false },
+    allowReceivingNotificationsOutOfWorksHours: { type: Boolean, default: false },
+    muteChatNotifications: { type: Boolean, default: false },
+    // blockChats: { type: Boolean, default: false },
+    newAppointmentsNotifications: { type: Boolean, default: false },
+    canceledAppointmentsNotifications: { type: Boolean, default: false },
     registrationTokens: [{ type: String }],
     workHoures: {
         type: workHouresSchema,

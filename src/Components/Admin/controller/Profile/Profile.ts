@@ -72,6 +72,10 @@ export const getProfileNotifications = async (req: Request, res: Response, next:
                 canceledOrdersNotifications: staffMember.canceledOrdersNotifications,
                 newReviewsNotifications: staffMember.newReviewsNotifications,
                 itemsAlmostOutOfStockNotification: staffMember.itemsAlmostOutOfStockNotification,
+                allowReceivingNotificationsOutOfWorksHours: staffMember.allowReceivingNotificationsOutOfWorksHours,
+                muteChatNotifications: staffMember.muteChatNotifications,
+                newAppointmentsNotifications: staffMember.newAppointmentsNotifications,
+                canceledAppointmentsNotifications: staffMember.canceledAppointmentsNotifications,
             }
         }
     });
@@ -84,7 +88,11 @@ export const setProfileNotifications = async (req: Request, res: Response, next:
         newOrdersNotifications,
         canceledOrdersNotifications,
         newReviewsNotifications,
-        itemsAlmostOutOfStockNotification
+        itemsAlmostOutOfStockNotification,
+        allowReceivingNotificationsOutOfWorksHours,
+        muteChatNotifications,
+        newAppointmentsNotifications,
+        canceledAppointmentsNotifications,
     } = req.body;
     let staffMember: StafInterface = req.staff;
     staffMember.muteChat = muteChat;
@@ -93,16 +101,25 @@ export const setProfileNotifications = async (req: Request, res: Response, next:
     staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
     staffMember.newReviewsNotifications = newReviewsNotifications;
     staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
+    staffMember.allowReceivingNotificationsOutOfWorksHours = allowReceivingNotificationsOutOfWorksHours;
+    staffMember.muteChatNotifications = muteChatNotifications;
+    // staffMember.blockChats = blockChats;
+    staffMember.newAppointmentsNotifications = newAppointmentsNotifications;
+    staffMember.canceledAppointmentsNotifications = canceledAppointmentsNotifications;
     await staffMember.save();
     return res.status(200).json({
         status: 200, data: {
             settings: {
-                muteChat: muteChat,
-                allowReceivingMessagesOutOfWorksHours: allowReceivingMessagesOutOfWorksHours,
-                newOrdersNotifications: newOrdersNotifications,
-                canceledOrdersNotifications: canceledOrdersNotifications,
-                newReviewsNotifications: newReviewsNotifications,
-                itemsAlmostOutOfStockNotification: itemsAlmostOutOfStockNotification,
+                muteChat: muteChat || staffMember.muteChat,
+                allowReceivingMessagesOutOfWorksHours: allowReceivingMessagesOutOfWorksHours || staffMember.allowReceivingMessagesOutOfWorksHours,
+                newOrdersNotifications: newOrdersNotifications || staffMember.newOrdersNotifications,
+                canceledOrdersNotifications: canceledOrdersNotifications || staffMember.canceledOrdersNotifications,
+                newReviewsNotifications: newReviewsNotifications || staffMember.newReviewsNotifications,
+                itemsAlmostOutOfStockNotification: itemsAlmostOutOfStockNotification || staffMember.itemsAlmostOutOfStockNotification,
+                allowReceivingNotificationsOutOfWorksHours: allowReceivingNotificationsOutOfWorksHours || staffMember.allowReceivingNotificationsOutOfWorksHours,
+                muteChatNotifications: muteChatNotifications || staffMember.muteChatNotifications,
+                newAppointmentsNotifications: newAppointmentsNotifications || staffMember.newAppointmentsNotifications,
+                canceledAppointmentsNotifications: canceledAppointmentsNotifications || canceledAppointmentsNotifications,
             }
         }
     });

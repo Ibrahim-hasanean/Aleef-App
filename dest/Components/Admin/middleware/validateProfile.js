@@ -26,5 +26,9 @@ exports.profileNotificationsSchema = {
         canceledOrdersNotifications: celebrate_1.Joi.boolean().required(),
         newReviewsNotifications: celebrate_1.Joi.boolean().required(),
         itemsAlmostOutOfStockNotification: celebrate_1.Joi.boolean().required(),
+        allowReceivingNotificationsOutOfWorksHours: celebrate_1.Joi.boolean().required(),
+        muteChatNotifications: celebrate_1.Joi.boolean().required(),
+        newAppointmentsNotifications: celebrate_1.Joi.boolean().required(),
+        canceledAppointmentsNotifications: celebrate_1.Joi.boolean().required(),
     })
 };

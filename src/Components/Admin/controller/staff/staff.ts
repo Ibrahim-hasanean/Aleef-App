@@ -107,6 +107,9 @@ export const deleteStaffMember = async (req: Request, res: Response, next: NextF
 export const getWorkHoures = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
     let staffMemeber = req.staff;
+    if (staffMemeber.role !== "admin" && staffMemeber.role !== "receiption" && staffMemeber._id != id) {
+        return res.status(400).json({ status: 400, msg: "not allow to see other memebers workhoures" });
+    }
     if (!mongoose.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
     let query: any = { _id: id };
@@ -122,6 +125,9 @@ export const setWorkHoures = async (req: Request, res: Response, next: NextFunct
     let id = req.params.id;
     let staffMemeber = req.staff;
     let { saturday, sunday, monday, tuesday, wednesday, thursday, friday } = req.body;
+    if (staffMemeber.role !== "admin" && staffMemeber.role !== "receiption" && staffMemeber._id != id) {
+        return res.status(400).json({ status: 400, msg: "not allow to set other memebers workhoures" });
+    }
     if (!mongoose.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { staffMember: null } });
     let query: any = { _id: id };

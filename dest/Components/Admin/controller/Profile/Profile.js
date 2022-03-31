@@ -79,13 +79,17 @@ const getProfileNotifications = (req, res, next) => __awaiter(void 0, void 0, vo
                 canceledOrdersNotifications: staffMember.canceledOrdersNotifications,
                 newReviewsNotifications: staffMember.newReviewsNotifications,
                 itemsAlmostOutOfStockNotification: staffMember.itemsAlmostOutOfStockNotification,
+                allowReceivingNotificationsOutOfWorksHours: staffMember.allowReceivingNotificationsOutOfWorksHours,
+                muteChatNotifications: staffMember.muteChatNotifications,
+                newAppointmentsNotifications: staffMember.newAppointmentsNotifications,
+                canceledAppointmentsNotifications: staffMember.canceledAppointmentsNotifications,
             }
         }
     });
 });
 exports.getProfileNotifications = getProfileNotifications;
 const setProfileNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { muteChat, allowReceivingMessagesOutOfWorksHours, newOrdersNotifications, canceledOrdersNotifications, newReviewsNotifications, itemsAlmostOutOfStockNotification } = req.body;
+    let { muteChat, allowReceivingMessagesOutOfWorksHours, newOrdersNotifications, canceledOrdersNotifications, newReviewsNotifications, itemsAlmostOutOfStockNotification, allowReceivingNotificationsOutOfWorksHours, muteChatNotifications, newAppointmentsNotifications, canceledAppointmentsNotifications, } = req.body;
     let staffMember = req.staff;
     staffMember.muteChat = muteChat;
     staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
@@ -93,16 +97,25 @@ const setProfileNotifications = (req, res, next) => __awaiter(void 0, void 0, vo
     staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
     staffMember.newReviewsNotifications = newReviewsNotifications;
     staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
+    staffMember.allowReceivingNotificationsOutOfWorksHours = allowReceivingNotificationsOutOfWorksHours;
+    staffMember.muteChatNotifications = muteChatNotifications;
+    // staffMember.blockChats = blockChats;
+    staffMember.newAppointmentsNotifications = newAppointmentsNotifications;
+    staffMember.canceledAppointmentsNotifications = canceledAppointmentsNotifications;
     yield staffMember.save();
     return res.status(200).json({
         status: 200, data: {
             settings: {
-                muteChat: muteChat,
-                allowReceivingMessagesOutOfWorksHours: allowReceivingMessagesOutOfWorksHours,
-                newOrdersNotifications: newOrdersNotifications,
-                canceledOrdersNotifications: canceledOrdersNotifications,
-                newReviewsNotifications: newReviewsNotifications,
-                itemsAlmostOutOfStockNotification: itemsAlmostOutOfStockNotification,
+                muteChat: muteChat || staffMember.muteChat,
+                allowReceivingMessagesOutOfWorksHours: allowReceivingMessagesOutOfWorksHours || staffMember.allowReceivingMessagesOutOfWorksHours,
+                newOrdersNotifications: newOrdersNotifications || staffMember.newOrdersNotifications,
+                canceledOrdersNotifications: canceledOrdersNotifications || staffMember.canceledOrdersNotifications,
+                newReviewsNotifications: newReviewsNotifications || staffMember.newReviewsNotifications,
+                itemsAlmostOutOfStockNotification: itemsAlmostOutOfStockNotification || staffMember.itemsAlmostOutOfStockNotification,
+                allowReceivingNotificationsOutOfWorksHours: allowReceivingNotificationsOutOfWorksHours || staffMember.allowReceivingNotificationsOutOfWorksHours,
+                muteChatNotifications: muteChatNotifications || staffMember.muteChatNotifications,
+                newAppointmentsNotifications: newAppointmentsNotifications || staffMember.newAppointmentsNotifications,
+                canceledAppointmentsNotifications: canceledAppointmentsNotifications || canceledAppointmentsNotifications,
             }
         }
     });
