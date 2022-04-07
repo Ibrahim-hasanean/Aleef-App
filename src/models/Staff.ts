@@ -1,5 +1,6 @@
 import mongoose, { Schema, ObjectId } from "mongoose";
 import bcrypt from "bcrypt";
+import moment from "moment-timezone";
 
 const dayHouresSchema = new Schema({
     from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
@@ -7,26 +8,42 @@ const dayHouresSchema = new Schema({
     isActive: { type: Boolean, default: true }
 });
 
-const weekenDayHouresSchema = new Schema({
-    from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
-    to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
-    isActive: { type: Boolean, default: false }
-});
 
 interface dayHouresInterface {
     from: Date,
     to: Date,
-    isActive: boolean
+    isActive: boolean,
 }
 
+dayHouresSchema.set("toObject", { virtuals: true });
+dayHouresSchema.set("toJSON", { virtuals: true });
+// const weekenDayHouresSchema = new Schema({
+//     from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
+//     to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
+//     isActive: { type: Boolean, default: false }
+// });
+dayHouresSchema.virtual("beginDate").get(function (this: dayHouresInterface) {
+    // let dayHours: dayHouresInterface = ;
+    let date = moment(this.from).tz('Asia/Qatar');
+    return date.toDate().toUTCString();
+    // return new Date(this.from).toString();
+})
+dayHouresSchema.virtual("endDate").get(function (this: dayHouresInterface) {
+    // let dayHours: dayHouresInterface = this;
+    let date = moment(this.to).tz('Asia/Qatar');
+    return date.toDate().toUTCString();
+    // return new Date(this.to).toString();
+})
+
+
 const workHouresSchema = new Schema({
-    saturday: { type: weekenDayHouresSchema, default: () => ({}) },
+    saturday: { type: dayHouresSchema, default: () => ({}) },
     sunday: { type: dayHouresSchema, default: () => ({}) },
     monday: { type: dayHouresSchema, default: () => ({}) },
     tuesday: { type: dayHouresSchema, default: () => ({}) },
     wednesday: { type: dayHouresSchema, default: () => ({}) },
     thursday: { type: dayHouresSchema, default: () => ({}) },
-    friday: { type: weekenDayHouresSchema, default: () => ({}) },
+    friday: { type: dayHouresSchema, default: () => ({}) },
 });
 
 

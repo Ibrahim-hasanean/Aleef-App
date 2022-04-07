@@ -18,27 +18,45 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.dayHoures = exports.WorkHoures = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
+const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const dayHouresSchema = new mongoose_1.Schema({
     from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
     to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
     isActive: { type: Boolean, default: true }
 });
-const weekenDayHouresSchema = new mongoose_1.Schema({
-    from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
-    to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
-    isActive: { type: Boolean, default: false }
+dayHouresSchema.set("toObject", { virtuals: true });
+dayHouresSchema.set("toJSON", { virtuals: true });
+// const weekenDayHouresSchema = new Schema({
+//     from: { type: Date, default: "2021-10-25T08:00:00.882Z" },
+//     to: { type: Date, default: "2021-10-25T18:00:00.882Z" },
+//     isActive: { type: Boolean, default: false }
+// });
+dayHouresSchema.virtual("beginDate").get(function () {
+    // let dayHours: dayHouresInterface = ;
+    let date = (0, moment_timezone_1.default)(this.from).tz('Asia/Qatar');
+    return date.toDate().toUTCString();
+    // return new Date(this.from).toString();
+});
+dayHouresSchema.virtual("endDate").get(function () {
+    // let dayHours: dayHouresInterface = this;
+    let date = (0, moment_timezone_1.default)(this.to).tz('Asia/Qatar');
+    return date.toDate().toUTCString();
+    // return new Date(this.to).toString();
 });
 const workHouresSchema = new mongoose_1.Schema({
-    saturday: { type: weekenDayHouresSchema, default: () => ({}) },
+    saturday: { type: dayHouresSchema, default: () => ({}) },
     sunday: { type: dayHouresSchema, default: () => ({}) },
     monday: { type: dayHouresSchema, default: () => ({}) },
     tuesday: { type: dayHouresSchema, default: () => ({}) },
     wednesday: { type: dayHouresSchema, default: () => ({}) },
     thursday: { type: dayHouresSchema, default: () => ({}) },
-    friday: { type: weekenDayHouresSchema, default: () => ({}) },
+    friday: { type: dayHouresSchema, default: () => ({}) },
 });
 const staffSchema = new mongoose_1.Schema({
     name: { type: String, required: true },

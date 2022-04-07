@@ -25,7 +25,7 @@ const getMessages = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     let isConversationExist = yield Conversations_1.default.findOne({ _id: conversationId, doctorId: staff._id });
     if (!isConversationExist)
         return res.status(400).json({ status: 400, msg: `you do not have conversation with id ${conversationId}` });
-    let messages = yield Messages_1.default.find({ conversation: isConversationExist._id }).sort({ createdAt: "desc" }).skip(skip).limit(numberPageSize);
+    let messages = yield (yield Messages_1.default.find({ conversation: isConversationExist._id }).sort({ createdAt: "desc" }).skip(skip).limit(numberPageSize)).reverse();
     return res.status(200).json({ status: 200, messages });
 });
 exports.getMessages = getMessages;
@@ -35,12 +35,13 @@ const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
     // .select(['-messages'])
-    let conversations = yield Conversations_1.default.find({ doctorId: staff._id })
+    let conversationsArray = yield Conversations_1.default.find({ doctorId: staff._id })
         .skip(skip)
         .limit(limitNumber)
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
         .populate({ path: "messages", options: { limit: 10, sort: { createdAt: "desc" } } })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
+    let conversations = conversationsArray.map(conv => conv.messages = conv.messages.reverse());
     return res.status(200).json({ status: 200, conversations });
 });
 exports.getConversations = getConversations;
@@ -54,6 +55,7 @@ const getConversation = (req, res) => __awaiter(void 0, void 0, void 0, function
         .populate({ path: "messages", options: { limit: 10, sort: { createdAt: "desc" } } })
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
+    conversation.messages = conversation.messages.reverse();
     return res.status(200).json({ status: 200, data: { conversation } });
 });
 exports.getConversation = getConversation;

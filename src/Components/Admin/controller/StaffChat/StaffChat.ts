@@ -11,7 +11,7 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let isConversationExist = await Conversations.findOne({ _id: conversationId, doctorId: staff._id });
     if (!isConversationExist) return res.status(400).json({ status: 400, msg: `you do not have conversation with id ${conversationId}` });
-    let messages: MessagesInterface[] = await Message.find({ conversation: isConversationExist._id }).sort({ createdAt: "desc" }).skip(skip).limit(numberPageSize);
+    let messages: MessagesInterface[] = await (await Message.find({ conversation: isConversationExist._id }).sort({ createdAt: "desc" }).skip(skip).limit(numberPageSize)).reverse();
     return res.status(200).json({ status: 200, messages });
 }
 
@@ -21,12 +21,13 @@ export const getConversations = async (req: Request, res: Response, next: NextFu
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
     // .select(['-messages'])
-    let conversations = await Conversations.find({ doctorId: staff._id })
+    let conversationsArray = await Conversations.find({ doctorId: staff._id })
         .skip(skip)
         .limit(limitNumber)
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
         .populate({ path: "messages", options: { limit: 10, sort: { createdAt: "desc" } } })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
+    let conversations = conversationsArray.map(conv => conv.messages = conv.messages.reverse())
     return res.status(200).json({ status: 200, conversations });
 }
 
@@ -41,6 +42,7 @@ export const getConversation = async (req: Request, res: Response) => {
         .populate({ path: "messages", options: { limit: 10, sort: { createdAt: "desc" } } })
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] }) as ConversationsInterface;
+    conversation.messages = conversation.messages.reverse();
     return res.status(200).json({ status: 200, data: { conversation } });
 }
 
