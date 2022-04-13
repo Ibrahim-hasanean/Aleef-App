@@ -27,7 +27,10 @@ export const getConversations = async (req: Request, res: Response, next: NextFu
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
         .populate({ path: "messages", options: { limit: 10, sort: { createdAt: "desc" } } })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
-    let conversations = conversationsArray.map(conv => conv.messages = conv.messages.reverse())
+    let conversations = conversationsArray.map(conv => {
+        conv.messages = conv.messages.reverse();
+        return conv;
+    })
     return res.status(200).json({ status: 200, conversations });
 }
 
