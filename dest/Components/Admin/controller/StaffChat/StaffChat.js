@@ -22,7 +22,17 @@ const getMessages = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     let conversationId = req.params.id;
     let numberPageSize = limit ? Number(limit) : 15;
     let skip = (Number(page || 1) - 1) * numberPageSize;
-    let isConversationExist = yield Conversations_1.default.findOne({ _id: conversationId, doctorId: staff._id });
+    let query = { _id: conversationId };
+    if (staff.role === "storeManager") {
+        query.storeSupport = true;
+    }
+    else if (staff.role === "receiption") {
+        query.receiptionSupport = true;
+    }
+    else {
+        query.doctorId = staff._id;
+    }
+    let isConversationExist = yield Conversations_1.default.findOne(query);
     if (!isConversationExist)
         return res.status(400).json({ status: 400, msg: `you do not have conversation with id ${conversationId}` });
     let messages = yield (yield Messages_1.default.find({ conversation: isConversationExist._id }).sort({ createdAt: "desc" }).skip(skip).limit(numberPageSize)).reverse();
@@ -34,8 +44,18 @@ const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     let { page, limit } = req.query;
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
+    let query = {};
     // .select(['-messages'])
-    let conversationsArray = yield Conversations_1.default.find({ doctorId: staff._id })
+    if (staff.role === "storeManager") {
+        query.storeSupport = true;
+    }
+    else if (staff.role === "receiption") {
+        query.receiptionSupport = true;
+    }
+    else {
+        query.doctorId = staff._id;
+    }
+    let conversationsArray = yield Conversations_1.default.find(query)
         .skip(skip)
         .limit(limitNumber)
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
@@ -53,8 +73,18 @@ const getConversation = (req, res) => __awaiter(void 0, void 0, void 0, function
     let staff = req.staff;
     if (!mongoose_1.default.isValidObjectId(id))
         return res.status(200).json({ status: 200, data: { conversation: null } });
+    let query = { _id: id };
+    if (staff.role === "storeManager") {
+        query.storeSupport = true;
+    }
+    else if (staff.role === "receiption") {
+        query.receiptionSupport = true;
+    }
+    else {
+        query.doctorId = staff._id;
+    }
     let conversation = yield Conversations_1.default
-        .findOne({ _id: id, doctorId: staff._id })
+        .findOne(query)
         .populate({ path: "messages", options: { limit: 10, sort: { createdAt: "desc" } } })
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
