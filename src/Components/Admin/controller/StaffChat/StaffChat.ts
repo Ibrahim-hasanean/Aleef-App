@@ -69,7 +69,8 @@ export const getConversation = async (req: Request, res: Response) => {
         .populate({ path: "messages", options: { limit: 10, sort: { createdAt: "desc" } } })
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] }) as ConversationsInterface;
-    conversation.messages = conversation.messages.reverse();
+    if (conversation)
+        conversation.messages = conversation.messages.reverse();
     return res.status(200).json({ status: 200, data: { conversation } });
 }
 
