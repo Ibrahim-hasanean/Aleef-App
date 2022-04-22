@@ -13,12 +13,12 @@ exports.AppointmentSchema = {
 };
 exports.appointmentPaymentSchema = {
     [celebrate_1.Segments.BODY]: celebrate_1.Joi.object().keys({
-        totalAmount: celebrate_1.Joi.number().required(),
-        discount: celebrate_1.Joi.number().required(),
-        paymentAmmount: celebrate_1.Joi.number().required(),
-        exchange: celebrate_1.Joi.number().required(),
+        // totalAmount: Joi.number().required(),
+        // discount: Joi.number().required(),
+        // paymentAmmount: Joi.number().required(),
+        // exchange: Joi.number().required(),
         appointmentId: celebrate_1.Joi.string().required(),
-        currency: celebrate_1.Joi.string().default("usd"),
+        // currency: Joi.string().default("usd"),
         paymentIntentId: celebrate_1.Joi.string().required(),
     })
 };

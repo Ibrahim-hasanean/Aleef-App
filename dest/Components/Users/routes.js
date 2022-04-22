@@ -23,9 +23,11 @@ const UserItemListValidation_1 = require("./middleware/UserItemListValidation");
 const HealthCare_1 = require("./controller/HealthCare");
 const Location_1 = require("./controller/Location");
 const ReadAbout_1 = require("./controller/ReadAbout");
+const UserPaymentMethods_1 = require("./controller/UserPaymentMethods");
 const uploadImage_1 = __importDefault(require("../middlewares/uploadImage"));
 const Notifications_1 = require("./controller/Notifications");
 const socialLoginValidation_1 = require("./middleware/socialLoginValidation");
+const paymentIntentSchema_1 = require("./middleware/paymentIntentSchema");
 const UserChat_1 = require("./controller/UserChat");
 const router = (0, express_1.Router)();
 // router.post("/upload", upload.single("image"), async (req: Request, res: Response) => {
@@ -49,6 +51,8 @@ router.get("/conversations/:id", verifyUser_1.default, UserChat_1.getConversatio
 router.get("/conversations/:id/messages", verifyUser_1.default, UserChat_1.getMessages);
 //get hospital location
 router.get("/location", verifyUser_1.default, Location_1.getLocation);
+//create payment intent
+router.post("/payment-intent", verifyUser_1.default, (0, userAuthValidate_1.validate)(paymentIntentSchema_1.paymentIntentSchema), UserPaymentMethods_1.createPaymentIntent);
 //get notifications
 router.get("/notifications", verifyUser_1.default, Notifications_1.getNotifications);
 //read about

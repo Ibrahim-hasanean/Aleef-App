@@ -8,7 +8,6 @@ import { paymentMethod, cancelPayment } from "../../utils/paymentMethod";
 
 export const payItem = async (req: Request, res: Response, next: NextFunction) => {
     try {
-
         const {
             totalPrice,
             itemsCount,
@@ -20,7 +19,7 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
             ExperitionDate,
             SecurityCode,
             currency,
-            paymentMethodId
+            paymentIntentId
         } = req.body;
         const user = req.user;
         let orderItemsTotal;
@@ -52,11 +51,15 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
             currency,
             status: "to be shipped"
         });
-        let paymentIntent = await paymentMethod(totalPrice, currency, "new order payment", paymentMethodId);
-        const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id, })
+        // let paymentIntent = await paymentMethod(totalPrice, currency, "new order payment", paymentMethodId);
+        // const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id, })
+        const payment: PaymentInterFace = await Payment.findOne({ paymentIntentId }) as PaymentInterFace;
+        if (!payment) {
+            return res.status(400).json({ status: 400, msg: `payment with paymentIntentId ${paymentIntentId} not found` });
+        }
         newOrder.payment = payment._id;
-        newOrder.paymentIntentId = paymentIntent.id;
-        payment.paymentIntentId = paymentIntent.id;
+        newOrder.paymentIntentId = paymentIntentId;
+        // payment.paymentIntentId = paymentIntent.id;
         await newOrder.save();
         await payment.save();
         return res.status(200).json({ status: 200, data: { order: newOrder } });
@@ -103,6 +106,7 @@ export const getPaymentById = async (req: Request, res: Response, next: NextFunc
 export const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
     let user = req.user;
     let paymentsId = req.params.id;
+    let { paymentIntent } = req.body;
     if (!mongoose.isValidObjectId(paymentsId)) {
         return res.status(400).json({ status: 400, msg: "order not found" });
     }
@@ -111,6 +115,9 @@ export const cancelOrder = async (req: Request, res: Response, next: NextFunctio
     if (userOrder.status == "shipped") return res.status(400).json({ status: 400, msg: "can not cancel order , order is shipped" });
     let cancelPaymentIntent = await cancelPayment(userOrder.paymentIntentId);
     userOrder.status = "canceled";
+    if (paymentIntent) {
+        await cancelPayment(paymentIntent)
+    }
     await userOrder.save();
     return res.status(200).json({ status: 200, data: { order: userOrder } });
 }

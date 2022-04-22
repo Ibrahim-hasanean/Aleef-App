@@ -22,7 +22,7 @@ const paymentMethod_1 = require("../../utils/paymentMethod");
 const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const { totalPrice, itemsCount, shippingFees, shippingAddressId, cardNumber, orderItems, cardHolderName, ExperitionDate, SecurityCode, currency, paymentMethodId } = req.body;
+        const { totalPrice, itemsCount, shippingFees, shippingAddressId, cardNumber, orderItems, cardHolderName, ExperitionDate, SecurityCode, currency, paymentIntentId } = req.body;
         const user = req.user;
         let orderItemsTotal;
         try {
@@ -54,11 +54,15 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             currency,
             status: "to be shipped"
         });
-        let paymentIntent = yield (0, paymentMethod_1.paymentMethod)(totalPrice, currency, "new order payment", paymentMethodId);
-        const payment = new Payment_1.default({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id, });
+        // let paymentIntent = await paymentMethod(totalPrice, currency, "new order payment", paymentMethodId);
+        // const payment: PaymentInterFace = new Payment({ totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id, })
+        const payment = yield Payment_1.default.findOne({ paymentIntentId });
+        if (!payment) {
+            return res.status(400).json({ status: 400, msg: `payment with paymentIntentId ${paymentIntentId} not found` });
+        }
         newOrder.payment = payment._id;
-        newOrder.paymentIntentId = paymentIntent.id;
-        payment.paymentIntentId = paymentIntent.id;
+        newOrder.paymentIntentId = paymentIntentId;
+        // payment.paymentIntentId = paymentIntent.id;
         yield newOrder.save();
         yield payment.save();
         return res.status(200).json({ status: 200, data: { order: newOrder } });
@@ -109,6 +113,7 @@ exports.getPaymentById = getPaymentById;
 const cancelOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let user = req.user;
     let paymentsId = req.params.id;
+    let { paymentIntent } = req.body;
     if (!mongoose_1.default.isValidObjectId(paymentsId)) {
         return res.status(400).json({ status: 400, msg: "order not found" });
     }
@@ -119,6 +124,9 @@ const cancelOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         return res.status(400).json({ status: 400, msg: "can not cancel order , order is shipped" });
     let cancelPaymentIntent = yield (0, paymentMethod_1.cancelPayment)(userOrder.paymentIntentId);
     userOrder.status = "canceled";
+    if (paymentIntent) {
+        yield (0, paymentMethod_1.cancelPayment)(paymentIntent);
+    }
     yield userOrder.save();
     return res.status(200).json({ status: 200, data: { order: userOrder } });
 });

@@ -29,10 +29,12 @@ import { userItemListSchema, updateUserItemListSchema } from "./middleware/UserI
 import { getHealthCare } from "./controller/HealthCare";
 import { getLocation } from "./controller/Location";
 import { getReadAboute } from "./controller/ReadAbout";
+import { createPaymentIntent } from "./controller/UserPaymentMethods";
 import upload from "../middlewares/uploadImage";
 import uploadFileToFirebase from "../utils/uploadFileToFirebase";
 import { getNotifications } from "./controller/Notifications";
 import { socialLoginSchema } from "./middleware/socialLoginValidation";
+import { paymentIntentSchema } from "./middleware/paymentIntentSchema";
 import { getMessages, getConversations, getConversation } from "./controller/UserChat"
 
 const router = Router();
@@ -64,6 +66,9 @@ router.get("/conversations/:id/messages", verifyUser, getMessages);
 
 //get hospital location
 router.get("/location", verifyUser, getLocation);
+
+//create payment intent
+router.post("/payment-intent", verifyUser, validate(paymentIntentSchema), createPaymentIntent);
 
 //get notifications
 router.get("/notifications", verifyUser, getNotifications);
