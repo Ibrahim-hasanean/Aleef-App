@@ -35,7 +35,7 @@ export const cancelPayment = async (id: string) => {
 const test = async () => {
     try {
         let payment = await stripe.paymentIntents.create({
-            amount: 100 * 100, currency: "usd", description: "aleef",
+            amount: 100 * 100, currency: "usd", description: "aleefaaa",
         });
         // payment_method: "pm_1Kr0pJIxwT72miO5XMaDB5MG", 
         console.log("paymentttt: ", payment)
@@ -50,3 +50,4 @@ const test = async () => {
         return Promise.reject(`payment failed, ${error.message}`);
     }
 }
+// test()

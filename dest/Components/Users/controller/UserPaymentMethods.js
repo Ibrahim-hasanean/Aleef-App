@@ -28,7 +28,7 @@ const createPaymentIntent = (req, res, next) => __awaiter(void 0, void 0, void 0
             user: user._id,
             paymentIntentId: paymentIntent.id
         });
-        return res.status(200).json({ status: 200, data: { paymentIntentId: paymentIntent.id } });
+        return res.status(200).json({ status: 200, data: { clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id } });
     }
     catch (error) {
         return res.status(400).json({ status: 400, msg: (_a = error.message) !== null && _a !== void 0 ? _a : error });

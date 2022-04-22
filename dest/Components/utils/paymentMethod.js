@@ -49,7 +49,7 @@ exports.cancelPayment = cancelPayment;
 const test = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         let payment = yield stripe.paymentIntents.create({
-            amount: 100 * 100, currency: "usd", description: "aleef",
+            amount: 100 * 100, currency: "usd", description: "aleefaaa",
         });
         // payment_method: "pm_1Kr0pJIxwT72miO5XMaDB5MG", 
         console.log("paymentttt: ", payment);
@@ -64,3 +64,4 @@ const test = () => __awaiter(void 0, void 0, void 0, function* () {
         return Promise.reject(`payment failed, ${error.message}`);
     }
 });
+// test()

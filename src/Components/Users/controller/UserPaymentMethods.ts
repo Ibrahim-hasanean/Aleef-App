@@ -14,7 +14,7 @@ export const createPaymentIntent = async (req: Request, res: Response, next: Nex
             user: user._id,
             paymentIntentId: paymentIntent.id
         });
-        return res.status(200).json({ status: 200, data: { paymentIntentId: paymentIntent.id } });
+        return res.status(200).json({ status: 200, data: { clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id } });
     } catch (error: any) {
         return res.status(400).json({ status: 400, msg: error.message ?? error });
     }
