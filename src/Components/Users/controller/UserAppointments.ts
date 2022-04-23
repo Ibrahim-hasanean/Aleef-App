@@ -132,7 +132,6 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
 
 export const deleteAppointments = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
-    let { paymentIntent } = req.body;
     let user = req.user;
     if (!mongoose.isValidObjectId(id)) {
         return res.status(400).json({ status: 400, msg: "appointmentId not found" });
@@ -140,8 +139,8 @@ export const deleteAppointments = async (req: Request, res: Response, next: Next
     const appointment: AppointmentsInterface = await Appointments.findOne({ _id: id, user: user._id }) as AppointmentsInterface;
     if (!appointment) return res.status(400).json({ status: 400, msg: "appointment not found" });
     appointment.status = "cancelled";
-    if (paymentIntent) {
-        await cancelPayment(paymentIntent)
+    if (appointment.paymentIntentId) {
+        await cancelPayment(appointment.paymentIntentId);
     }
     await appointment.save()
     return res.status(200).json({ status: 200, msg: "appointment cancelled successfully" });
@@ -159,29 +158,25 @@ export const getAvaliableTime = async (req: Request, res: Response, next: NextFu
 
 export const payAppointment = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, paymentIntentId } = req.body;
+        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency } = req.body;
         let user = req.user;
         const isAppointmentExist: AppointmentsInterface | null = await Appointments.findById(appointmentId);
         if (!isAppointmentExist) return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
-        // let newPayment: PaymentInterFace = await Payment.create({
-        //     totalAmount,
-        //     discount,
-        //     paymentAmmount,
-        //     exchange,
-        //     paymentType: "visa",
-        //     user: user._id,
-        //     appointment: appointmentId
-        // })
-        // let paymentIntent = await paymentMethod(totalAmount, currency, "new order payment", paymentIntentId);
-        const payment: PaymentInterFace = await Payment.findOne({ paymentIntentId }) as PaymentInterFace;
-        if (!payment) {
-            return res.status(400).json({ status: 400, msg: `payment with paymentIntentId ${paymentIntentId} not found` });
-        }
-        isAppointmentExist.paymentIntentId = paymentIntentId;
-        isAppointmentExist.payment = payment._id;
-        isAppointmentExist.paymentStatus = "Completed";
+        let paymentIntent = await paymentMethod(paymentAmmount, currency, `new payment for appointment ${appointmentId}`);
+        let newPayment: PaymentInterFace = await Payment.create({
+            totalAmount,
+            discount,
+            paymentAmmount,
+            exchange,
+            paymentType: "visa",
+            user: user._id,
+            appointment: appointmentId,
+            paymentIntentId: paymentIntent.id,
+        })
+        isAppointmentExist.paymentIntentId = paymentIntent.id;
+        isAppointmentExist.payment = newPayment._id;
         await isAppointmentExist.save();
-        return res.status(201).json({ status: 201, msg: "payment success", data: { payment: payment } });
+        return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment, clientSecret: paymentIntent.client_secret } });
     } catch (error: any) {
         return res.status(400).json({ status: 400, msg: error.message ?? error });
     }

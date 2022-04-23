@@ -67,8 +67,8 @@ router.get("/conversations/:id/messages", verifyUser, getMessages);
 //get hospital location
 router.get("/location", verifyUser, getLocation);
 
-//create payment intent
-router.post("/payment-intent", verifyUser, validate(paymentIntentSchema), createPaymentIntent);
+// //create payment intent
+// router.post("/payment-intent", verifyUser, validate(paymentIntentSchema), createPaymentIntent);
 
 //get notifications
 router.get("/notifications", verifyUser, getNotifications);

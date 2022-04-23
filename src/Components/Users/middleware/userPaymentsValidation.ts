@@ -1,4 +1,4 @@
-import { Joi, celebrate, Segments, Modes, SchemaOptions } from "celebrate";
+import { Joi, Segments, } from "celebrate";
 
 
 export const paymentSchema = {
@@ -7,13 +7,9 @@ export const paymentSchema = {
         itemsCount: Joi.number().required(),
         shippingFees: Joi.number().required(),
         shippingAddressId: Joi.string().required(),
-        cardNumber: Joi.string(),
-        cardHolderName: Joi.string(),
-        ExperitionDate: Joi.string(),
-        SecurityCode: Joi.string(),
         status: Joi.string().valid("pending", "arrived", "in the way", "canceled"),
+        paymentType: Joi.string().valid("card", "cash").default("cash"),
         currency: Joi.string().default("usd"),
-        paymentIntentId: Joi.string().required(),
         orderItems: Joi.array().required().items(Joi.object().keys({
             count: Joi.number().required(),
             item: Joi.string().required()

@@ -20,6 +20,7 @@ export interface OrderInterface extends mongoose.Document {
     user: ObjectId | UserInterface,
     status: string,
     currency: string,
+    paymentType: string,
     payment: ObjectId | PaymentInterFace
 }
 
@@ -38,6 +39,7 @@ const orderSchema = new Schema({
     user: { type: mongoose.Types.ObjectId, ref: "users", required: true },
     status: { type: String },
     currency: { type: String },
+    paymentType: { type: String },
     payment: { type: mongoose.Types.ObjectId, ref: "payments" },
 
 }, { timestamps: true });

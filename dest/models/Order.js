@@ -35,6 +35,7 @@ const orderSchema = new mongoose_1.Schema({
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users", required: true },
     status: { type: String },
     currency: { type: String },
+    paymentType: { type: String },
     payment: { type: mongoose_1.default.Types.ObjectId, ref: "payments" },
 }, { timestamps: true });
 const Order = mongoose_1.default.model("orders", orderSchema);

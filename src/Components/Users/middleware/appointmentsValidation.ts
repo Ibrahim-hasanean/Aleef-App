@@ -13,12 +13,12 @@ export const AppointmentSchema = {
 
 export const appointmentPaymentSchema = {
     [Segments.BODY]: Joi.object().keys({
-        // totalAmount: Joi.number().required(),
-        // discount: Joi.number().required(),
-        // paymentAmmount: Joi.number().required(),
-        // exchange: Joi.number().required(),
+        totalAmount: Joi.number().required(),
+        discount: Joi.number().required(),
+        paymentAmmount: Joi.number().required(),
+        exchange: Joi.number().required(),
         appointmentId: Joi.string().required(),
-        // currency: Joi.string().default("usd"),
-        paymentIntentId: Joi.string().required(),
+        currency: Joi.string().default("usd"),
+        // paymentIntentId: Joi.string().required(),
     })
 }
