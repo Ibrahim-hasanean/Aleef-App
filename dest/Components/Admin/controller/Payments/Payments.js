@@ -16,7 +16,7 @@ exports.getPaymentById = exports.getPayments = void 0;
 const Payment_1 = __importDefault(require("../../../../models/Payment"));
 const User_1 = __importDefault(require("../../../../models/User"));
 const getPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { page, limit, paymentType, text, from, to, type } = req.query;
+    let { page, limit, paymentType, text, from, to, type, paymentNumber } = req.query;
     let query = {};
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
@@ -50,12 +50,14 @@ const getPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         query.appointment = { $ne: null };
     if (type == "orders")
         query.order = { $ne: null };
+    if (paymentNumber)
+        query.paymentNumber = paymentNumber;
     let payments = yield Payment_1.default
         .find(query)
         .sort({ createdAt: "descending" })
         .skip(skip)
         .limit(limitNumber)
-        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
+        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason', 'appointmentNumber'] })
         .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
         .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
     let paymentsCount = yield Payment_1.default.find(query).count();
@@ -65,7 +67,7 @@ exports.getPayments = getPayments;
 const getPaymentById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
     let payment = yield Payment_1.default.findById(id)
-        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
+        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason', 'appointmentNumber'] })
         .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
         .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
     return res.status(200).json({ status: 200, data: { payment } });

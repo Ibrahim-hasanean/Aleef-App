@@ -92,7 +92,7 @@ const updateAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, 
 exports.updateAppointment = updateAppointment;
 const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day, status } = req.query;
+        let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day, status, appointmentNumber } = req.query;
         let numberPageSize = pageSize ? Number(pageSize) : 15;
         let skip = (Number(page || 1) - 1) * numberPageSize;
         let query = {};
@@ -112,6 +112,8 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
             return res.status(400).json({ status: 400, msg: `petId ${petId} not valid` });
         if (paymentStatus)
             query.paymentStatus = paymentStatus;
+        if (appointmentNumber)
+            query.appointmentNumber = appointmentNumber;
         if (day) {
             let beginDay = new Date(day);
             beginDay.setUTCHours(0);

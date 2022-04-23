@@ -71,7 +71,7 @@ export const updateAppointment = async (req: Request, res: Response, next: NextF
 
 export const getAppointments = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day, status } =
+        let { page, pageSize, service, doctorId, userId, paymentStatus, petId, day, status, appointmentNumber } =
             req.query as
             {
                 page: string,
@@ -83,6 +83,7 @@ export const getAppointments = async (req: Request, res: Response, next: NextFun
                 petId: string,
                 day: string,
                 status: string,
+                appointmentNumber: string,
             };
         let numberPageSize = pageSize ? Number(pageSize) : 15;
         let skip = (Number(page || 1) - 1) * numberPageSize;
@@ -95,6 +96,7 @@ export const getAppointments = async (req: Request, res: Response, next: NextFun
         if (petId && mongoose.isValidObjectId(petId)) query.pet = petId;
         else if (petId) return res.status(400).json({ status: 400, msg: `petId ${petId} not valid` });
         if (paymentStatus) query.paymentStatus = paymentStatus;
+        if (appointmentNumber) query.appointmentNumber = appointmentNumber;
         if (day) {
             let beginDay = new Date(day);
             beginDay.setUTCHours(0);

@@ -3,8 +3,8 @@ import Payment, { PaymentInterFace } from "../../../../models/Payment";
 import User, { UserInterface } from "../../../../models/User";
 
 export const getPayments = async (req: Request, res: Response, next: NextFunction) => {
-    let { page, limit, paymentType, text, from, to, type } =
-        req.query as { page: string, limit: string, paymentType: string, userId: string, text: string, from: string, to: string, type: string }
+    let { page, limit, paymentType, text, from, to, type, paymentNumber } =
+        req.query as { page: string, limit: string, paymentType: string, userId: string, text: string, from: string, to: string, type: string, paymentNumber: string }
     let query: any = {};
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
@@ -35,12 +35,13 @@ export const getPayments = async (req: Request, res: Response, next: NextFunctio
     }
     if (type == "appointments") query.appointment = { $ne: null };
     if (type == "orders") query.order = { $ne: null };
+    if (paymentNumber) query.paymentNumber = paymentNumber;
     let payments: PaymentInterFace[] = await Payment
         .find(query)
         .sort({ createdAt: "descending" })
         .skip(skip)
         .limit(limitNumber)
-        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
+        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason', 'appointmentNumber'] })
         .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
         .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
     let paymentsCount = await Payment.find(query).count();
@@ -50,7 +51,7 @@ export const getPayments = async (req: Request, res: Response, next: NextFunctio
 export const getPaymentById = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
     let payment: PaymentInterFace | null = await Payment.findById(id)
-        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason'] })
+        .populate({ path: "appointment", select: ['service', 'appointmentDate', 'reason', 'appointmentNumber'] })
         .populate({ path: "user", select: ['fullName', 'email', 'phoneNumber'] })
         .populate({ path: "order", select: ['totalPrice', 'itemsCount', 'shippingFees', 'shippingAddress'] });
     return res.status(200).json({ status: 200, data: { payment } });
