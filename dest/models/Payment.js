@@ -24,6 +24,7 @@ const payemntSchema = new mongoose_1.Schema({
     paymentIntentId: { type: String },
     totalAmount: { type: Number, required: true },
     discount: { type: Number },
+    paymentNumber: { type: Number },
     paymentAmmount: { type: Number, required: true },
     exchange: { type: Number },
     paymentType: { type: String, required: true },
@@ -31,5 +32,10 @@ const payemntSchema = new mongoose_1.Schema({
     appointment: { type: mongoose_1.default.Types.ObjectId, ref: "appointments" },
     order: { type: mongoose_1.default.Types.ObjectId, ref: "orders" }
 }, { timestamps: true });
+payemntSchema.pre("save", function () {
+    let payment = this;
+    let generatedId = Date.now();
+    payment.paymentNumber = generatedId;
+});
 const Payment = mongoose_1.default.model("payments", payemntSchema);
 exports.default = Payment;

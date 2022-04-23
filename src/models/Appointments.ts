@@ -12,6 +12,7 @@ export interface AppointmentsInterface extends mongoose.Document {
     service: string,
     paymentIntentId: string,
     appointmentDate: Date | string,
+    appointmentNumber: number,
     reason: string,
     doctor: ObjectId | StafInterface,
     user: ObjectId | UserInterface,
@@ -30,6 +31,7 @@ const appointmentSchema = new Schema({
     service: { type: String },
     paymentIntentId: { type: String },
     appointmentDate: { type: Date },
+    appointmentNumber: { type: Number },
     reason: { type: String },
     doctor: { type: mongoose.Types.ObjectId, ref: "staff" },
     user: { type: mongoose.Types.ObjectId, ref: "users" },
@@ -43,6 +45,14 @@ const appointmentSchema = new Schema({
     invoice: [{ type: mongoose.Types.ObjectId, ref: "invoices" }],
 
 }, { timestamps: true });
+
+
+appointmentSchema.pre("save", function () {
+    let payment: AppointmentsInterface = this;
+    let generatedId = Date.now();
+    payment.appointmentNumber = generatedId;
+})
+
 
 const Appointments = mongoose.model<AppointmentsInterface>("appointments", appointmentSchema);
 export default Appointments;

@@ -17,7 +17,7 @@ const socketIoEvents = (io: Server) => {
 
     io.use(async (socket: any, next) => {
         try {
-            let userToken: string = socket.handshake.headers.usertoken as string;
+            let userToken: string = socket.handshake.query.usertoken as string;
             let staffToken: string = socket.handshake.query.stafftoken as string;
             console.log("check tokennn", staffToken);
             console.log("userTokennnnnn", userToken);

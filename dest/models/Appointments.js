@@ -25,6 +25,7 @@ const appointmentSchema = new mongoose_1.Schema({
     service: { type: String },
     paymentIntentId: { type: String },
     appointmentDate: { type: Date },
+    appointmentNumber: { type: Number },
     reason: { type: String },
     doctor: { type: mongoose_1.default.Types.ObjectId, ref: "staff" },
     user: { type: mongoose_1.default.Types.ObjectId, ref: "users" },
@@ -37,5 +38,10 @@ const appointmentSchema = new mongoose_1.Schema({
     totalAmount: { type: Number },
     invoice: [{ type: mongoose_1.default.Types.ObjectId, ref: "invoices" }],
 }, { timestamps: true });
+appointmentSchema.pre("save", function () {
+    let payment = this;
+    let generatedId = Date.now();
+    payment.appointmentNumber = generatedId;
+});
 const Appointments = mongoose_1.default.model("appointments", appointmentSchema);
 exports.default = Appointments;
