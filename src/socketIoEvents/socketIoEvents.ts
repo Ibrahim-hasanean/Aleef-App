@@ -20,6 +20,7 @@ const socketIoEvents = (io: Server) => {
             let userToken: string = socket.handshake.headers.usertoken as string;
             let staffToken: string = socket.handshake.query.stafftoken as string;
             console.log("check tokennn", staffToken);
+            console.log("userTokennnnnn", userToken);
             if (userToken) {
                 let user = await verifyUser(userToken);
                 if (user) {

@@ -52,11 +52,11 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         });
         // online payment
         let clientSecret;
+        const payment = new Payment_1.default({
+            totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: paymentType == "card" ? "visa" : paymentType, user: user._id, order: newOrder._id
+        });
         if (paymentType == "card") {
             let paymentIntent = yield (0, paymentMethod_1.paymentMethod)(totalPrice, currency, `new order payment order id ${newOrder._id}`);
-            const payment = new Payment_1.default({
-                totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: "visa", user: user._id, order: newOrder._id, paymentIntentId: paymentIntent.id
-            });
             payment.paymentIntentId = paymentIntent.id;
             newOrder.payment = payment._id;
             newOrder.paymentIntentId = paymentIntent.id;
@@ -64,6 +64,7 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             yield payment.save();
         }
         yield newOrder.save();
+        yield payment.save();
         return res.status(200).json({ status: 200, data: { order: newOrder, clientSecret } });
     }
     catch (error) {
