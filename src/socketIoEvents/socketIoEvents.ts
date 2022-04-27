@@ -55,8 +55,10 @@ const socketIoEvents = (io: Server) => {
                     }
                     next();
                 } else next(new Error("unauthorize"));
-            } else
-                next(new Error("token is required"));
+            } else {
+                // next(new Error("token is required"));
+                next();
+            }
         } catch (error: any) {
             next(new Error(error.message));
         }

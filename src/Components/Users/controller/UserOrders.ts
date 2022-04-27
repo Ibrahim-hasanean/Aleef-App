@@ -15,7 +15,8 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
             shippingAddressId,
             orderItems,
             currency,
-            paymentType
+            paymentType,
+            stripeToken
         } = req.body;
         const user = req.user;
         let orderItemsTotal;
@@ -29,6 +30,9 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
         }
         if (shippingFees != orderItemsTotal.shippingCost) {
             return res.status(400).json({ status: 400, msg: "shippingFees not equal all items total shipping fees" });
+        }
+        if (paymentType == "card" && !stripeToken) {
+            return res.status(400).json({ status: 400, msg: "payment type card require stripe token" });
         }
         const orderItemsCollection = await OrderItem.create(...orderItems);
         const newOrder: OrderInterface = new Order({
@@ -44,21 +48,19 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
             paymentType
         });
         // online payment
-        let clientSecret;
         const payment: PaymentInterFace = new Payment({
             totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: paymentType == "card" ? "visa" : paymentType, user: user._id, order: newOrder._id
         })
         if (paymentType == "card") {
-            let paymentIntent = await paymentMethod(totalPrice, currency, `new order payment order id ${newOrder._id}`);
-            payment.paymentIntentId = paymentIntent.id;
+            let paymentCharge = await paymentMethod(stripeToken, totalPrice, currency, `new order payment order id ${newOrder._id}`);
+            payment.paymentChargeId = paymentCharge.id;
             newOrder.payment = payment._id;
-            newOrder.paymentIntentId = paymentIntent.id;
-            clientSecret = paymentIntent.client_secret;
+            newOrder.paymentChargeId = paymentCharge.id;
             await payment.save();
         }
         await newOrder.save();
         await payment.save();
-        return res.status(200).json({ status: 200, data: { order: newOrder, clientSecret } });
+        return res.status(200).json({ status: 200, data: { order: newOrder } });
     } catch (error: any) {
         return res.status(400).json({ status: 400, msg: error.message ?? error });
     }
@@ -102,19 +104,19 @@ export const getPaymentById = async (req: Request, res: Response, next: NextFunc
 export const cancelOrder = async (req: Request, res: Response, next: NextFunction) => {
     let user = req.user;
     let paymentsId = req.params.id;
-    let { paymentIntent } = req.body;
+    // let { paymentChargeId } = req.body;
     if (!mongoose.isValidObjectId(paymentsId)) {
         return res.status(400).json({ status: 400, msg: "order not found" });
     }
     let userOrder: OrderInterface = await Order.findOne({ user: user._id, _id: paymentsId }) as OrderInterface;
     if (!userOrder) return res.status(400).json({ status: 400, msg: "order not found" });
     if (userOrder.status == "shipped") return res.status(400).json({ status: 400, msg: "can not cancel order , order is shipped" });
-    if (userOrder.paymentIntentId)
-        await cancelPayment(userOrder.paymentIntentId);
+    if (userOrder.paymentChargeId)
+        await cancelPayment(userOrder.paymentChargeId);
     userOrder.status = "canceled";
-    if (paymentIntent) {
-        await cancelPayment(paymentIntent)
-    }
+    // if (paymentIntent) {
+    //     await cancelPayment(paymentIntent)
+    // }
     await userOrder.save();
     return res.status(200).json({ status: 200, data: { order: userOrder } });
 }

@@ -8,7 +8,8 @@ import { UserInterface } from "./User";
 export interface OrderInterface extends mongoose.Document {
     totalPrice: number,
     itemsCount: number,
-    paymentIntentId: string,
+    // paymentIntentId: string,
+    paymentChargeId: string,
     items: OrdersItemsInterface,
     shippingFees: number,
     subTotal: number,
@@ -27,7 +28,8 @@ export interface OrderInterface extends mongoose.Document {
 const orderSchema = new Schema({
     totalPrice: { type: Number },
     itemsCount: { type: Number },
-    paymentIntentId: { type: String },
+    // paymentIntentId: { type: String },
+    paymentChargeId: { type: String },
     items: [{ type: mongoose.Types.ObjectId, ref: "orderItems" }],
     shippingFees: { type: Number },
     subTotal: { type: Number },

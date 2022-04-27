@@ -139,8 +139,8 @@ export const deleteAppointments = async (req: Request, res: Response, next: Next
     const appointment: AppointmentsInterface = await Appointments.findOne({ _id: id, user: user._id }) as AppointmentsInterface;
     if (!appointment) return res.status(400).json({ status: 400, msg: "appointment not found" });
     appointment.status = "cancelled";
-    if (appointment.paymentIntentId) {
-        await cancelPayment(appointment.paymentIntentId);
+    if (appointment.paymentChargeId) {
+        await cancelPayment(appointment.paymentChargeId);
     }
     await appointment.save()
     return res.status(200).json({ status: 200, msg: "appointment cancelled successfully" });
@@ -158,11 +158,11 @@ export const getAvaliableTime = async (req: Request, res: Response, next: NextFu
 
 export const payAppointment = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency } = req.body;
+        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, stripeToken } = req.body;
         let user = req.user;
         const isAppointmentExist: AppointmentsInterface | null = await Appointments.findById(appointmentId);
         if (!isAppointmentExist) return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
-        let paymentIntent = await paymentMethod(paymentAmmount, currency, `new payment for appointment ${appointmentId}`);
+        let paymentCharge = await paymentMethod(stripeToken, paymentAmmount, currency, `new payment for appointment ${appointmentId}`);
         let newPayment: PaymentInterFace = await Payment.create({
             totalAmount,
             discount,
@@ -171,12 +171,12 @@ export const payAppointment = async (req: Request, res: Response, next: NextFunc
             paymentType: "visa",
             user: user._id,
             appointment: appointmentId,
-            paymentIntentId: paymentIntent.id,
-        })
-        isAppointmentExist.paymentIntentId = paymentIntent.id;
+            paymentChargeId: paymentCharge.id,
+        });
+        isAppointmentExist.paymentChargeId = paymentCharge.id;
         isAppointmentExist.payment = newPayment._id;
         await isAppointmentExist.save();
-        return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment, clientSecret: paymentIntent.client_secret } });
+        return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment, } });
     } catch (error: any) {
         return res.status(400).json({ status: 400, msg: error.message ?? error });
     }

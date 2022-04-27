@@ -19,6 +19,6 @@ export const appointmentPaymentSchema = {
         exchange: Joi.number().required(),
         appointmentId: Joi.string().required(),
         currency: Joi.string().default("usd"),
-        // paymentIntentId: Joi.string().required(),
+        stripeToken: Joi.string().required(),
     })
 }

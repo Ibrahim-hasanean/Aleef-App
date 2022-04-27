@@ -5,15 +5,18 @@ const stripe = new Stripe(stripeSecretKey, {
     apiVersion: '2020-08-27',
 });
 
-export const paymentMethod = async (amount: number, currency: string, description: string,) => {
+export const paymentMethod = async (token: string, amount: number, currency: string, description: string,) => {
     try {
         // let payment = await stripe.paymentIntents.create({
         //     amount: amount * 1000, currency, description, payment_method, confirm: true
         // });
-        let payment = await stripe.paymentIntents.create({
-            amount: amount * 100, currency, description,
+        // let payment = await stripe.paymentIntents.create({
+        //     amount: amount * 100, currency, description,
+        // });
+        let stripeCharge = stripe.charges.create({
+            amount: amount * 100, currency, description, source: token
         });
-        return payment;
+        return stripeCharge;
 
     } catch (error: any) {
         console.log("error", error)
@@ -32,18 +35,11 @@ export const cancelPayment = async (id: string) => {
 }
 
 
-const test = async () => {
+const test = async (token: string, amount: number, currency: string, description: string) => {
     try {
-        let payment = await stripe.paymentIntents.create({
-            amount: 100 * 100, currency: "usd", description: "aleefaaa",
+        let stripeCharge = stripe.charges.create({
+            amount: amount * 100, currency, description, source: token
         });
-        // payment_method: "pm_1Kr0pJIxwT72miO5XMaDB5MG", 
-        console.log("paymentttt: ", payment)
-        // const paymentIntent = await stripe.paymentIntents.confirm(
-        //     payment.id,
-        //     { payment_method: 'pm_1Kr0pJIxwT72miO5XMaDB5MG', setup_future_usage: "off_session" }
-        // );
-        // console.log("paymentIntent: ", paymentIntent)
 
     } catch (error: any) {
         console.log("error", error)
