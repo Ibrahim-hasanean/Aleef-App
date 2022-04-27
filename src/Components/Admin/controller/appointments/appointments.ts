@@ -203,6 +203,7 @@ export const userAppointments = async (req: Request, res: Response, next: NextFu
 
 export const addReportToAppointment = async (req: Request, res: Response, next: NextFunction) => {
     let { report } = req.body;
+    if (!report) return res.status(400).json({ status: 400, msg: "report is required" });
     let appointmentId = req.params.id;
     if (!mongoose.isValidObjectId(appointmentId)) return res.status(400).json({ status: 400, msg: `appointmentId ${appointmentId} not valid` });
     let isAppointmentExist: AppointmentsInterface = await Appointments.findById(appointmentId) as AppointmentsInterface;

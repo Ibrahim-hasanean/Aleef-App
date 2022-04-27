@@ -16,6 +16,7 @@ exports.getConversation = exports.getConversations = exports.getMessages = void 
 const Messages_1 = __importDefault(require("../../../../models/Messages"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const Conversations_1 = __importDefault(require("../../../../models/Conversations"));
+const User_1 = __importDefault(require("../../../../models/User"));
 const getMessages = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let staff = req.staff;
     let { page, limit } = req.query;
@@ -42,10 +43,10 @@ exports.getMessages = getMessages;
 const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let staff = req.staff;
     let { page, limit } = req.query;
+    let keyword = req.query.keyword;
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
     let query = {};
-    // .select(['-messages'])
     if (staff.role === "storeManager") {
         query.storeSupport = true;
     }
@@ -54,6 +55,15 @@ const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     }
     else {
         query.doctorId = staff._id;
+    }
+    if (keyword) {
+        let users = yield User_1.default.find({
+            fullName: {
+                "$regex": keyword, "$options": "i"
+            }
+        });
+        let usersIds = users.map(x => x._id);
+        query.userId = { "$in": usersIds };
     }
     let conversationsArray = yield Conversations_1.default.find(query)
         .skip(skip)

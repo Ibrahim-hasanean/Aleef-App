@@ -223,6 +223,8 @@ const userAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, f
 exports.userAppointments = userAppointments;
 const addReportToAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { report } = req.body;
+    if (!report)
+        return res.status(400).json({ status: 400, msg: "report is required" });
     let appointmentId = req.params.id;
     if (!mongoose_1.default.isValidObjectId(appointmentId))
         return res.status(400).json({ status: 400, msg: `appointmentId ${appointmentId} not valid` });

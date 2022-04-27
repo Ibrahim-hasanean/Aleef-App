@@ -3,6 +3,7 @@ import Message, { MessagesInterface } from "../../../../models/Messages";
 import mongoose, { ObjectId } from "mongoose";
 import Conversations, { ConversationsInterface } from "../../../../models/Conversations";
 import { StafInterface } from "../../../../models/Staff";
+import User, { UserInterface } from "../../../../models/User";
 export const getMessages = async (req: Request, res: Response, next: NextFunction) => {
     let staff: StafInterface = req.staff;
     let { page, limit } = req.query as { page: string, limit: string, };
@@ -26,16 +27,25 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
 export const getConversations = async (req: Request, res: Response, next: NextFunction) => {
     let staff: StafInterface = req.staff;
     let { page, limit } = req.query;
+    let keyword: string = req.query.keyword as string;
     const limitNumber = Number(limit) || 10;
     const skip = (Number(page || 1) - 1) * limitNumber;
     let query: any = {};
-    // .select(['-messages'])
     if (staff.role === "storeManager") {
         query.storeSupport = true;
     } else if (staff.role === "receiption") {
         query.receiptionSupport = true;
     } else {
         query.doctorId = staff._id
+    }
+    if (keyword) {
+        let users = await User.find({
+            fullName: {
+                "$regex": keyword, "$options": "i"
+            }
+        });
+        let usersIds = users.map(x => x._id);
+        query.userId = { "$in": usersIds };
     }
     let conversationsArray = await Conversations.find(query)
         .skip(skip)
