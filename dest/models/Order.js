@@ -23,7 +23,8 @@ const mongoose_1 = __importStar(require("mongoose"));
 const orderSchema = new mongoose_1.Schema({
     totalPrice: { type: Number },
     itemsCount: { type: Number },
-    paymentIntentId: { type: String },
+    // paymentIntentId: { type: String },
+    paymentChargeId: { type: String },
     items: [{ type: mongoose_1.default.Types.ObjectId, ref: "orderItems" }],
     shippingFees: { type: Number },
     subTotal: { type: Number },

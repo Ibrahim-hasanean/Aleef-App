@@ -19,15 +19,18 @@ const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = new stripe_1.default(stripeSecretKey, {
     apiVersion: '2020-08-27',
 });
-const paymentMethod = (amount, currency, description) => __awaiter(void 0, void 0, void 0, function* () {
+const paymentMethod = (token, amount, currency, description) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // let payment = await stripe.paymentIntents.create({
         //     amount: amount * 1000, currency, description, payment_method, confirm: true
         // });
-        let payment = yield stripe.paymentIntents.create({
-            amount: amount * 100, currency, description,
+        // let payment = await stripe.paymentIntents.create({
+        //     amount: amount * 100, currency, description,
+        // });
+        let stripeCharge = stripe.charges.create({
+            amount: amount * 100, currency, description, source: token
         });
-        return payment;
+        return stripeCharge;
     }
     catch (error) {
         console.log("error", error);
@@ -46,18 +49,11 @@ const cancelPayment = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.cancelPayment = cancelPayment;
-const test = () => __awaiter(void 0, void 0, void 0, function* () {
+const test = (token, amount, currency, description) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let payment = yield stripe.paymentIntents.create({
-            amount: 100 * 100, currency: "usd", description: "aleefaaa",
+        let stripeCharge = stripe.charges.create({
+            amount: amount * 100, currency, description, source: token
         });
-        // payment_method: "pm_1Kr0pJIxwT72miO5XMaDB5MG", 
-        console.log("paymentttt: ", payment);
-        // const paymentIntent = await stripe.paymentIntents.confirm(
-        //     payment.id,
-        //     { payment_method: 'pm_1Kr0pJIxwT72miO5XMaDB5MG', setup_future_usage: "off_session" }
-        // );
-        // console.log("paymentIntent: ", paymentIntent)
     }
     catch (error) {
         console.log("error", error);

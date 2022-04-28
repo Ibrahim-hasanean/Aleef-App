@@ -5,7 +5,7 @@ const stripe = new Stripe(stripeSecretKey, {
     apiVersion: '2020-08-27',
 });
 
-export const paymentMethod = async (token: string, amount: number, currency: string, description: string,) => {
+export const paymentMethod = async (token: string, amount: number, currency: string, description: string) => {
     try {
         // let payment = await stripe.paymentIntents.create({
         //     amount: amount * 1000, currency, description, payment_method, confirm: true

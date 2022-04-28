@@ -152,8 +152,8 @@ const deleteAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0,
     if (!appointment)
         return res.status(400).json({ status: 400, msg: "appointment not found" });
     appointment.status = "cancelled";
-    if (appointment.paymentIntentId) {
-        yield (0, paymentMethod_1.cancelPayment)(appointment.paymentIntentId);
+    if (appointment.paymentChargeId) {
+        yield (0, paymentMethod_1.cancelPayment)(appointment.paymentChargeId);
     }
     yield appointment.save();
     return res.status(200).json({ status: 200, msg: "appointment cancelled successfully" });
@@ -172,12 +172,12 @@ exports.getAvaliableTime = getAvaliableTime;
 const payAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency } = req.body;
+        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, stripeToken } = req.body;
         let user = req.user;
         const isAppointmentExist = yield Appointments_1.default.findById(appointmentId);
         if (!isAppointmentExist)
             return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
-        let paymentIntent = yield (0, paymentMethod_1.paymentMethod)(paymentAmmount, currency, `new payment for appointment ${appointmentId}`);
+        let paymentCharge = yield (0, paymentMethod_1.paymentMethod)(stripeToken, paymentAmmount, currency, `new payment for appointment ${appointmentId}`);
         let newPayment = yield Payment_1.default.create({
             totalAmount,
             discount,
@@ -186,12 +186,12 @@ const payAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
             paymentType: "visa",
             user: user._id,
             appointment: appointmentId,
-            paymentIntentId: paymentIntent.id,
+            paymentChargeId: paymentCharge.id,
         });
-        isAppointmentExist.paymentIntentId = paymentIntent.id;
+        isAppointmentExist.paymentChargeId = paymentCharge.id;
         isAppointmentExist.payment = newPayment._id;
         yield isAppointmentExist.save();
-        return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment, clientSecret: paymentIntent.client_secret } });
+        return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment, } });
     }
     catch (error) {
         return res.status(400).json({ status: 400, msg: (_a = error.message) !== null && _a !== void 0 ? _a : error });

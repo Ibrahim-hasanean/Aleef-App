@@ -19,6 +19,6 @@ exports.appointmentPaymentSchema = {
         exchange: celebrate_1.Joi.number().required(),
         appointmentId: celebrate_1.Joi.string().required(),
         currency: celebrate_1.Joi.string().default("usd"),
-        // paymentIntentId: Joi.string().required(),
+        stripeToken: celebrate_1.Joi.string().required(),
     })
 };

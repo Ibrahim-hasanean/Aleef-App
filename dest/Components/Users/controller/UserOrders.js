@@ -22,7 +22,7 @@ const paymentMethod_1 = require("../../utils/paymentMethod");
 const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const { totalPrice, itemsCount, shippingFees, shippingAddressId, orderItems, currency, paymentType } = req.body;
+        const { totalPrice, itemsCount, shippingFees, shippingAddressId, orderItems, currency, paymentType, stripeToken } = req.body;
         const user = req.user;
         let orderItemsTotal;
         try {
@@ -36,6 +36,9 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         }
         if (shippingFees != orderItemsTotal.shippingCost) {
             return res.status(400).json({ status: 400, msg: "shippingFees not equal all items total shipping fees" });
+        }
+        if (paymentType == "card" && !stripeToken) {
+            return res.status(400).json({ status: 400, msg: "payment type card require stripe token" });
         }
         const orderItemsCollection = yield OrderItems_1.default.create(...orderItems);
         const newOrder = new Order_1.default({
@@ -51,21 +54,19 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             paymentType
         });
         // online payment
-        let clientSecret;
         const payment = new Payment_1.default({
             totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: paymentType == "card" ? "visa" : paymentType, user: user._id, order: newOrder._id
         });
         if (paymentType == "card") {
-            let paymentIntent = yield (0, paymentMethod_1.paymentMethod)(totalPrice, currency, `new order payment order id ${newOrder._id}`);
-            payment.paymentIntentId = paymentIntent.id;
+            let paymentCharge = yield (0, paymentMethod_1.paymentMethod)(stripeToken, totalPrice, currency, `new order payment order id ${newOrder._id}`);
+            payment.paymentChargeId = paymentCharge.id;
             newOrder.payment = payment._id;
-            newOrder.paymentIntentId = paymentIntent.id;
-            clientSecret = paymentIntent.client_secret;
+            newOrder.paymentChargeId = paymentCharge.id;
             yield payment.save();
         }
         yield newOrder.save();
         yield payment.save();
-        return res.status(200).json({ status: 200, data: { order: newOrder, clientSecret } });
+        return res.status(200).json({ status: 200, data: { order: newOrder } });
     }
     catch (error) {
         return res.status(400).json({ status: 400, msg: (_a = error.message) !== null && _a !== void 0 ? _a : error });
@@ -113,7 +114,7 @@ exports.getPaymentById = getPaymentById;
 const cancelOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let user = req.user;
     let paymentsId = req.params.id;
-    let { paymentIntent } = req.body;
+    // let { paymentChargeId } = req.body;
     if (!mongoose_1.default.isValidObjectId(paymentsId)) {
         return res.status(400).json({ status: 400, msg: "order not found" });
     }
@@ -122,12 +123,12 @@ const cancelOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         return res.status(400).json({ status: 400, msg: "order not found" });
     if (userOrder.status == "shipped")
         return res.status(400).json({ status: 400, msg: "can not cancel order , order is shipped" });
-    if (userOrder.paymentIntentId)
-        yield (0, paymentMethod_1.cancelPayment)(userOrder.paymentIntentId);
+    if (userOrder.paymentChargeId)
+        yield (0, paymentMethod_1.cancelPayment)(userOrder.paymentChargeId);
     userOrder.status = "canceled";
-    if (paymentIntent) {
-        yield (0, paymentMethod_1.cancelPayment)(paymentIntent);
-    }
+    // if (paymentIntent) {
+    //     await cancelPayment(paymentIntent)
+    // }
     yield userOrder.save();
     return res.status(200).json({ status: 200, data: { order: userOrder } });
 });
