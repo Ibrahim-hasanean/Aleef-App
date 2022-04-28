@@ -35,15 +35,24 @@ export const cancelPayment = async (id: string) => {
 }
 
 
-const test = async (token: string, amount: number, currency: string, description: string) => {
+const test = async () => {
     try {
-        let stripeCharge = stripe.charges.create({
-            amount: amount * 100, currency, description, source: token
-        });
+        // const token = await stripe.tokens.create({
+        //     card: {
+        //         number: '4242424242424242',
+        //         exp_month: 4,
+        //         exp_year: 2023,
+        //         cvc: '314',
+        //     },
+        // });
+        // let stripeCharge = stripe.charges.create({
+        //     amount: 50 * 100, currency: "usd", description: "paymennnttt", source: token.id
+        // });
+        // console.log(stripeCharge)
 
     } catch (error: any) {
         console.log("error", error)
         return Promise.reject(`payment failed, ${error.message}`);
     }
 }
-// test()
+// test();

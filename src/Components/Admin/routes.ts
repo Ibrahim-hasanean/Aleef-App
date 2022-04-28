@@ -78,6 +78,7 @@ router.get("/admin-home", verifyAdmin, adminHome);
 // invoices routes
 router.post("/invoice", verifyStaffMember, validate(InvoiceSchema), addInvoice);
 router.post("/invoice/doctor", verifyStaffMember, validate(doctorInvoiceSchema), doctorAddInvoice);
+router.patch("/invoice/:id", verifyStaffMember, validate(doctorInvoiceSchema), doctorAddInvoice);
 router.get("/invoice", verifyStaffMember, validate(appointmentsQuerySchema), getInvoicements);
 
 // profile

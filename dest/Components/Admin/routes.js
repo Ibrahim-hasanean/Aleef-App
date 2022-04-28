@@ -61,6 +61,7 @@ router.get("/admin-home", verifyAdmin_1.default, home_1.adminHome);
 // invoices routes
 router.post("/invoice", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateInvoice_1.InvoiceSchema), Invoice_1.addInvoice);
 router.post("/invoice/doctor", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateInvoice_1.doctorInvoiceSchema), Invoice_1.doctorAddInvoice);
+router.patch("/invoice/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateInvoice_1.doctorInvoiceSchema), Invoice_1.doctorAddInvoice);
 router.get("/invoice", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.appointmentsQuerySchema), Invoice_1.getInvoicements);
 // profile
 router.patch("/profile", verifyStaffMember_1.default, uploadImage_1.default.single('image'), (0, validateAuth_1.validate)(validateProfile_1.profileSchema), Profile_1.updateProfile);

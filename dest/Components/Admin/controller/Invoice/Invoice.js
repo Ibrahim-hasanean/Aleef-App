@@ -33,7 +33,7 @@ const doctorAddInvoice = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     isAppointmentExist.invoice = [...isAppointmentExist.invoice, addInvoice._id];
     isAppointmentExist.totalAmount = (isAppointmentExist.totalAmount || 0) + totalAmount;
     yield isAppointmentExist.save();
-    return res.status(201).json({ status: 201, msg: "invoice added successfully" });
+    return res.status(201).json({ status: 201, msg: "invoice added successfully", data: { invoice: addInvoice } });
 });
 exports.doctorAddInvoice = doctorAddInvoice;
 const addInvoice = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -59,7 +59,7 @@ const addInvoice = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         isAppointmentExist.paymentStatus = "Completed";
     }
     yield isAppointmentExist.save();
-    return res.status(201).json({ status: 201, msg: "invoice added successfully" });
+    return res.status(201).json({ status: 201, msg: "invoice added successfully", data: { invoice: addInvoice } });
 });
 exports.addInvoice = addInvoice;
 const getInvoicements = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

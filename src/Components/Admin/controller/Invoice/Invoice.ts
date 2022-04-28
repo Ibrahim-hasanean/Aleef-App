@@ -20,7 +20,7 @@ export const doctorAddInvoice = async (req: Request, res: Response, next: NextFu
     isAppointmentExist.invoice = [...isAppointmentExist.invoice, addInvoice._id];
     isAppointmentExist.totalAmount = (isAppointmentExist.totalAmount || 0) + totalAmount;
     await isAppointmentExist.save();
-    return res.status(201).json({ status: 201, msg: "invoice added successfully" });
+    return res.status(201).json({ status: 201, msg: "invoice added successfully", data: { invoice: addInvoice } });
 }
 
 export const addInvoice = async (req: Request, res: Response, next: NextFunction) => {
@@ -46,7 +46,7 @@ export const addInvoice = async (req: Request, res: Response, next: NextFunction
         isAppointmentExist.paymentStatus = "Completed";
     }
     await isAppointmentExist.save();
-    return res.status(201).json({ status: 201, msg: "invoice added successfully" });
+    return res.status(201).json({ status: 201, msg: "invoice added successfully", data: { invoice: addInvoice } });
 }
 
 export const getInvoicements = async (req: Request, res: Response, next: NextFunction) => {

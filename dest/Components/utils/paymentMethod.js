@@ -49,15 +49,24 @@ const cancelPayment = (id) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.cancelPayment = cancelPayment;
-const test = (token, amount, currency, description) => __awaiter(void 0, void 0, void 0, function* () {
+const test = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let stripeCharge = stripe.charges.create({
-            amount: amount * 100, currency, description, source: token
-        });
+        // const token = await stripe.tokens.create({
+        //     card: {
+        //         number: '4242424242424242',
+        //         exp_month: 4,
+        //         exp_year: 2023,
+        //         cvc: '314',
+        //     },
+        // });
+        // let stripeCharge = stripe.charges.create({
+        //     amount: 50 * 100, currency: "usd", description: "paymennnttt", source: token.id
+        // });
+        // console.log(stripeCharge)
     }
     catch (error) {
         console.log("error", error);
         return Promise.reject(`payment failed, ${error.message}`);
     }
 });
-// test()
+// test();
