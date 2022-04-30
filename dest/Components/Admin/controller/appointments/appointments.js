@@ -153,7 +153,7 @@ const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0
             .populate({
             path: "pet",
             populate: {
-                path: 'medacins vaccinations'
+                path: 'medacins vaccinations appointments'
             }
         }) //select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes']
             .populate({ path: "medacin" })

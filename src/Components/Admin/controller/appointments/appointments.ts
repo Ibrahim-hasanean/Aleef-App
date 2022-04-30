@@ -134,7 +134,7 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
             .populate({
                 path: "pet",
                 populate: {
-                    path: 'medacins vaccinations'
+                    path: 'medacins vaccinations appointments'
                 }
             })//select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes']
             .populate({ path: "medacin" })
