@@ -84,7 +84,7 @@ export const getPetById = async (req: Request, res: Response, next: NextFunction
         .populate("breed") as PetsInterface;
 
     if (!pet) return res.status(200).json({ status: 200, pet: null });
-    let lastAppointment: AppointmentsInterface[] = await Appointments
+    let lastAppointments: AppointmentsInterface[] = await Appointments
         .find({ pet: petId, appointmentDate: { $lte: date } })
         .sort({ appointmentDate: "desc" })
         .limit(10).select(["service", "appointmentDate", "doctor", 'reason']).populate({
@@ -119,7 +119,7 @@ export const getPetById = async (req: Request, res: Response, next: NextFunction
                 lastPrescription: (medacin[0] && medacin[0].createdAt) || "",
                 // nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination,
                 nextVaccination: vaccination[0]?.date ?? "",
-                medicalRecord: lastAppointment,
+                medicalRecord: lastAppointments,
                 ...pet?.toJSON(),
 
             }

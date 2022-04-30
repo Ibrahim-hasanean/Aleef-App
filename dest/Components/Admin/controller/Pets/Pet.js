@@ -101,7 +101,7 @@ const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         .populate("breed");
     if (!pet)
         return res.status(200).json({ status: 200, pet: null });
-    let lastAppointment = yield Appointments_1.default
+    let lastAppointments = yield Appointments_1.default
         .find({ pet: petId, appointmentDate: { $lte: date } })
         .sort({ appointmentDate: "desc" })
         .limit(10).select(["service", "appointmentDate", "doctor", 'reason']).populate({
@@ -128,7 +128,7 @@ const getPetById = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         data: {
             pet: Object.assign({ lastCheckUp: (appointment[0] && appointment[0].appointmentDate) || "", lastGrooming: (grooming[0] && grooming[0].appointmentDate) || "", lastPrescription: (medacin[0] && medacin[0].createdAt) || "", 
                 // nextVaccination: nextVaccination == "Invalid Date" ? "" : nextVaccination,
-                nextVaccination: (_b = (_a = vaccination[0]) === null || _a === void 0 ? void 0 : _a.date) !== null && _b !== void 0 ? _b : "", medicalRecord: lastAppointment }, pet === null || pet === void 0 ? void 0 : pet.toJSON())
+                nextVaccination: (_b = (_a = vaccination[0]) === null || _a === void 0 ? void 0 : _a.date) !== null && _b !== void 0 ? _b : "", medicalRecord: lastAppointments }, pet === null || pet === void 0 ? void 0 : pet.toJSON())
         }
     });
 });

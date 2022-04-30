@@ -153,13 +153,20 @@ const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0
             .populate({
             path: "pet",
             populate: {
-                path: 'medacins vaccinations appointments',
+                path: 'medacins vaccinations',
                 options: { sort: { createdAt: "desc" } }
             },
         }) //select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes']
             .populate({ path: "medacin" })
             .populate({ path: "user", }); // select: ['fullName', 'phoneNumber', 'email']
         let lastCheckUp = '';
+        let lastAppointments = yield Appointments_1.default
+            .find({ pet: appointment.pet })
+            .sort({ appointmentDate: "desc" })
+            .limit(10).select(["service", "appointmentDate", "doctor", 'reason']).populate({
+            path: "doctor",
+            select: ['name', 'phoneNumber'],
+        });
         let pet = appointment.pet;
         if (pet) {
             let lastAppointment = yield Appointments_1.default
@@ -171,7 +178,12 @@ const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0
         else {
             return res.status(200).json({ status: 200, data: { appointment: null } });
         }
-        return res.status(200).json({ status: 200, data: { appointment: Object.assign(Object.assign({}, appointment === null || appointment === void 0 ? void 0 : appointment.toJSON()), { pet: Object.assign(Object.assign({}, pet.toJSON()), { lastCheckUp }) }) } });
+        return res.status(200).json({
+            status: 200,
+            data: {
+                appointment: Object.assign(Object.assign({}, appointment === null || appointment === void 0 ? void 0 : appointment.toJSON()), { pet: Object.assign(Object.assign({}, pet.toJSON()), { lastCheckUp, medicalRecord: lastAppointments }) }),
+            }
+        });
     }
     catch (error) {
         console.log(error);

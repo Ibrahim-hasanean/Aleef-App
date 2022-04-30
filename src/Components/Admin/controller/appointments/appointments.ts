@@ -134,14 +134,20 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
             .populate({
                 path: "pet",
                 populate: {
-                    path: 'medacins vaccinations appointments',
+                    path: 'medacins vaccinations',
                     options: { sort: { createdAt: "desc" } }
                 },
             })//select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes']
             .populate({ path: "medacin" })
             .populate({ path: "user", }) as AppointmentsInterface;// select: ['fullName', 'phoneNumber', 'email']
-
         let lastCheckUp = '';
+        let lastAppointments: AppointmentsInterface[] = await Appointments
+            .find({ pet: appointment.pet })
+            .sort({ appointmentDate: "desc" })
+            .limit(10).select(["service", "appointmentDate", "doctor", 'reason']).populate({
+                path: "doctor",
+                select: ['name', 'phoneNumber'],
+            });
         let pet: PetsInterface = appointment.pet as PetsInterface;
         if (pet) {
             let lastAppointment: AppointmentsInterface[] = await Appointments
@@ -152,7 +158,19 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
         } else {
             return res.status(200).json({ status: 200, data: { appointment: null } });
         }
-        return res.status(200).json({ status: 200, data: { appointment: { ...appointment?.toJSON(), pet: { ...pet.toJSON(), lastCheckUp } } } });
+        return res.status(200).json({
+            status: 200,
+            data: {
+                appointment: {
+                    ...appointment?.toJSON(),
+                    pet: {
+                        ...pet.toJSON(),
+                        lastCheckUp,
+                        medicalRecord: lastAppointments,
+                    }
+                },
+            }
+        });
     } catch (error: any) {
         console.log(error);
         return res.status(500).json({ status: 500, msg: error.message })
