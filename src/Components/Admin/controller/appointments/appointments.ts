@@ -134,8 +134,9 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
             .populate({
                 path: "pet",
                 populate: {
-                    path: 'medacins vaccinations appointments'
-                }
+                    path: 'medacins vaccinations appointments',
+                    options: { sort: { createdAt: "desc" } }
+                },
             })//select: ['name', 'serialNumber', 'age', 'gender', 'imageUrl', 'notes']
             .populate({ path: "medacin" })
             .populate({ path: "user", }) as AppointmentsInterface;// select: ['fullName', 'phoneNumber', 'email']
