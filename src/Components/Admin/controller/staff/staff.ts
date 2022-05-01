@@ -136,14 +136,14 @@ export const setWorkHoures = async (req: Request, res: Response, next: NextFunct
     }
     let staff: StafInterface | null = await Staff.findOne(query) as StafInterface;
     if (!staff) return res.status(400).json({ status: 400, msg: "staff memeber not found" });
-    let workHoures = staff?.workHoures
-    workHoures.saturday = { isActive: saturday.isActive, from: saturday.from, to: saturday.to };
-    workHoures.sunday = { isActive: sunday.isActive, from: sunday.from, to: sunday.to };
-    workHoures.monday = { isActive: monday.isActive, from: monday.from, to: monday.to };
-    workHoures.tuesday = { isActive: tuesday.isActive, from: tuesday.from, to: tuesday.to };
-    workHoures.wednesday = { isActive: wednesday.isActive, from: wednesday.from, to: wednesday.to };
-    workHoures.thursday = { isActive: thursday.isActive, from: thursday.from, to: thursday.to };
-    workHoures.friday = { isActive: friday.isActive, from: friday.from, to: friday.to };
+    let workHoures = staff?.workHoures;
+    workHoures.saturday = { isActive: saturday.isActive, from: saturday.beginDate, to: saturday.endDate };
+    workHoures.sunday = { isActive: sunday.isActive, from: sunday.beginDate, to: sunday.endDate };
+    workHoures.monday = { isActive: monday.isActive, from: monday.beginDate, to: monday.endDate };
+    workHoures.tuesday = { isActive: tuesday.isActive, from: tuesday.beginDate, to: tuesday.endDate };
+    workHoures.wednesday = { isActive: wednesday.isActive, from: wednesday.beginDate, to: wednesday.endDate };
+    workHoures.thursday = { isActive: thursday.isActive, from: thursday.beginDate, to: thursday.endDate };
+    workHoures.friday = { isActive: friday.isActive, from: friday.beginDate, to: friday.endDate };
     staff.workHoures = workHoures;
     await staff?.save();
     return res.status(200).json({ status: 200, data: { workHoures: staff.workHoures } });
@@ -159,3 +159,11 @@ export const defaultAdmin = async (req: Request, res: Response, next: NextFuncti
     });
 }
 
+
+// workHoures.saturday = { isActive: saturday.isActive, from: saturday.from, to: saturday.to };
+// workHoures.sunday = { isActive: sunday.isActive, from: sunday.from, to: sunday.to };
+// workHoures.monday = { isActive: monday.isActive, from: monday.from, to: monday.to };
+// workHoures.tuesday = { isActive: tuesday.isActive, from: tuesday.from, to: tuesday.to };
+// workHoures.wednesday = { isActive: wednesday.isActive, from: wednesday.from, to: wednesday.to };
+// workHoures.thursday = { isActive: thursday.isActive, from: thursday.from, to: thursday.to };
+// workHoures.friday = { isActive: friday.isActive, from: friday.from, to: friday.to };

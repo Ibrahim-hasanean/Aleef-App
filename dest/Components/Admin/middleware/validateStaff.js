@@ -20,38 +20,77 @@ exports.workHouresSchema = {
     [celebrate_1.Segments.BODY]: celebrate_1.Joi.object().keys({
         saturday: celebrate_1.Joi.object().required().keys({
             isActive: celebrate_1.Joi.boolean().required(),
-            from: celebrate_1.Joi.date().required(),
-            to: celebrate_1.Joi.date().required(),
-        }),
+            beginDate: celebrate_1.Joi.date().required(),
+            endDate: celebrate_1.Joi.date().required(),
+        }).unknown(true),
         sunday: celebrate_1.Joi.object().required().keys({
             isActive: celebrate_1.Joi.boolean().required(),
-            from: celebrate_1.Joi.date().required(),
-            to: celebrate_1.Joi.date().required(),
-        }),
+            beginDate: celebrate_1.Joi.date().required(),
+            endDate: celebrate_1.Joi.date().required(),
+        }).unknown(true),
         monday: celebrate_1.Joi.object().required().keys({
             isActive: celebrate_1.Joi.boolean().required(),
-            from: celebrate_1.Joi.date().required(),
-            to: celebrate_1.Joi.date().required(),
-        }),
+            beginDate: celebrate_1.Joi.date().required(),
+            endDate: celebrate_1.Joi.date().required(),
+        }).unknown(true),
         tuesday: celebrate_1.Joi.object().required().keys({
             isActive: celebrate_1.Joi.boolean().required(),
-            from: celebrate_1.Joi.date().required(),
-            to: celebrate_1.Joi.date().required(),
-        }),
+            beginDate: celebrate_1.Joi.date().required(),
+            endDate: celebrate_1.Joi.date().required(),
+        }).unknown(true),
         wednesday: celebrate_1.Joi.object().required().keys({
             isActive: celebrate_1.Joi.boolean().required(),
-            from: celebrate_1.Joi.date().required(),
-            to: celebrate_1.Joi.date().required(),
-        }),
+            beginDate: celebrate_1.Joi.date().required(),
+            endDate: celebrate_1.Joi.date().required(),
+        }).unknown(true),
         thursday: celebrate_1.Joi.object().required().keys({
             isActive: celebrate_1.Joi.boolean().required(),
-            from: celebrate_1.Joi.date().required(),
-            to: celebrate_1.Joi.date().required(),
-        }),
+            beginDate: celebrate_1.Joi.date().required(),
+            endDate: celebrate_1.Joi.date().required(),
+        }).unknown(true),
         friday: celebrate_1.Joi.object().required().keys({
             isActive: celebrate_1.Joi.boolean().required(),
-            from: celebrate_1.Joi.date().required(),
-            to: celebrate_1.Joi.date().required(),
-        }),
+            beginDate: celebrate_1.Joi.date().required(),
+            endDate: celebrate_1.Joi.date().required(),
+        }).unknown(true),
     })
 };
+// export const workHouresSchema = {
+//     [Segments.BODY]: Joi.object().keys({
+//         saturday: Joi.object().required().keys({
+//             isActive: Joi.boolean().required(),
+//             from: Joi.date().required(),
+//             to: Joi.date().required(),
+//         }),
+//         sunday: Joi.object().required().keys({
+//             isActive: Joi.boolean().required(),
+//             from: Joi.date().required(),
+//             to: Joi.date().required(),
+//         }),
+//         monday: Joi.object().required().keys({
+//             isActive: Joi.boolean().required(),
+//             from: Joi.date().required(),
+//             to: Joi.date().required(),
+//         }),
+//         tuesday: Joi.object().required().keys({
+//             isActive: Joi.boolean().required(),
+//             from: Joi.date().required(),
+//             to: Joi.date().required(),
+//         }),
+//         wednesday: Joi.object().required().keys({
+//             isActive: Joi.boolean().required(),
+//             from: Joi.date().required(),
+//             to: Joi.date().required(),
+//         }),
+//         thursday: Joi.object().required().keys({
+//             isActive: Joi.boolean().required(),
+//             from: Joi.date().required(),
+//             to: Joi.date().required(),
+//         }),
+//         friday: Joi.object().required().keys({
+//             isActive: Joi.boolean().required(),
+//             from: Joi.date().required(),
+//             to: Joi.date().required(),
+//         }),
+//     })
+// }
