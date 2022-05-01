@@ -11,12 +11,6 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
         licenseNumber,
         cardNumber,
         staffMemberId
-        // muteChat,
-        // allowReceivingMessagesOutOfWorksHours,
-        // newOrdersNotifications,
-        // canceledOrdersNotifications,
-        // newReviewsNotifications,
-        // itemsAlmostOutOfStockNotification
     } = req.body;
     try {
         let staffMember: StafInterface = req.staff;
@@ -38,12 +32,6 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
         staffMember.cardNumber = cardNumber || staffMember.cardNumber;
         staffMember.staffMemberId = staffMemberId || staffMember.staffMemberId;
         staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
-        // staffMember.muteChat = muteChat;
-        // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
-        // staffMember.newOrdersNotifications = newOrdersNotifications;
-        // staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
-        // staffMember.newReviewsNotifications = newReviewsNotifications;
-        // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
         await staffMember.save();
         return res.status(200).json({ status: 200, msg: "profile updated successfully", data: { staffMember } });
 
@@ -66,6 +54,7 @@ export const getProfileNotifications = async (req: Request, res: Response, next:
     return res.status(200).json({
         status: 200, data: {
             settings: {
+                muteAllNotification: staffMember.muteAllNotification,
                 muteChat: staffMember.muteChat,
                 allowReceivingMessagesOutOfWorksHours: staffMember.allowReceivingMessagesOutOfWorksHours,
                 newOrdersNotifications: staffMember.newOrdersNotifications,
@@ -93,8 +82,10 @@ export const setProfileNotifications = async (req: Request, res: Response, next:
         muteChatNotifications,
         newAppointmentsNotifications,
         canceledAppointmentsNotifications,
+        muteAllNotification
     } = req.body;
     let staffMember: StafInterface = req.staff;
+    staffMember.muteAllNotification = muteAllNotification;
     staffMember.muteChat = muteChat;
     staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
     staffMember.newOrdersNotifications = newOrdersNotifications;
@@ -110,6 +101,7 @@ export const setProfileNotifications = async (req: Request, res: Response, next:
     return res.status(200).json({
         status: 200, data: {
             settings: {
+                muteAllNotification: muteAllNotification || staffMember.muteAllNotification,
                 muteChat: muteChat || staffMember.muteChat,
                 allowReceivingMessagesOutOfWorksHours: allowReceivingMessagesOutOfWorksHours || staffMember.allowReceivingMessagesOutOfWorksHours,
                 newOrdersNotifications: newOrdersNotifications || staffMember.newOrdersNotifications,

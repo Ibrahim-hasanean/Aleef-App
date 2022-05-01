@@ -16,14 +16,7 @@ exports.setProfileNotifications = exports.getProfileNotifications = exports.getP
 const Staff_1 = __importDefault(require("../../../../models/Staff"));
 const uploadFileToFirebase_1 = __importDefault(require("../../../utils/uploadFileToFirebase"));
 const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { name, email, phoneNumber, licenseNumber, cardNumber, staffMemberId
-    // muteChat,
-    // allowReceivingMessagesOutOfWorksHours,
-    // newOrdersNotifications,
-    // canceledOrdersNotifications,
-    // newReviewsNotifications,
-    // itemsAlmostOutOfStockNotification
-     } = req.body;
+    let { name, email, phoneNumber, licenseNumber, cardNumber, staffMemberId } = req.body;
     try {
         let staffMember = req.staff;
         let image = req.file;
@@ -45,12 +38,6 @@ const updateProfile = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         staffMember.cardNumber = cardNumber || staffMember.cardNumber;
         staffMember.staffMemberId = staffMemberId || staffMember.staffMemberId;
         staffMember.imageUrl = imageUrl ? imageUrl : staffMember.imageUrl;
-        // staffMember.muteChat = muteChat;
-        // staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
-        // staffMember.newOrdersNotifications = newOrdersNotifications;
-        // staffMember.canceledOrdersNotifications = canceledOrdersNotifications;
-        // staffMember.newReviewsNotifications = newReviewsNotifications;
-        // staffMember.itemsAlmostOutOfStockNotification = itemsAlmostOutOfStockNotification;
         yield staffMember.save();
         return res.status(200).json({ status: 200, msg: "profile updated successfully", data: { staffMember } });
     }
@@ -73,6 +60,7 @@ const getProfileNotifications = (req, res, next) => __awaiter(void 0, void 0, vo
     return res.status(200).json({
         status: 200, data: {
             settings: {
+                muteAllNotification: staffMember.muteAllNotification,
                 muteChat: staffMember.muteChat,
                 allowReceivingMessagesOutOfWorksHours: staffMember.allowReceivingMessagesOutOfWorksHours,
                 newOrdersNotifications: staffMember.newOrdersNotifications,
@@ -89,8 +77,9 @@ const getProfileNotifications = (req, res, next) => __awaiter(void 0, void 0, vo
 });
 exports.getProfileNotifications = getProfileNotifications;
 const setProfileNotifications = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { muteChat, allowReceivingMessagesOutOfWorksHours, newOrdersNotifications, canceledOrdersNotifications, newReviewsNotifications, itemsAlmostOutOfStockNotification, allowReceivingNotificationsOutOfWorksHours, muteChatNotifications, newAppointmentsNotifications, canceledAppointmentsNotifications, } = req.body;
+    let { muteChat, allowReceivingMessagesOutOfWorksHours, newOrdersNotifications, canceledOrdersNotifications, newReviewsNotifications, itemsAlmostOutOfStockNotification, allowReceivingNotificationsOutOfWorksHours, muteChatNotifications, newAppointmentsNotifications, canceledAppointmentsNotifications, muteAllNotification } = req.body;
     let staffMember = req.staff;
+    staffMember.muteAllNotification = muteAllNotification;
     staffMember.muteChat = muteChat;
     staffMember.allowReceivingMessagesOutOfWorksHours = allowReceivingMessagesOutOfWorksHours;
     staffMember.newOrdersNotifications = newOrdersNotifications;
@@ -106,6 +95,7 @@ const setProfileNotifications = (req, res, next) => __awaiter(void 0, void 0, vo
     return res.status(200).json({
         status: 200, data: {
             settings: {
+                muteAllNotification: muteAllNotification || staffMember.muteAllNotification,
                 muteChat: muteChat || staffMember.muteChat,
                 allowReceivingMessagesOutOfWorksHours: allowReceivingMessagesOutOfWorksHours || staffMember.allowReceivingMessagesOutOfWorksHours,
                 newOrdersNotifications: newOrdersNotifications || staffMember.newOrdersNotifications,
