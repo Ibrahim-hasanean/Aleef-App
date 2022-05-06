@@ -68,7 +68,7 @@ export const getOrderById = async (req: Request, res: Response, next: NextFuncti
 export const setStatus = async (req: Request, res: Response, next: NextFunction) => {
     let { status } = req.body;
     let id = req.params.id;
-    let order: OrderInterface = await Order.findByIdAndUpdate(id, { status }) as OrderInterface;
+    let order: OrderInterface = await Order.findByIdAndUpdate(id, { status }, { new: true }) as OrderInterface;
     return res.status(200).json({ status: 200, data: { order } });
 }
 

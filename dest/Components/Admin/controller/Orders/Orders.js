@@ -82,7 +82,7 @@ exports.getOrderById = getOrderById;
 const setStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let { status } = req.body;
     let id = req.params.id;
-    let order = yield Order_1.default.findByIdAndUpdate(id, { status });
+    let order = yield Order_1.default.findByIdAndUpdate(id, { status }, { new: true });
     return res.status(200).json({ status: 200, data: { order } });
 });
 exports.setStatus = setStatus;
