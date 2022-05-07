@@ -22,7 +22,9 @@ const paymentMethod_1 = require("../../utils/paymentMethod");
 const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        const { totalPrice, itemsCount, shippingFees, shippingAddressId, orderItems, currency, paymentType, stripeToken } = req.body;
+        const { totalPrice, itemsCount, shippingFees, shippingAddressId, orderItems, currency, paymentType, 
+        // stripeToken,
+        cardNumber, expMonth, expYear, cvc } = req.body;
         const user = req.user;
         let orderItemsTotal;
         try {
@@ -37,8 +39,8 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         if (shippingFees != orderItemsTotal.shippingCost) {
             return res.status(400).json({ status: 400, msg: "shippingFees not equal all items total shipping fees" });
         }
-        if (paymentType == "card" && !stripeToken) {
-            return res.status(400).json({ status: 400, msg: "payment type card require stripe token" });
+        if (paymentType == "card" && !cardNumber || !expMonth || !expYear || !cvc) {
+            return res.status(400).json({ status: 400, msg: "cards info required for credit orders" });
         }
         const orderItemsCollection = yield OrderItems_1.default.create(...orderItems);
         const newOrder = new Order_1.default({
@@ -58,7 +60,7 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: paymentType == "card" ? "visa" : paymentType, user: user._id, order: newOrder._id
         });
         if (paymentType == "card") {
-            let paymentCharge = yield (0, paymentMethod_1.paymentMethod)(stripeToken, totalPrice, currency, `new order payment order id ${newOrder._id}`);
+            let paymentCharge = yield (0, paymentMethod_1.paymentMethod)(totalPrice, currency, `new order payment order id ${newOrder._id}`, cardNumber, expMonth, expYear, cvc);
             payment.paymentChargeId = paymentCharge.id;
             newOrder.payment = payment._id;
             newOrder.paymentChargeId = paymentCharge.id;

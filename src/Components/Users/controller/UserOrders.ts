@@ -16,7 +16,11 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
             orderItems,
             currency,
             paymentType,
-            stripeToken
+            // stripeToken,
+            cardNumber,
+            expMonth,
+            expYear,
+            cvc
         } = req.body;
         const user = req.user;
         let orderItemsTotal;
@@ -31,8 +35,8 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
         if (shippingFees != orderItemsTotal.shippingCost) {
             return res.status(400).json({ status: 400, msg: "shippingFees not equal all items total shipping fees" });
         }
-        if (paymentType == "card" && !stripeToken) {
-            return res.status(400).json({ status: 400, msg: "payment type card require stripe token" });
+        if (paymentType == "card" && !cardNumber || !expMonth || !expYear || !cvc) {
+            return res.status(400).json({ status: 400, msg: "cards info required for credit orders" });
         }
         const orderItemsCollection = await OrderItem.create(...orderItems);
         const newOrder: OrderInterface = new Order({
@@ -52,7 +56,7 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
             totalAmount: totalPrice, paymentAmmount: totalPrice, paymentType: paymentType == "card" ? "visa" : paymentType, user: user._id, order: newOrder._id
         })
         if (paymentType == "card") {
-            let paymentCharge = await paymentMethod(stripeToken, totalPrice, currency, `new order payment order id ${newOrder._id}`);
+            let paymentCharge = await paymentMethod(totalPrice, currency, `new order payment order id ${newOrder._id}`, cardNumber, expMonth, expYear, cvc);
             payment.paymentChargeId = paymentCharge.id;
             newOrder.payment = payment._id;
             newOrder.paymentChargeId = paymentCharge.id;

@@ -172,12 +172,14 @@ exports.getAvaliableTime = getAvaliableTime;
 const payAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
-        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, stripeToken } = req.body;
+        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, cardNumber, expMonth, expYear, cvc
+        // stripeToken
+         } = req.body;
         let user = req.user;
         const isAppointmentExist = yield Appointments_1.default.findById(appointmentId);
         if (!isAppointmentExist)
             return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
-        let paymentCharge = yield (0, paymentMethod_1.paymentMethod)(stripeToken, paymentAmmount, currency, `new payment for appointment ${appointmentId}`);
+        let paymentCharge = yield (0, paymentMethod_1.paymentMethod)(paymentAmmount, currency, `new payment for appointment ${appointmentId}`, cardNumber, expMonth, expYear, cvc);
         let newPayment = yield Payment_1.default.create({
             totalAmount,
             discount,

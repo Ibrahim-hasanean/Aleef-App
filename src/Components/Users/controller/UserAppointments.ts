@@ -158,11 +158,31 @@ export const getAvaliableTime = async (req: Request, res: Response, next: NextFu
 
 export const payAppointment = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, stripeToken } = req.body;
+        let {
+            totalAmount,
+            discount,
+            paymentAmmount,
+            exchange,
+            appointmentId,
+            currency,
+            cardNumber,
+            expMonth,
+            expYear,
+            cvc
+            // stripeToken
+        } = req.body;
         let user = req.user;
         const isAppointmentExist: AppointmentsInterface | null = await Appointments.findById(appointmentId);
         if (!isAppointmentExist) return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId} not exist` });
-        let paymentCharge = await paymentMethod(stripeToken, paymentAmmount, currency, `new payment for appointment ${appointmentId}`);
+        let paymentCharge = await paymentMethod(
+            paymentAmmount,
+            currency,
+            `new payment for appointment ${appointmentId}`,
+            cardNumber,
+            expMonth,
+            expYear,
+            cvc
+        );
         let newPayment: PaymentInterFace = await Payment.create({
             totalAmount,
             discount,

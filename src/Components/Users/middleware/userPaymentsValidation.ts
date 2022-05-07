@@ -10,7 +10,11 @@ export const paymentSchema = {
         status: Joi.string().valid("pending", "arrived", "in the way", "canceled"),
         paymentType: Joi.string().valid("card", "cash").default("cash"),
         currency: Joi.string().default("usd"),
-        stripeToken: Joi.string(),
+        // stripeToken: Joi.string(),
+        cardNumber: Joi.string(),
+        expMonth: Joi.number(),
+        expYear: Joi.number(),
+        cvc: Joi.string(),
         orderItems: Joi.array().required().items(Joi.object().keys({
             count: Joi.number().required(),
             item: Joi.string().required()
