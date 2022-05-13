@@ -123,9 +123,9 @@ export const itemsHome = async (req: Request, res: Response, next: NextFunction)
             { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } }
         ]);
     let totalOrders = await Order.find(query).count();
-    let totalClients = await User.find(query).count();
+    let totalClients = await User.count();
     let newOrders = await Order
-        .find(query)
+        .find()
         .sort({ createdAt: "desc" })
         .populate({
             path: "items",

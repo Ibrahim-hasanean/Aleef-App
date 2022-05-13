@@ -124,9 +124,9 @@ const itemsHome = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         { $group: { _id: null, totalRevenue: { $sum: '$totalPrice' } } }
     ]);
     let totalOrders = yield Order_1.default.find(query).count();
-    let totalClients = yield User_1.default.find(query).count();
+    let totalClients = yield User_1.default.count();
     let newOrders = yield Order_1.default
-        .find(query)
+        .find()
         .sort({ createdAt: "desc" })
         .populate({
         path: "items",

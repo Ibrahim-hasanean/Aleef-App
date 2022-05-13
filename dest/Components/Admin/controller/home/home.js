@@ -19,13 +19,32 @@ const Order_1 = __importDefault(require("../../../../models/Order"));
 const Payment_1 = __importDefault(require("../../../../models/Payment"));
 const HealthCare_1 = __importDefault(require("../../../../models/HealthCare"));
 const adminHome = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let { from, to } = req.query;
+    let fromDate = new Date(from);
+    let toDate = new Date(to);
+    let query = {};
+    let appointmentsQuery = {};
+    if (from || to) {
+        query.createdAt = {};
+        if (from) {
+            query.createdAt = Object.assign(Object.assign({}, query.createdAt), { $gte: fromDate });
+            appointmentsQuery.appointmentDate = { $gte: fromDate };
+        }
+        if (to) {
+            query.createdAt = Object.assign(Object.assign({}, query.createdAt), { $lte: toDate });
+            appointmentsQuery.appointmentDate = { $lte: toDate };
+        }
+    }
     const totalClients = yield User_1.default.count();
-    const totalAppointments = yield Appointments_1.default.count();
+    const totalAppointments = yield Appointments_1.default.find(appointmentsQuery).count();
     const totalOrders = yield Order_1.default.count();
-    let storeRevenueSum = yield Order_1.default.aggregate([{ $group: { _id: null, storeRevenue: { $sum: '$totalPrice' } } }]);
+    let storeRevenueSum = yield Order_1.default.aggregate([
+        { $match: query },
+        { $group: { _id: null, storeRevenue: { $sum: '$totalPrice' } } }
+    ]);
     let clinicRevenueSum = yield Payment_1.default.
         aggregate([
-        { $match: { appointment: { $ne: null } } },
+        { $match: Object.assign({ appointment: { $ne: null } }, query) },
         { $group: { _id: null, clinicRevenue: { $sum: '$totalAmount' } } }
     ]);
     const storeRevenue = storeRevenueSum[0] ? storeRevenueSum[0].storeRevenue : 0;

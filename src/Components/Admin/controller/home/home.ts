@@ -5,13 +5,32 @@ import Order from "../../../../models/Order";
 import Payment from "../../../../models/Payment";
 import HealthCare from "../../../../models/HealthCare";
 export const adminHome = async (req: Request, res: Response, next: NextFunction) => {
+    let { from, to } = req.query as { from: string, to: string };
+    let fromDate = new Date(from);
+    let toDate = new Date(to);
+    let query: any = {};
+    let appointmentsQuery: any = {};
+    if (from || to) {
+        query.createdAt = {};
+        if (from) {
+            query.createdAt = { ...query.createdAt, $gte: fromDate };
+            appointmentsQuery.appointmentDate = { $gte: fromDate };
+        }
+        if (to) {
+            query.createdAt = { ...query.createdAt, $lte: toDate };
+            appointmentsQuery.appointmentDate = { $lte: toDate }
+        }
+    }
     const totalClients = await User.count();
-    const totalAppointments = await Appointments.count();
+    const totalAppointments = await Appointments.find(appointmentsQuery).count();
     const totalOrders = await Order.count();
-    let storeRevenueSum = await Order.aggregate([{ $group: { _id: null, storeRevenue: { $sum: '$totalPrice' } } }]);
+    let storeRevenueSum = await Order.aggregate([
+        { $match: query },
+        { $group: { _id: null, storeRevenue: { $sum: '$totalPrice' } } }
+    ]);
     let clinicRevenueSum = await Payment.
         aggregate([
-            { $match: { appointment: { $ne: null } } },
+            { $match: { appointment: { $ne: null }, ...query } },
             { $group: { _id: null, clinicRevenue: { $sum: '$totalAmount' } } }
         ]);
 
