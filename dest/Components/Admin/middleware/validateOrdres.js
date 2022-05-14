@@ -22,7 +22,7 @@ exports.orderSchema = {
                 throw new Error(`userId ${value} not valid id`);
             return value;
         }, "id validation"),
-        status: celebrate_1.Joi.string().valid("pending", "arrived", "in the way", "canceled"),
+        status: celebrate_1.Joi.string(),
         orderItems: celebrate_1.Joi.array().required().items(celebrate_1.Joi.object().keys({
             count: celebrate_1.Joi.number().required(),
             item: celebrate_1.Joi.string().required().custom((value, helpers) => {
@@ -35,6 +35,6 @@ exports.orderSchema = {
 };
 exports.orderStatusSchema = {
     [celebrate_1.Segments.BODY]: celebrate_1.Joi.object().keys({
-        status: celebrate_1.Joi.string().valid("shipped", "to be shipped", "canceled"),
+        status: celebrate_1.Joi.string()
     })
 };

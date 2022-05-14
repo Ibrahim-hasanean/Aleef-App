@@ -15,7 +15,7 @@ export const orderSchema = {
             if (!mongoose.isValidObjectId(value)) throw new Error(`userId ${value} not valid id`);
             return value;
         }, "id validation"),
-        status: Joi.string().valid("pending", "arrived", "in the way", "canceled"),
+        status: Joi.string(),
         orderItems: Joi.array().required().items(Joi.object().keys({
             count: Joi.number().required(),
             item: Joi.string().required().custom((value, helpers) => {
@@ -28,6 +28,6 @@ export const orderSchema = {
 
 export const orderStatusSchema = {
     [Segments.BODY]: Joi.object().keys({
-        status: Joi.string().valid("shipped", "to be shipped", "canceled"),
+        status: Joi.string()
     })
 }
