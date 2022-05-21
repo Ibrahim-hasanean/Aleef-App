@@ -17,18 +17,22 @@ const Payment_1 = __importDefault(require("../../../../models/Payment"));
 const User_1 = __importDefault(require("../../../../models/User"));
 const Appointments_1 = __importDefault(require("../../../../models/Appointments"));
 const addAppointmentsPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    let { totalAmount, discount, paymentAmmount, exchange, paymentType, userId, appointmentId } = req.body;
-    const isUserExist = yield User_1.default.findById(userId);
-    if (!isUserExist)
-        return res.status(400).json({ status: 400, msg: `user with userId ${userId} not found` });
+    let { totalAmount, discount, paymentAmmount, exchange, appointmentId } = req.body;
     const isAppoitmentExist = yield Appointments_1.default.findById(appointmentId);
     if (!isAppoitmentExist)
         return res.status(400).json({ status: 400, msg: `appointment with appointmentId ${appointmentId} not found` });
     let newPayment = yield Payment_1.default.create({
-        totalAmount, discount, paymentAmmount,
-        exchange, paymentType, user: userId, appointment: appointmentId
+        totalAmount,
+        discount,
+        paymentAmmount,
+        exchange,
+        paymentType: 'cash',
+        user: isAppoitmentExist.user,
+        appointment: appointmentId
     });
     isAppoitmentExist.payment = newPayment._id;
+    isAppoitmentExist.paymentStatus = "completed";
+    isAppoitmentExist.totalAmount = paymentAmmount;
     yield isAppoitmentExist.save();
     return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
 });
@@ -48,7 +52,7 @@ const updateAppointmentsPayment = (req, res, next) => __awaiter(void 0, void 0, 
     let newPayment = yield Payment_1.default.findByIdAndUpdate(id, { totalAmount, discount, paymentAmmount, exchange, paymentType, user: userId, appointment: appointmentId });
     isAppoitmentExist.payment = newPayment._id;
     yield isAppoitmentExist.save();
-    return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
+    return res.status(200).json({ status: 200, msg: "payment update success", data: { payment: newPayment } });
 });
 exports.updateAppointmentsPayment = updateAppointmentsPayment;
 const getAppointmentsPayments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

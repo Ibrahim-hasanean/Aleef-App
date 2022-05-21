@@ -4,16 +4,21 @@ import { NextFunction, Request, Response } from "express";
 import Appointments, { AppointmentsInterface } from "../../../../models/Appointments";
 
 export const addAppointmentsPayment = async (req: Request, res: Response, next: NextFunction) => {
-    let { totalAmount, discount, paymentAmmount, exchange, paymentType, userId, appointmentId } = req.body;
-    const isUserExist: UserInterface | null = await User.findById(userId);
-    if (!isUserExist) return res.status(400).json({ status: 400, msg: `user with userId ${userId} not found` });
+    let { totalAmount, discount, paymentAmmount, exchange, appointmentId } = req.body;
     const isAppoitmentExist: AppointmentsInterface | null = await Appointments.findById(appointmentId);
     if (!isAppoitmentExist) return res.status(400).json({ status: 400, msg: `appointment with appointmentId ${appointmentId} not found` });
     let newPayment: PaymentInterFace = await Payment.create({
-        totalAmount, discount, paymentAmmount,
-        exchange, paymentType, user: userId, appointment: appointmentId
+        totalAmount,
+        discount,
+        paymentAmmount,
+        exchange,
+        paymentType: 'cash',
+        user: isAppoitmentExist.user,
+        appointment: appointmentId
     });
     isAppoitmentExist.payment = newPayment._id;
+    isAppoitmentExist.paymentStatus = "completed";
+    isAppoitmentExist.totalAmount = paymentAmmount;
     await isAppoitmentExist.save();
     return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
 }
@@ -32,7 +37,7 @@ export const updateAppointmentsPayment = async (req: Request, res: Response, nex
     ) as PaymentInterFace;
     isAppoitmentExist.payment = newPayment._id;
     await isAppoitmentExist.save();
-    return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment } });
+    return res.status(200).json({ status: 200, msg: "payment update success", data: { payment: newPayment } });
 }
 
 export const getAppointmentsPayments = async (req: Request, res: Response, next: NextFunction) => {

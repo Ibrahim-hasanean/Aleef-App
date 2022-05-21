@@ -12,12 +12,11 @@ exports.paymentSchema = {
         discount: celebrate_1.Joi.number().required(),
         paymentAmmount: celebrate_1.Joi.number().required(),
         exchange: celebrate_1.Joi.number().required(),
-        paymentType: celebrate_1.Joi.string().required().valid("cash", "visa"),
-        userId: celebrate_1.Joi.string().required().custom((value, helpers) => {
-            if (!mongoose_1.default.isValidObjectId(value))
-                throw new Error(`userId ${value} not valid`);
-            return value;
-        }, "id validation"),
+        // paymentType: Joi.string().required().valid("cash", "visa"),
+        // userId: Joi.string().required().custom((value, helpers) => {
+        //     if (!mongoose.isValidObjectId(value)) throw new Error(`userId ${value} not valid`);
+        //     return value;
+        // }, "id validation"),
         appointmentId: celebrate_1.Joi.string().required().custom((value, helpers) => {
             if (!mongoose_1.default.isValidObjectId(value))
                 throw new Error(`appointmentId ${value} not valid`);

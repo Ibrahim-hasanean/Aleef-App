@@ -7,11 +7,11 @@ export const paymentSchema = {
         discount: Joi.number().required(),
         paymentAmmount: Joi.number().required(),
         exchange: Joi.number().required(),
-        paymentType: Joi.string().required().valid("cash", "visa"),
-        userId: Joi.string().required().custom((value, helpers) => {
-            if (!mongoose.isValidObjectId(value)) throw new Error(`userId ${value} not valid`);
-            return value;
-        }, "id validation"),
+        // paymentType: Joi.string().required().valid("cash", "visa"),
+        // userId: Joi.string().required().custom((value, helpers) => {
+        //     if (!mongoose.isValidObjectId(value)) throw new Error(`userId ${value} not valid`);
+        //     return value;
+        // }, "id validation"),
         appointmentId: Joi.string().required().custom((value, helpers) => {
             if (!mongoose.isValidObjectId(value)) throw new Error(`appointmentId ${value} not valid`);
             return value;
