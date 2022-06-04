@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import User, { UserInterface } from "../../../../models/User";
 import mongoose, { ObjectId } from "mongoose";
 import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
-import Appointments from "../../../../models/Appointments";
+import Appointments, { AppointmentsInterface } from "../../../../models/Appointments";
 import Pets, { PetsInterface } from "../../../../models/Pets";
 
 export const getUsers = async (req: Request, res: Response, next: NextFunction) => {
@@ -41,12 +41,29 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
     if (!mongoose.isValidObjectId(id)) {
         return res.status(200).json({ status: 200, data: { user: null } });
     }
+    let date: Date = new Date();
     let user: UserInterface | null = await User.findById(id)
         .select(['fullName', 'phoneNumber', 'email', 'isSuspend', 'imageUrl'])
-        .populate({ path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'] }) as UserInterface;
+        .populate({
+            path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'], populate: {
+                path: "appointments",
+                options: {
+                    select: ["appointmentDate"],
+                    match: { appointmentDate: { $lte: date } },
+                    sort: { appointmentDate: "desc" },
+                    limit: 1
+                },
+            }
+        }) as UserInterface;
     if (!user) return res.status(200).json({ status: 200, data: { user } });
     let lastUsetVisit = await Appointments.find({ user: user?._id }).sort({ appointmentDate: "desc" }).limit(1);
-    let userObject = { lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "", ...user.toJSON() }
+    let petsArray: PetsInterface[] = user.pets as PetsInterface[];
+    let pets = petsArray.map((pet: PetsInterface): any => {
+        let petsAppointments: AppointmentsInterface[] = pet.appointments as AppointmentsInterface[];
+        let petObject = { ...pet.toJSON(), lastCheckUp: petsAppointments[0] ? petsAppointments[0].appointmentDate : "" };
+        return petObject;
+    });
+    let userObject = { lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "", ...user.toJSON(), pets }
     return res.status(200).json({ status: 200, data: { user: userObject } });
 }
 

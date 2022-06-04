@@ -56,13 +56,30 @@ const getUserById = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     if (!mongoose_1.default.isValidObjectId(id)) {
         return res.status(200).json({ status: 200, data: { user: null } });
     }
+    let date = new Date();
     let user = yield User_1.default.findById(id)
         .select(['fullName', 'phoneNumber', 'email', 'isSuspend', 'imageUrl'])
-        .populate({ path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'] });
+        .populate({
+        path: "pets", select: ['name', 'age', 'serialNumber', 'imageUrl', 'imageUrl'], populate: {
+            path: "appointments",
+            options: {
+                select: ["appointmentDate"],
+                match: { appointmentDate: { $lte: date } },
+                sort: { appointmentDate: "desc" },
+                limit: 1
+            },
+        }
+    });
     if (!user)
         return res.status(200).json({ status: 200, data: { user } });
     let lastUsetVisit = yield Appointments_1.default.find({ user: user === null || user === void 0 ? void 0 : user._id }).sort({ appointmentDate: "desc" }).limit(1);
-    let userObject = Object.assign({ lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }, user.toJSON());
+    let petsArray = user.pets;
+    let pets = petsArray.map((pet) => {
+        let petsAppointments = pet.appointments;
+        let petObject = Object.assign(Object.assign({}, pet.toJSON()), { lastCheckUp: petsAppointments[0] ? petsAppointments[0].appointmentDate : "" });
+        return petObject;
+    });
+    let userObject = Object.assign(Object.assign({ lastVisit: lastUsetVisit[0] ? lastUsetVisit[0].appointmentDate : "" }, user.toJSON()), { pets });
     return res.status(200).json({ status: 200, data: { user: userObject } });
 });
 exports.getUserById = getUserById;
