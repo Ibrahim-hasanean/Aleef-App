@@ -12,7 +12,7 @@ export const addHealthCareTip = async (req: Request, res: Response, next: NextFu
         return res.status(200).json({ status: 200, msg: "new health care  tips are added" });
     }
     let newHealthCare = await HealthCare.create({ description });
-    return res.status(200).json({ status: 200, msg: "new health care tips are added" });
+    return res.status(200).json({ status: 200, msg: "new health care tips are added", data: { description } });
 }
 
 export const getHealthCare = async (req: Request, res: Response, next: NextFunction) => {
