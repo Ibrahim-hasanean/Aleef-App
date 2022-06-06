@@ -151,13 +151,13 @@ router.get("/itemsCategory", verifyStoreManagement_1.default, ItemsCategory_1.ge
 router.post("/itemsCategory", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateName_1.nameSchema), ItemsCategory_1.addItemCategory);
 router.delete("/itemsCategory/:id", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), ItemsCategory_1.deleteCategory);
 // services
-router.post("/services", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateName_1.nameSchema), services_1.addService);
-router.get("/services", verifyAdmin_1.default, services_1.getServices);
-router.delete("/services/:id", verifyAdmin_1.default, services_1.deleteService);
-router.get("/petstypes", verifyAdmin_1.default, PetsTypes_1.getTypes);
-router.post("/petstypes", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateName_1.nameSchema), PetsTypes_1.addPetsType);
-router.delete("/petstypes/:id", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), PetsTypes_1.deleteType);
-router.get("/breeds", verifyAdmin_1.default, Breeds_1.getbreeds);
-router.post("/breeds", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateName_1.nameTypeSchema), Breeds_1.addBreed);
-router.delete("/breeds/:id", verifyAdmin_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), Breeds_1.deletebreed);
+router.post("/services", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateName_1.nameSchema), services_1.addService);
+router.get("/services", verifyStaffMember_1.default, services_1.getServices);
+router.delete("/services/:id", verifyStaffMember_1.default, services_1.deleteService);
+router.get("/petstypes", verifyStaffMember_1.default, PetsTypes_1.getTypes);
+router.post("/petstypes", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateName_1.nameSchema), PetsTypes_1.addPetsType);
+router.delete("/petstypes/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), PetsTypes_1.deleteType);
+router.get("/breeds", verifyStaffMember_1.default, Breeds_1.getbreeds);
+router.post("/breeds", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateName_1.nameTypeSchema), Breeds_1.addBreed);
+router.delete("/breeds/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), Breeds_1.deletebreed);
 exports.default = router;

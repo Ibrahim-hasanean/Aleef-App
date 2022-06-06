@@ -199,16 +199,16 @@ router.post("/itemsCategory", verifyStoreManagement, validate(nameSchema), addIt
 router.delete("/itemsCategory/:id", verifyStoreManagement, validate(ValidateIdParam), deleteCategory);
 
 // services
-router.post("/services", verifyAdmin, validate(nameSchema), addService);
-router.get("/services", verifyAdmin, getServices);
-router.delete("/services/:id", verifyAdmin, deleteService);
+router.post("/services", verifyStaffMember, validate(nameSchema), addService);
+router.get("/services", verifyStaffMember, getServices);
+router.delete("/services/:id", verifyStaffMember, deleteService);
 
-router.get("/petstypes", verifyAdmin, getTypes);
-router.post("/petstypes", verifyAdmin, validate(nameSchema), addPetsType);
-router.delete("/petstypes/:id", verifyAdmin, validate(ValidateIdParam), deleteType);
+router.get("/petstypes", verifyStaffMember, getTypes);
+router.post("/petstypes", verifyStaffMember, validate(nameSchema), addPetsType);
+router.delete("/petstypes/:id", verifyStaffMember, validate(ValidateIdParam), deleteType);
 
-router.get("/breeds", verifyAdmin, getbreeds);
-router.post("/breeds", verifyAdmin, validate(nameTypeSchema), addBreed);
-router.delete("/breeds/:id", verifyAdmin, validate(ValidateIdParam), deletebreed);
+router.get("/breeds", verifyStaffMember, getbreeds);
+router.post("/breeds", verifyStaffMember, validate(nameTypeSchema), addBreed);
+router.delete("/breeds/:id", verifyStaffMember, validate(ValidateIdParam), deletebreed);
 
 export default router;
