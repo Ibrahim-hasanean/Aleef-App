@@ -9,7 +9,7 @@ export const addHealthCareTip = async (req: Request, res: Response, next: NextFu
         let healthCareTips = isHealthCareExist[0];
         healthCareTips.description = description;
         await healthCareTips.save();
-        return res.status(200).json({ status: 200, msg: "new health care  tips are added" });
+        return res.status(200).json({ status: 200, msg: "new health care  tips are added", description });
     }
     let newHealthCare = await HealthCare.create({ description });
     return res.status(200).json({ status: 200, msg: "new health care tips are added", data: { description } });

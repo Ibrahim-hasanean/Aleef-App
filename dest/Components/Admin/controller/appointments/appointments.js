@@ -132,9 +132,9 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
             .sort({ appointmentDate: "desc" })
             .skip(skip)
             .limit(numberPageSize)
-            .populate({ path: "doctor", select: ['name', 'phoneNumber', 'email', 'role'] })
-            .populate({ path: "pet", select: ['name', 'serialNumber', 'age'] })
-            .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] });
+            .populate({ path: "doctor" })
+            .populate({ path: "pet" })
+            .populate({ path: "user" });
         const appointmentsCount = yield Appointments_1.default.find(query).count();
         return res.status(200).json({ status: 200, data: { appointments, page: page || 1, limit: pageSize || 10, appointmentsCount } });
     }

@@ -21,7 +21,7 @@ const addHealthCareTip = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         let healthCareTips = isHealthCareExist[0];
         healthCareTips.description = description;
         yield healthCareTips.save();
-        return res.status(200).json({ status: 200, msg: "new health care  tips are added" });
+        return res.status(200).json({ status: 200, msg: "new health care  tips are added", description });
     }
     let newHealthCare = yield HealthCare_1.default.create({ description });
     return res.status(200).json({ status: 200, msg: "new health care tips are added", data: { description } });
