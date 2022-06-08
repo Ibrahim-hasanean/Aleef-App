@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyCode = exports.login = void 0;
 const Staff_1 = __importDefault(require("../../../../models/Staff"));
+const HealthCare_1 = __importDefault(require("../../../../models/HealthCare"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const GenerateCode_1 = __importDefault(require("../../../utils/GenerateCode"));
@@ -37,12 +38,13 @@ const verifyCode = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         if (!staffMember)
             return res.status(400).json({ status: 400, msg: `staff member with phonenumber ${phoneNumber} not exist` });
         let isCodeEqual = staffMember.code === code;
+        let healthCares = yield HealthCare_1.default.find({});
         if (isCodeEqual) {
             const staffMembersToken = process.env.STAF_TOKEN_SECRET;
             let token = jsonwebtoken_1.default.sign({ staffId: staffMember._id, phoneNumber: staffMember.phoneNumber }, staffMembersToken, { expiresIn: "7 days" });
             staffMember.code = '';
             yield staffMember.save();
-            return res.status(200).json({ status: 200, data: { staffMember: staffMember, token } });
+            return res.status(200).json({ status: 200, data: { staffMember: staffMember, healthCare: healthCares[0], token } });
         }
         return res.status(400).json({ status: 400, msg: "code is wrong" });
     }

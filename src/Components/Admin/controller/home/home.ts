@@ -48,6 +48,7 @@ export const adminHome = async (req: Request, res: Response, next: NextFunction)
         })
         .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] })
         .limit(10);
+
     let newAppointments = await Appointments
         .find()
         .sort({ appointmentDate: "desc" })
