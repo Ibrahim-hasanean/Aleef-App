@@ -66,6 +66,7 @@ const adminHome = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         .sort({ appointmentDate: "desc" })
         .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] })
         .populate("pet")
+        .populate({ path: "doctor" })
         .limit(10);
     const healthCare = yield HealthCare_1.default.find();
     return res.status(200).json({

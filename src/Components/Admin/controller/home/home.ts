@@ -54,6 +54,7 @@ export const adminHome = async (req: Request, res: Response, next: NextFunction)
         .sort({ appointmentDate: "desc" })
         .populate({ path: "user", select: ['fullName', 'phoneNumber', 'email'] })
         .populate("pet")
+        .populate({ path: "doctor" })
         .limit(10);
     const healthCare = await HealthCare.find();
     return res.status(200).json({
