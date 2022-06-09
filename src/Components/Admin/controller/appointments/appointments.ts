@@ -7,6 +7,7 @@ import isDateOutWorkTime from "../../../utils/isDateOutWorkTime";
 import Pets, { PetsInterface } from "../../../../models/Pets";
 import User, { UserInterface } from "../../../../models/User";
 import mongoose, { ObjectId } from "mongoose";
+import { cancelPayment } from "../../../utils/paymentMethod";
 
 export const addAppointment = async (req: Request, res: Response, next: NextFunction) => {
     const { petId, service, appointmentDate, reason, userId, doctorId, report } = req.body;
@@ -180,8 +181,17 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
 
 export const deleteAppointments = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.params.id;
-    const appointment = await Appointments.findByIdAndDelete(id);
-    return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
+    if (!mongoose.isValidObjectId(id)) {
+        return res.status(400).json({ status: 400, msg: "appointmentId not found" });
+    }
+    const appointment: AppointmentsInterface = await Appointments.findOne({ _id: id }) as AppointmentsInterface;
+    if (!appointment) return res.status(400).json({ status: 400, msg: "appointment not found" });
+    appointment.status = "cancelled";
+    if (appointment.paymentChargeId) {
+        await cancelPayment(appointment.paymentChargeId);
+    }
+    await appointment.save()
+    return res.status(200).json({ status: 200, msg: "appointment cancelled successfully" });
 
 }
 

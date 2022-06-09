@@ -20,6 +20,7 @@ const isDateOutWorkTime_1 = __importDefault(require("../../../utils/isDateOutWor
 const Pets_1 = __importDefault(require("../../../../models/Pets"));
 const User_1 = __importDefault(require("../../../../models/User"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const paymentMethod_1 = require("../../../utils/paymentMethod");
 const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { petId, service, appointmentDate, reason, userId, doctorId, report } = req.body;
     let isPetExist = yield Pets_1.default.findOne({ _id: petId, user: userId });
@@ -193,8 +194,18 @@ const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0
 exports.getAppointmentsById = getAppointmentsById;
 const deleteAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let id = req.params.id;
-    const appointment = yield Appointments_1.default.findByIdAndDelete(id);
-    return res.status(200).json({ status: 200, msg: "appointment deleted successfully" });
+    if (!mongoose_1.default.isValidObjectId(id)) {
+        return res.status(400).json({ status: 400, msg: "appointmentId not found" });
+    }
+    const appointment = yield Appointments_1.default.findOne({ _id: id });
+    if (!appointment)
+        return res.status(400).json({ status: 400, msg: "appointment not found" });
+    appointment.status = "cancelled";
+    if (appointment.paymentChargeId) {
+        yield (0, paymentMethod_1.cancelPayment)(appointment.paymentChargeId);
+    }
+    yield appointment.save();
+    return res.status(200).json({ status: 200, msg: "appointment cancelled successfully" });
 });
 exports.deleteAppointments = deleteAppointments;
 const getAvaliableTime = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
