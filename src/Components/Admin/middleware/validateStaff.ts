@@ -2,6 +2,16 @@ import { Joi, celebrate, Segments, Modes, SchemaOptions } from "celebrate";
 
 export const validate = (schema: SchemaOptions) => celebrate(schema, { abortEarly: false }, { mode: Modes.FULL });
 
+let defaultWorkHoures = {
+    "saturday": { "isActive": false, "beginDate": "2021-10-25T08:00:00.882Z", "endDate": "2021-10-25T17:00:00.882Z" },
+    "sunday": { "isActive": true, "beginDate": "2021-10-25T08:00:00.882Z", "endDate": "2021-10-25T17:00:00.882Z" },
+    "monday": { "isActive": true, "beginDate": "2021-10-25T08:00:00.882Z", "endDate": "2021-10-25T17:00:00.882Z" },
+    "tuesday": { "isActive": true, "beginDate": "2021-10-25T08:00:00.882Z", "endDate": "2021-10-25T17:00:00.882Z" },
+    "wednesday": { "isActive": true, "beginDate": "2021-10-25T08:00:00.882Z", "endDate": "2021-10-23T17:00:00.882Z" },
+    "thursday": { "isActive": true, "beginDate": "2021-10-25T08:00:00.882Z", "endDate": "2021-10-25T17:00:00.882Z" },
+    "friday": { "isActive": true, "beginDate": "2021-10-25T08:00:00.882Z", "endDate": "2021-10-25T17:00:00.882Z" }
+}
+
 export const addStaffSchema = {
     [Segments.BODY]: Joi.object().keys({
         name: Joi.string().required(),
@@ -11,7 +21,7 @@ export const addStaffSchema = {
         role: Joi.string().required().valid("admin", "doctor", "storeManager", "receiption"),
         staffMemberId: Joi.string().required(),
         licenseNumber: Joi.string().required(),
-        // password: Joi.string().required(),
+        workHoures: Joi.string().default(JSON.stringify(defaultWorkHoures)),
     })
 }
 

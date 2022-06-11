@@ -4,7 +4,8 @@ import mongoose from "mongoose";
 import uploadImageToStorage from "../../../utils/uploadFileToFirebase";
 
 export const addStaff = async (req: Request, res: Response, next: NextFunction) => {
-    const { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber } = req.body;
+    let { name, cardNumber, phoneNumber, email, role, staffMemberId, licenseNumber, workHoures } = req.body;
+    workHoures = JSON.parse(workHoures);
     let staffMemeber = req.staff;
     if (staffMemeber.role === 'receiption' && role !== "doctor") {
         return res.status(400).json({ status: 400, msg: "receiption can add vets only" });
@@ -15,7 +16,19 @@ export const addStaff = async (req: Request, res: Response, next: NextFunction) 
     if (isPhoneNumberExist) return res.status(409).json({ status: 409, msg: "phone number is used before" });
     const isCardNumberExist = await Staff.findOne({ cardNumber });
     if (isCardNumberExist) return res.status(409).json({ status: 409, msg: "card number is used before" });
-    const newStaff = await Staff.create({ name, cardNumber, phoneNumber, email, role, staffMemberId, imageUrl, licenseNumber });
+    const newStaff = new Staff({ name, cardNumber, phoneNumber, email, role, staffMemberId, imageUrl, licenseNumber });
+    if (role === "doctor") {
+        let doctorWorkHoures = newStaff?.workHoures;
+        doctorWorkHoures.saturday = { isActive: workHoures.saturday.isActive, from: workHoures.saturday.beginDate, to: workHoures.saturday.endDate };
+        doctorWorkHoures.sunday = { isActive: workHoures.sunday.isActive, from: workHoures.sunday.beginDate, to: workHoures.sunday.endDate };
+        doctorWorkHoures.monday = { isActive: workHoures.monday.isActive, from: workHoures.monday.beginDate, to: workHoures.monday.endDate };
+        doctorWorkHoures.tuesday = { isActive: workHoures.tuesday.isActive, from: workHoures.tuesday.beginDate, to: workHoures.tuesday.endDate };
+        doctorWorkHoures.wednesday = { isActive: workHoures.wednesday.isActive, from: workHoures.wednesday.beginDate, to: workHoures.wednesday.endDate };
+        doctorWorkHoures.thursday = { isActive: workHoures.thursday.isActive, from: workHoures.thursday.beginDate, to: workHoures.thursday.endDate };
+        doctorWorkHoures.friday = { isActive: workHoures.friday.isActive, from: workHoures.friday.beginDate, to: workHoures.friday.endDate };
+        newStaff.workHoures = doctorWorkHoures;
+    }
+    await newStaff.save();
     return res.status(201).json({
         status: 201, msg: "staff member added successfully", data: {
             staffMember: newStaff
