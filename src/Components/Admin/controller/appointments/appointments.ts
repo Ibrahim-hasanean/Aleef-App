@@ -251,3 +251,26 @@ export const deleteReportToAppointment = async (req: Request, res: Response, nex
     await isAppointmentExist.save();
     return res.status(200).json({ status: 200, msg: "report deleted successfully" });
 }
+
+export const setAppointmentStatus = async (req: Request, res: Response, next: NextFunction) => {
+    let { status } = req.body;
+    let id = req.params.id;
+    if (!mongoose.isValidObjectId(id)) {
+        return res.status(400).json({ status: 400, msg: "appointmentId not found" });
+    }
+    const appointment: AppointmentsInterface = await Appointments.findOne({ _id: id })
+        .populate({ path: "doctor" })
+        .populate({
+            path: "pet",
+            populate: {
+                path: 'medacins vaccinations',
+                options: { sort: { createdAt: "desc" } }
+            },
+        })
+        .populate({ path: "medacin" })
+        .populate({ path: "user", }) as AppointmentsInterface;
+    if (!appointment) return res.status(400).json({ status: 400, msg: "appointment not found" });
+    appointment.status = String(status).toLocaleLowerCase();
+    await appointment.save();
+    return res.status(200).json({ status: 200, msg: "appointment status set successfully", data: { appointment } });
+}

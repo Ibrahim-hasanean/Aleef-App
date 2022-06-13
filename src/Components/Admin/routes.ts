@@ -13,7 +13,7 @@ import {
     getAvaliableTime,
     updateAppointment,
     getAvaliableDoctrs,
-    userAppointments, addReportToAppointment, deleteReportToAppointment
+    userAppointments, addReportToAppointment, deleteReportToAppointment, setAppointmentStatus
 } from "./controller/appointments/appointments";
 import {
     addAppointmentsPayment,
@@ -145,15 +145,16 @@ router.get("/orders/:id", verifyStoreManagement, validate(ValidateIdParam), getO
 
 
 // Appointments Payments
-router.post("/appointments/payments", verifyRecieption, validate(paymentSchema), addAppointmentsPayment);
-router.patch("/appointments/payments/:id", verifyRecieption, validate(paymentSchema), updateAppointmentsPayment);
-router.get("/appointments/payments", verifyRecieption, validate(appointmentsQuerySchema), getAppointmentsPayments);
-router.get("/appointments/payments/:id", verifyRecieption, validate(ValidateIdParam), getAppointmentsPaymentById);
-router.delete("/appointments/payments/:id", verifyRecieption, validate(ValidateIdParam), deleteAppointmentsPayment);
+router.post("/appointments/payments", verifyStaffMember, validate(paymentSchema), addAppointmentsPayment);
+router.patch("/appointments/payments/:id", verifyStaffMember, validate(paymentSchema), updateAppointmentsPayment);
+router.get("/appointments/payments", verifyStaffMember, validate(appointmentsQuerySchema), getAppointmentsPayments);
+router.get("/appointments/payments/:id", verifyStaffMember, validate(ValidateIdParam), getAppointmentsPaymentById);
+router.delete("/appointments/payments/:id", verifyStaffMember, validate(ValidateIdParam), deleteAppointmentsPayment);
 
 // appointments routes 
 router.get("/appointments", verifyStaffMember, validate(appointmentsQuerySchema), getAppointments);
 router.post("/appointments", verifyStaffMember, validate(AppointmentSchema), addAppointment);
+router.patch("/appointments/:id/status", verifyStaffMember, setAppointmentStatus);
 router.patch("/appointments/:id", verifyStaffMember, validate(ValidateIdParam), validate(AppointmentSchema), updateAppointment);
 router.get("/appointments/avaliable", verifyStaffMember, getAvaliableTime);
 router.get("/appointments/doctors", verifyStaffMember, getAvaliableDoctrs);

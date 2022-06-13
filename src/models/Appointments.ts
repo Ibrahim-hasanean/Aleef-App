@@ -39,7 +39,7 @@ const appointmentSchema = new Schema({
     user: { type: mongoose.Types.ObjectId, ref: "users" },
     medacin: { type: mongoose.Types.ObjectId, ref: "medicins" },
     report: { type: String, default: "" },
-    status: { type: String },
+    status: { type: String, default: "upcoming" },
     paymentStatus: { type: String, default: "Not Completed" },
     payment: { type: mongoose.Types.ObjectId, ref: "payments" },
     paymentType: { type: String },

@@ -113,14 +113,15 @@ router.get("/orders", verifyStoreManagement_1.default, Orders_1.getOrders);
 router.post("/orders/:id/status", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), (0, validateAuth_1.validate)(validateOrdres_1.orderStatusSchema), Orders_1.setStatus);
 router.get("/orders/:id", verifyStoreManagement_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), Orders_1.getOrderById);
 // Appointments Payments
-router.post("/appointments/payments", verifyRecieption_1.default, (0, validateAuth_1.validate)(validatePayment_1.paymentSchema), AppointmentsPayment_1.addAppointmentsPayment);
-router.patch("/appointments/payments/:id", verifyRecieption_1.default, (0, validateAuth_1.validate)(validatePayment_1.paymentSchema), AppointmentsPayment_1.updateAppointmentsPayment);
-router.get("/appointments/payments", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.appointmentsQuerySchema), AppointmentsPayment_1.getAppointmentsPayments);
-router.get("/appointments/payments/:id", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), AppointmentsPayment_1.getAppointmentsPaymentById);
-router.delete("/appointments/payments/:id", verifyRecieption_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), AppointmentsPayment_1.deleteAppointmentsPayment);
+router.post("/appointments/payments", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validatePayment_1.paymentSchema), AppointmentsPayment_1.addAppointmentsPayment);
+router.patch("/appointments/payments/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validatePayment_1.paymentSchema), AppointmentsPayment_1.updateAppointmentsPayment);
+router.get("/appointments/payments", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.appointmentsQuerySchema), AppointmentsPayment_1.getAppointmentsPayments);
+router.get("/appointments/payments/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), AppointmentsPayment_1.getAppointmentsPaymentById);
+router.delete("/appointments/payments/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), AppointmentsPayment_1.deleteAppointmentsPayment);
 // appointments routes 
 router.get("/appointments", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.appointmentsQuerySchema), appointments_1.getAppointments);
 router.post("/appointments", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.addAppointment);
+router.patch("/appointments/:id/status", verifyStaffMember_1.default, appointments_1.setAppointmentStatus);
 router.patch("/appointments/:id", verifyStaffMember_1.default, (0, validateAuth_1.validate)(validateAppointment_1.ValidateIdParam), (0, validateAuth_1.validate)(validateAppointment_1.AppointmentSchema), appointments_1.updateAppointment);
 router.get("/appointments/avaliable", verifyStaffMember_1.default, appointments_1.getAvaliableTime);
 router.get("/appointments/doctors", verifyStaffMember_1.default, appointments_1.getAvaliableDoctrs);

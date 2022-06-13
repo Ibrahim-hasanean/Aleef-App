@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteReportToAppointment = exports.addReportToAppointment = exports.userAppointments = exports.getAvaliableDoctrs = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
+exports.setAppointmentStatus = exports.deleteReportToAppointment = exports.addReportToAppointment = exports.userAppointments = exports.getAvaliableDoctrs = exports.getAvaliableTime = exports.deleteAppointments = exports.getAppointmentsById = exports.getAppointments = exports.updateAppointment = exports.addAppointment = void 0;
 const Appointments_1 = __importDefault(require("../../../../models/Appointments"));
 const getFreeTimes_1 = __importDefault(require("../../../utils/getFreeTimes"));
 const getFreeDoctors_1 = __importDefault(require("../../../utils/getFreeDoctors"));
@@ -272,3 +272,27 @@ const deleteReportToAppointment = (req, res, next) => __awaiter(void 0, void 0, 
     return res.status(200).json({ status: 200, msg: "report deleted successfully" });
 });
 exports.deleteReportToAppointment = deleteReportToAppointment;
+const setAppointmentStatus = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let { status } = req.body;
+    let id = req.params.id;
+    if (!mongoose_1.default.isValidObjectId(id)) {
+        return res.status(400).json({ status: 400, msg: "appointmentId not found" });
+    }
+    const appointment = yield Appointments_1.default.findOne({ _id: id })
+        .populate({ path: "doctor" })
+        .populate({
+        path: "pet",
+        populate: {
+            path: 'medacins vaccinations',
+            options: { sort: { createdAt: "desc" } }
+        },
+    })
+        .populate({ path: "medacin" })
+        .populate({ path: "user", });
+    if (!appointment)
+        return res.status(400).json({ status: 400, msg: "appointment not found" });
+    appointment.status = String(status).toLocaleLowerCase();
+    yield appointment.save();
+    return res.status(200).json({ status: 200, msg: "appointment status set successfully", data: { appointment } });
+});
+exports.setAppointmentStatus = setAppointmentStatus;
