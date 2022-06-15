@@ -22,6 +22,7 @@ export const addNewPet = async (req: Request, res: Response, next: NextFunction)
     let pet = await Pet.create({ user: user._id, imageUrl, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     await user.save();
+    await (await (await pet.populate("breed")).populate("type")).populate("user");
     return res.status(201).json({ status: 201, data: { pet } });
 }
 

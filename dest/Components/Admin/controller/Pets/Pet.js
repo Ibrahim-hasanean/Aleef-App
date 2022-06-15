@@ -33,6 +33,7 @@ const addNewPet = (req, res, next) => __awaiter(void 0, void 0, void 0, function
     let pet = yield Pets_1.default.create({ user: user._id, imageUrl, name, serialNumber, age, type: typeId, breed: breedId, gender, duerming, nutried });
     user.pets = [...user.pets, pet._id];
     yield user.save();
+    yield (yield (yield pet.populate("breed")).populate("type")).populate("user");
     return res.status(201).json({ status: 201, data: { pet } });
 });
 exports.addNewPet = addNewPet;
