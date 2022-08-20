@@ -39,7 +39,7 @@ const itemSchema = new Schema({
     images: [{ type: String }]
 }, { timestamps: true })
 
-const Item = mongoose.model("items", itemSchema);
+const Item = mongoose.model<ItemInterface>("items", itemSchema);
 
 export default Item;
 

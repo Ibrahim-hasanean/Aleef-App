@@ -24,6 +24,7 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
         } = req.body;
         const user = req.user;
         let orderItemsTotal;
+        console.log({ paymentType });
         try {
             orderItemsTotal = await caculateItemsPrice(orderItems);
         } catch (error: any) {
@@ -35,11 +36,11 @@ export const payItem = async (req: Request, res: Response, next: NextFunction) =
         if (shippingFees != orderItemsTotal.shippingCost) {
             return res.status(400).json({ status: 400, msg: "shippingFees not equal all items total shipping fees" });
         }
-        if (paymentType == "card" && !cardNumber || !expMonth || !expYear || !cvc) {
+        if (paymentType === "card" && (!cardNumber || !expMonth || !expYear || !cvc)) {
             return res.status(400).json({ status: 400, msg: "cards info required for credit orders" });
         }
         const orderItemsCollection = await OrderItem.create(...orderItems);
-        const newOrder: OrderInterface = new Order({
+        const newOrder = new Order({
             user: user._id,
             totalPrice,
             itemsCount,

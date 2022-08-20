@@ -27,6 +27,7 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         cardNumber, expMonth, expYear, cvc } = req.body;
         const user = req.user;
         let orderItemsTotal;
+        console.log({ paymentType });
         try {
             orderItemsTotal = yield (0, calculateItemsPrice_1.default)(orderItems);
         }
@@ -39,7 +40,7 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         if (shippingFees != orderItemsTotal.shippingCost) {
             return res.status(400).json({ status: 400, msg: "shippingFees not equal all items total shipping fees" });
         }
-        if (paymentType == "card" && !cardNumber || !expMonth || !expYear || !cvc) {
+        if (paymentType === "card" && (!cardNumber || !expMonth || !expYear || !cvc)) {
             return res.status(400).json({ status: 400, msg: "cards info required for credit orders" });
         }
         const orderItemsCollection = yield OrderItems_1.default.create(...orderItems);

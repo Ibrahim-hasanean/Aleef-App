@@ -11,5 +11,5 @@ const orderItemsSchema = new Schema({
     count: { type: Number }
 });
 
-const OrderItems = mongoose.model("orderItems", orderItemsSchema);
+const OrderItems = mongoose.model<OrdersItemsInterface>("orderItems", orderItemsSchema);
 export default OrderItems;

@@ -9,7 +9,7 @@ const itemsCategorySchema = new Schema({
     name: { type: String, required: true },
 })
 
-const ItemsCategory = mongoose.model("itemsCategory", itemsCategorySchema);
+const ItemsCategory = mongoose.model<ItemsCategoryInterface>("itemsCategory", itemsCategorySchema);
 
 export default ItemsCategory;
 

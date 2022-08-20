@@ -25,9 +25,10 @@ export const getItemById = async (req: Request, res: Response, next: NextFunctio
         return res.status(200).json({ status: 200, data: { item: null } });
     }
     let item = await Item.findOne({ _id: itemId, allowed: true });
+    let returnItem: any = { ...item };
     if (item) {
-        let isLikeItem = user.wishList.some(x => x.toString() === String(item._id));
-        item = { ...item._doc, isLikeItem };
+        let isLikeItem = user.wishList.some(x => x.toString() === String(item?._id));
+        returnItem = { ...item, isLikeItem };
     }
     return res.status(200).json({ status: 200, data: { item } });
 }

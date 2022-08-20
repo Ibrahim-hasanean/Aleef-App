@@ -50,7 +50,7 @@ const appointmentSchema = new Schema({
 
 
 appointmentSchema.pre("save", function () {
-    let payment: AppointmentsInterface = this;
+    let payment = this;
     let generatedId = Date.now();
     payment.appointmentNumber = generatedId;
 })

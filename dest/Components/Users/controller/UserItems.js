@@ -39,9 +39,10 @@ const getItemById = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         return res.status(200).json({ status: 200, data: { item: null } });
     }
     let item = yield Item_1.default.findOne({ _id: itemId, allowed: true });
+    let returnItem = Object.assign({}, item);
     if (item) {
-        let isLikeItem = user.wishList.some(x => x.toString() === String(item._id));
-        item = Object.assign(Object.assign({}, item._doc), { isLikeItem });
+        let isLikeItem = user.wishList.some(x => x.toString() === String(item === null || item === void 0 ? void 0 : item._id));
+        returnItem = Object.assign(Object.assign({}, item), { isLikeItem });
     }
     return res.status(200).json({ status: 200, data: { item } });
 });

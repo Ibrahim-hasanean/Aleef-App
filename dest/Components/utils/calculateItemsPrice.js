@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Item_1 = __importDefault(require("../../models/Item"));
 function caculateItemsPrice(orderItems) {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         let shippingCost = 0;
         let itemsCost = 0;
@@ -23,15 +24,15 @@ function caculateItemsPrice(orderItems) {
             const item = yield Item_1.default.findById(itemId);
             if (!item)
                 throw new Error(`can not pay items, item with id  ${itemId} not found`);
-            if (item.avaliableQuantity <= 0)
+            if ((item === null || item === void 0 ? void 0 : item.avaliableQuantity) && item.avaliableQuantity <= 0)
                 throw new Error(`this item ${itemId} is out of stock`);
-            if (item.avaliableQuantity < orderItem.count)
+            if ((item === null || item === void 0 ? void 0 : item.avaliableQuantity) && item.avaliableQuantity < orderItem.count)
                 throw new Error(`this item is out of stock`);
             let itemShippingCost = Number(item.shippingPrice) * Number(orderItem.count);
             let itemCost = Number(item.price) * Number(orderItem.count);
             shippingCost = itemShippingCost + shippingCost;
             itemsCost = itemCost + itemsCost;
-            item.avaliableQuantity = item.avaliableQuantity - (1 * orderItem.count);
+            item.avaliableQuantity = ((_a = item === null || item === void 0 ? void 0 : item.avaliableQuantity) !== null && _a !== void 0 ? _a : 0) - (1 * orderItem.count);
             item.soldQuantity = item.soldQuantity + (1 * orderItem.count);
             yield item.save();
         }

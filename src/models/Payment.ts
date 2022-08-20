@@ -33,7 +33,7 @@ const payemntSchema = new Schema({
 }, { timestamps: true });
 
 payemntSchema.pre("save", function () {
-    let payment: PaymentInterFace = this;
+    let payment = this;
     let generatedId = Date.now();
     payment.paymentNumber = generatedId;
 })

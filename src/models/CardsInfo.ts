@@ -16,6 +16,6 @@ const cardInfoSchema = new Schema({
 })
 
 
-const cardInfo = mongoose.model("cardInfo", cardInfoSchema);
+const cardInfo = mongoose.model<CardInfoInterface>("cardInfo", cardInfoSchema);
 
 export default cardInfo
