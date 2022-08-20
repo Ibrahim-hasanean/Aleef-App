@@ -1,6 +1,9 @@
 import admin from "../../config/firebase";
 const sendNotifications = async (tokens: string[], data: any) => {
     try {
+        if (tokens.length === 0) {
+            return;
+        }
         const payload = {
             notification: data
         };

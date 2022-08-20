@@ -95,6 +95,7 @@ const socketIoEvents = (io) => {
         socket.on('user-doctor-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 let { message, doctorId } = data;
+                console.log(message);
                 let user = socket.handshake.auth.user;
                 let isThereAppointmentBetween = yield Appointments_1.default.findOne({ user: user._id, doctor: doctorId });
                 if (isThereAppointmentBetween) {
@@ -103,7 +104,8 @@ const socketIoEvents = (io) => {
                         isConversationExist = yield Conversations_1.default.create({ doctorId, userId: user._id });
                     }
                     let newMessage = yield Messages_1.default.create({ userId: user._id, message, conversation: isConversationExist._id, by: "user" });
-                    isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
+                    // isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
+                    isConversationExist.messages.push(newMessage._id);
                     yield isConversationExist.save();
                     //send message to doctor
                     let isOnline = doctorsArray.find(x => x == String(doctorId));

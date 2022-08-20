@@ -81,6 +81,7 @@ const socketIoEvents = (io: Server) => {
         socket.on('user-doctor-message', async (data: any, ack: any) => {
             try {
                 let { message, doctorId } = data as { message: string, doctorId: ObjectId };
+                console.log(message);
                 let user: UserInterface = socket.handshake.auth.user;
                 let isThereAppointmentBetween: AppointmentsInterface | null = await Appointments.findOne({ user: user._id, doctor: doctorId });
                 if (isThereAppointmentBetween) {
@@ -89,7 +90,8 @@ const socketIoEvents = (io: Server) => {
                         isConversationExist = await Conversation.create({ doctorId, userId: user._id });
                     }
                     let newMessage: MessagesInterface = await Messages.create({ userId: user._id, message, conversation: isConversationExist._id, by: "user" });
-                    isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
+                    // isConversationExist.messages = [...isConversationExist.messages, newMessage._id];
+                    isConversationExist.messages.push(newMessage._id);
                     await isConversationExist.save();
                     //send message to doctor
                     let isOnline = doctorsArray.find(x => x == String(doctorId));

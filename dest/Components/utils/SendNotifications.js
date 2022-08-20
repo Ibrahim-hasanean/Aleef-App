@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const firebase_1 = __importDefault(require("../../config/firebase"));
 const sendNotifications = (tokens, data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        if (tokens.length === 0) {
+            return;
+        }
         const payload = {
             notification: data
         };
