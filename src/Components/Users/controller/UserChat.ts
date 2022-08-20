@@ -3,6 +3,8 @@ import Message, { MessagesInterface } from "../../../models/Messages";
 import mongoose, { ObjectId } from "mongoose";
 import Conversations, { ConversationsInterface } from "../../../models/Conversations";
 import { UserInterface } from "../../../models/User";
+
+
 export const getMessages = async (req: Request, res: Response, next: NextFunction) => {
     let user = req.user;
     let { page, limit } = req.query as { page: string, limit: string, };
@@ -13,6 +15,12 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
     if (!isConversationExist) return res.status(400).json({ status: 400, msg: `you do not have conversation with id ${conversationId}` });
     let messages: MessagesInterface[] = await Message.find({ conversation: isConversationExist._id }).skip(skip).limit(numberPageSize);
     return res.status(200).json({ status: 200, messages });
+}
+
+export const getMessage = async (req: Request, res: Response, next: NextFunction) => {
+    let id = req.params.id;
+    let message: MessagesInterface = await Message.findOne({ _id: id }) as MessagesInterface;
+    return res.status(200).json({ status: 200, message });
 }
 
 export const getConversations = async (req: Request, res: Response, next: NextFunction) => {

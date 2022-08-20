@@ -89,7 +89,7 @@ const socketIoEvents = (io) => {
         socket.on("hello", (data, ack) => {
             console.log(data);
             socket.emit("hello", "helllo");
-            // if (ack) ack({ status: 200, msg: "helllo" });
+            // if (ack) ack?.({ status: 200, msg: "helllo" });
         });
         //user new message to doctor
         socket.on('user-doctor-message', (data, ack) => __awaiter(void 0, void 0, void 0, function* () {
@@ -117,16 +117,16 @@ const socketIoEvents = (io) => {
                         });
                     }
                     if (ack) {
-                        ack({ status: 200, msg: "message sent successfully" });
+                        ack === null || ack === void 0 ? void 0 : ack({ status: 200, msg: "message sent successfully" });
                     }
                 }
                 else {
-                    ack({ status: 400, msg: "can not send message to doctor not have appointment with" });
+                    ack === null || ack === void 0 ? void 0 : ack({ status: 400, msg: "can not send message to doctor not have appointment with" });
                 }
             }
             catch (error) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack === null || ack === void 0 ? void 0 : ack({ status: 500, msg: error.message });
             }
         }));
         //doctor new message to user
@@ -158,17 +158,17 @@ const socketIoEvents = (io) => {
                         });
                     }
                     if (ack) {
-                        ack({ status: 200, msg: "message sent successfully" });
+                        ack === null || ack === void 0 ? void 0 : ack({ status: 200, msg: "message sent successfully" });
                     }
                 }
                 else {
                     console.log("has nooo appointment");
-                    ack({ status: 400, msg: "can not send message to user not have appointment with" });
+                    ack === null || ack === void 0 ? void 0 : ack({ status: 400, msg: "can not send message to user not have appointment with" });
                 }
             }
             catch (error) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack === null || ack === void 0 ? void 0 : ack({ status: 500, msg: error.message });
             }
         }));
         // reciption support new message to user
@@ -195,12 +195,12 @@ const socketIoEvents = (io) => {
                     });
                 }
                 if (ack) {
-                    ack({ status: 200, msg: "message sent successfully" });
+                    ack === null || ack === void 0 ? void 0 : ack({ status: 200, msg: "message sent successfully" });
                 }
             }
             catch (error) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack === null || ack === void 0 ? void 0 : ack({ status: 500, msg: error.message });
             }
         }));
         //user new message to  reciption support
@@ -229,12 +229,12 @@ const socketIoEvents = (io) => {
                     });
                 }
                 if (ack) {
-                    ack({ status: 200, msg: "message sent successfully" });
+                    ack === null || ack === void 0 ? void 0 : ack({ status: 200, msg: "message sent successfully" });
                 }
             }
             catch (error) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack === null || ack === void 0 ? void 0 : ack({ status: 500, msg: error.message });
             }
         }));
         //store support new message to user
@@ -261,12 +261,12 @@ const socketIoEvents = (io) => {
                     });
                 }
                 if (ack) {
-                    ack({ status: 200, msg: "message sent successfully" });
+                    ack === null || ack === void 0 ? void 0 : ack({ status: 200, msg: "message sent successfully" });
                 }
             }
             catch (error) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack === null || ack === void 0 ? void 0 : ack({ status: 500, msg: error.message });
             }
         }));
         //user new message to store support
@@ -295,12 +295,12 @@ const socketIoEvents = (io) => {
                     });
                 }
                 if (ack) {
-                    ack({ status: 200, msg: "message sent successfully" });
+                    ack === null || ack === void 0 ? void 0 : ack({ status: 200, msg: "message sent successfully" });
                 }
             }
             catch (error) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack === null || ack === void 0 ? void 0 : ack({ status: 500, msg: error.message });
             }
         }));
         socket.on("disconnect", () => {

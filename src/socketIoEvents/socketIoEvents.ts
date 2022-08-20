@@ -74,7 +74,7 @@ const socketIoEvents = (io: Server) => {
         socket.on("hello", (data: any, ack: any) => {
             console.log(data);
             socket.emit("hello", "helllo");
-            // if (ack) ack({ status: 200, msg: "helllo" });
+            // if (ack) ack?.({ status: 200, msg: "helllo" });
         });
 
         //user new message to doctor
@@ -102,15 +102,14 @@ const socketIoEvents = (io: Server) => {
                         });
                     }
                     if (ack) {
-                        ack({ status: 200, msg: "message sent successfully" });
+                        ack?.({ status: 200, msg: "message sent successfully" });
                     }
                 } else {
-                    ack({ status: 400, msg: "can not send message to doctor not have appointment with" });
-
+                    ack?.({ status: 400, msg: "can not send message to doctor not have appointment with" });
                 }
             } catch (error: any) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack?.({ status: 500, msg: error.message });
 
             }
         });
@@ -143,16 +142,16 @@ const socketIoEvents = (io: Server) => {
                         });
                     }
                     if (ack) {
-                        ack({ status: 200, msg: "message sent successfully" });
+                        ack?.({ status: 200, msg: "message sent successfully" });
                     }
                 } else {
                     console.log("has nooo appointment");
-                    ack({ status: 400, msg: "can not send message to user not have appointment with" });
+                    ack?.({ status: 400, msg: "can not send message to user not have appointment with" });
 
                 }
             } catch (error: any) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack?.({ status: 500, msg: error.message });
             }
         });
         // reciption support new message to user
@@ -178,11 +177,11 @@ const socketIoEvents = (io: Server) => {
                     });
                 }
                 if (ack) {
-                    ack({ status: 200, msg: "message sent successfully" });
+                    ack?.({ status: 200, msg: "message sent successfully" });
                 }
             } catch (error: any) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack?.({ status: 500, msg: error.message });
             }
         });
         //user new message to  reciption support
@@ -210,11 +209,11 @@ const socketIoEvents = (io: Server) => {
                     })
                 }
                 if (ack) {
-                    ack({ status: 200, msg: "message sent successfully" });
+                    ack?.({ status: 200, msg: "message sent successfully" });
                 }
             } catch (error: any) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack?.({ status: 500, msg: error.message });
 
             }
         });
@@ -241,11 +240,11 @@ const socketIoEvents = (io: Server) => {
                     });
                 }
                 if (ack) {
-                    ack({ status: 200, msg: "message sent successfully" });
+                    ack?.({ status: 200, msg: "message sent successfully" });
                 }
             } catch (error: any) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack?.({ status: 500, msg: error.message });
             }
         });
         //user new message to store support
@@ -273,11 +272,11 @@ const socketIoEvents = (io: Server) => {
                     })
                 }
                 if (ack) {
-                    ack({ status: 200, msg: "message sent successfully" });
+                    ack?.({ status: 200, msg: "message sent successfully" });
                 }
             } catch (error: any) {
                 console.log(error);
-                ack({ status: 500, msg: error.message });
+                ack?.({ status: 500, msg: error.message });
 
             }
         });

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getConversation = exports.getConversations = exports.getMessages = void 0;
+exports.getConversation = exports.getConversations = exports.getMessage = exports.getMessages = void 0;
 const Messages_1 = __importDefault(require("../../../models/Messages"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const Conversations_1 = __importDefault(require("../../../models/Conversations"));
@@ -29,6 +29,12 @@ const getMessages = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     return res.status(200).json({ status: 200, messages });
 });
 exports.getMessages = getMessages;
+const getMessage = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    let id = req.params.id;
+    let message = yield Messages_1.default.findOne({ _id: id });
+    return res.status(200).json({ status: 200, message });
+});
+exports.getMessage = getMessage;
 const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     let user = req.user;
     let { page, limit } = req.query;
