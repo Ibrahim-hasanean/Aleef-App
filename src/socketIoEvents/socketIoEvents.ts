@@ -134,6 +134,7 @@ const socketIoEvents = (io: Server) => {
                     await isConversationExist.save();
                     //send message to doctor
                     let isOnline = usersArray.find(x => x == String(userId));
+                    console.log({ isOnline })
                     if (isOnline) io.to(String(userId)).emit("new-message", { message, from: staff.name, doctorId: staff._id, conversationId: isConversationExist._id });
                     else {
                         let user: UserInterface = await User.findById(userId) as UserInterface;
