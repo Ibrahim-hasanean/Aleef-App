@@ -23,6 +23,7 @@ exports.appointmentPaymentSchema = {
         expMonth: celebrate_1.Joi.number(),
         expYear: celebrate_1.Joi.number(),
         cvc: celebrate_1.Joi.string(),
+        cardHolderName: celebrate_1.Joi.string(),
         // stripeToken: Joi.string().required(),
     })
 };

@@ -16,6 +16,7 @@ exports.paymentSchema = {
         expMonth: celebrate_1.Joi.number(),
         expYear: celebrate_1.Joi.number(),
         cvc: celebrate_1.Joi.string(),
+        cardHolderName: celebrate_1.Joi.string(),
         orderItems: celebrate_1.Joi.array().required().items(celebrate_1.Joi.object().keys({
             count: celebrate_1.Joi.number().required(),
             item: celebrate_1.Joi.string().required()

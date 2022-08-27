@@ -24,7 +24,7 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
     try {
         const { totalPrice, itemsCount, shippingFees, shippingAddressId, orderItems, currency, paymentType, 
         // stripeToken,
-        cardNumber, expMonth, expYear, cvc } = req.body;
+        cardNumber, expMonth, expYear, cvc, cardHolderName } = req.body;
         const user = req.user;
         let orderItemsTotal;
         console.log({ paymentType });
@@ -40,7 +40,7 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         if (shippingFees != orderItemsTotal.shippingCost) {
             return res.status(400).json({ status: 400, msg: "shippingFees not equal all items total shipping fees" });
         }
-        if (paymentType === "card" && (!cardNumber || !expMonth || !expYear || !cvc)) {
+        if (paymentType === "card" && (!cardNumber || !expMonth || !expYear || !cvc || !cardHolderName)) {
             return res.status(400).json({ status: 400, msg: "cards info required for credit orders" });
         }
         const orderItemsCollection = yield OrderItems_1.default.create(...orderItems);
@@ -54,7 +54,9 @@ const payItem = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
             shippingAddress: shippingAddressId,
             currency,
             status: "to be shipped",
-            paymentType
+            paymentType,
+            cardHolderName,
+            cardNumber
         });
         // online payment
         const payment = new Payment_1.default({

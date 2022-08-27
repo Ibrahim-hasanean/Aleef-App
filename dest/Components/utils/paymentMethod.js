@@ -31,7 +31,7 @@ const paymentMethod = (amount, currency, description, cardNumber, exp_month, exp
                 number: cardNumber,
                 exp_month,
                 exp_year,
-                cvc
+                cvc,
             },
         });
         let stripeCharge = stripe.charges.create({

@@ -15,6 +15,7 @@ export const paymentSchema = {
         expMonth: Joi.number(),
         expYear: Joi.number(),
         cvc: Joi.string(),
+        cardHolderName: Joi.string(),
         orderItems: Joi.array().required().items(Joi.object().keys({
             count: Joi.number().required(),
             item: Joi.string().required()

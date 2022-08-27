@@ -177,7 +177,8 @@ export const payAppointment = async (req: Request, res: Response, next: NextFunc
             cardNumber,
             expMonth,
             expYear,
-            cvc
+            cvc,
+            cardHolderName
             // stripeToken
         } = req.body;
         let user = req.user;

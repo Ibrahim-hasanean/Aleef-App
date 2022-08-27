@@ -23,6 +23,7 @@ export const appointmentPaymentSchema = {
         expMonth: Joi.number(),
         expYear: Joi.number(),
         cvc: Joi.string(),
+        cardHolderName: Joi.string(),
         // stripeToken: Joi.string().required(),
     })
 }

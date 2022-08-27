@@ -181,7 +181,7 @@ exports.getAvaliableTime = getAvaliableTime;
 const payAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _c;
     try {
-        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, cardNumber, expMonth, expYear, cvc
+        let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, cardNumber, expMonth, expYear, cvc, cardHolderName
         // stripeToken
          } = req.body;
         let user = req.user;

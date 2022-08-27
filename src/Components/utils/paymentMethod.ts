@@ -28,7 +28,7 @@ export const paymentMethod = async (
         number: cardNumber,
         exp_month,
         exp_year,
-        cvc
+        cvc,
       },
     });
     let stripeCharge = stripe.charges.create({
