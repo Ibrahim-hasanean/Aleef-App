@@ -9,6 +9,8 @@ import mongoose from "mongoose";
 import Pets, { PetsInterface } from "../../../models/Pets";
 import { PetsVaccination } from "../../../models/Vaccination";
 import { paymentMethod, cancelPayment } from "../../utils/paymentMethod";
+import Conversation from "../../../models/Conversations";
+import { UserInterface } from "../../../models/User";
 export const addAppointment = async (req: Request, res: Response, next: NextFunction) => {
     const { petId, service, appointmentDate, reason } = req.body;
     const user = req.user;
@@ -124,10 +126,17 @@ export const getAppointmentsById = async (req: Request, res: Response, next: Nex
         return res.status(200).json({ status: 200, data: { appointment: null } });
     }
     const appointment = await Appointments.findOne({ _id: id, user: user._id })
-        .populate("doctor")
-        .populate("pet")
+        .populate({ path: "user", select: ['fullName', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] })
+        .populate({ path: "doctor", select: ['name', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] })
+        .populate({ path: "pet", select: ['name', 'serialNumber', 'age', 'imageUrl'] })
+        .populate("payment")
         .populate("medacin");
-    return res.status(200).json({ status: 200, data: { appointment } });
+    let conversation = await Conversation
+        .findOne({
+            doctorId: (appointment?.doctor as StafInterface)?._id,
+            userId: (appointment?.user as UserInterface)?._id
+        });
+    return res.status(200).json({ status: 200, data: { appointment }, conversationId: conversation?._id });
 }
 
 export const deleteAppointments = async (req: Request, res: Response, next: NextFunction) => {

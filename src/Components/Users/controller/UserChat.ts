@@ -31,9 +31,9 @@ export const getConversations = async (req: Request, res: Response, next: NextFu
     let conversations = await Conversations.find({ userId: user._id })
         .skip(skip)
         .limit(limitNumber)
-        .select(['-messages'])
-        .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
-        .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
+        .populate({ path: "messages", options: { sort: { createdAt: -1 }, limit: 1 } })
+        .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] })
+        .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] });
     return res.status(200).json({ status: 200, conversations });
 }
 
@@ -45,9 +45,9 @@ export const getConversation = async (req: Request, res: Response) => {
         return res.status(200).json({ status: 200, data: { conversation: null } });
     let conversation: ConversationsInterface = await Conversations
         .findOne({ _id: id, userId: user._id })
-        .select(['-messages'])
-        .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
-        .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] }) as ConversationsInterface;
+        .populate({ path: "messages", options: { sort: { createdAt: -1 }, limit: 1 } })
+        .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] })
+        .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] }) as ConversationsInterface;
     return res.status(200).json({ status: 200, data: { conversation } });
 }
 

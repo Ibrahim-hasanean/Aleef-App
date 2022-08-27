@@ -21,6 +21,7 @@ const Payment_1 = __importDefault(require("../../../models/Payment"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const Pets_1 = __importDefault(require("../../../models/Pets"));
 const paymentMethod_1 = require("../../utils/paymentMethod");
+const Conversations_1 = __importDefault(require("../../../models/Conversations"));
 const addAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { petId, service, appointmentDate, reason } = req.body;
     const user = req.user;
@@ -130,16 +131,24 @@ const getAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.getAppointments = getAppointments;
 const getAppointmentsById = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a, _b;
     let id = req.params.id;
     let user = req.user;
     if (!mongoose_1.default.isValidObjectId(id)) {
         return res.status(200).json({ status: 200, data: { appointment: null } });
     }
     const appointment = yield Appointments_1.default.findOne({ _id: id, user: user._id })
-        .populate("doctor")
-        .populate("pet")
+        .populate({ path: "user", select: ['fullName', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] })
+        .populate({ path: "doctor", select: ['name', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] })
+        .populate({ path: "pet", select: ['name', 'serialNumber', 'age', 'imageUrl'] })
+        .populate("payment")
         .populate("medacin");
-    return res.status(200).json({ status: 200, data: { appointment } });
+    let conversation = yield Conversations_1.default
+        .findOne({
+        doctorId: (_a = appointment === null || appointment === void 0 ? void 0 : appointment.doctor) === null || _a === void 0 ? void 0 : _a._id,
+        userId: (_b = appointment === null || appointment === void 0 ? void 0 : appointment.user) === null || _b === void 0 ? void 0 : _b._id
+    });
+    return res.status(200).json({ status: 200, data: { appointment }, conversationId: conversation === null || conversation === void 0 ? void 0 : conversation._id });
 });
 exports.getAppointmentsById = getAppointmentsById;
 const deleteAppointments = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -170,7 +179,7 @@ const getAvaliableTime = (req, res, next) => __awaiter(void 0, void 0, void 0, f
 });
 exports.getAvaliableTime = getAvaliableTime;
 const payAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _c;
     try {
         let { totalAmount, discount, paymentAmmount, exchange, appointmentId, currency, cardNumber, expMonth, expYear, cvc
         // stripeToken
@@ -196,7 +205,7 @@ const payAppointment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
         return res.status(201).json({ status: 201, msg: "payment success", data: { payment: newPayment, } });
     }
     catch (error) {
-        return res.status(400).json({ status: 400, msg: (_a = error.message) !== null && _a !== void 0 ? _a : error });
+        return res.status(400).json({ status: 400, msg: (_c = error.message) !== null && _c !== void 0 ? _c : error });
     }
 });
 exports.payAppointment = payAppointment;

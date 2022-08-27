@@ -43,9 +43,9 @@ const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, f
     let conversations = yield Conversations_1.default.find({ userId: user._id })
         .skip(skip)
         .limit(limitNumber)
-        .select(['-messages'])
-        .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
-        .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
+        .populate({ path: "messages", options: { sort: { createdAt: -1 }, limit: 1 } })
+        .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] })
+        .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] });
     return res.status(200).json({ status: 200, conversations });
 });
 exports.getConversations = getConversations;
@@ -56,9 +56,9 @@ const getConversation = (req, res) => __awaiter(void 0, void 0, void 0, function
         return res.status(200).json({ status: 200, data: { conversation: null } });
     let conversation = yield Conversations_1.default
         .findOne({ _id: id, userId: user._id })
-        .select(['-messages'])
-        .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email'] })
-        .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email'] });
+        .populate({ path: "messages", options: { sort: { createdAt: -1 }, limit: 1 } })
+        .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] })
+        .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] });
     return res.status(200).json({ status: 200, data: { conversation } });
 });
 exports.getConversation = getConversation;
