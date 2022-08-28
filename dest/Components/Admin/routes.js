@@ -48,6 +48,7 @@ const StaffChat_1 = require("./controller/StaffChat/StaffChat");
 const notifications_1 = require("./controller/notifications/notifications");
 const router = (0, express_1.Router)();
 // auth routers
+router.post("/auth/logout", verifyStaffMember_1.default, auth_1.logout);
 router.post("/auth/login", (0, validateAuth_1.validate)(validateAuth_1.loginSchema), auth_1.login);
 router.post("/auth/verify", (0, validateAuth_1.validate)(validateAuth_1.verifyCodeSchema), auth_1.verifyCode);
 //chat routes 

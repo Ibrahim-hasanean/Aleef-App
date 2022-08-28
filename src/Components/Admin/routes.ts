@@ -27,7 +27,7 @@ import { addOrder, getOrderById, getOrders, setStatus } from "./controller/Order
 import { getUsers, getUserById, addNewUser, updateUser, suspendUser, deleteUser, addNewUserWithPets, updateUserWithPets } from "./controller/Users/Users";
 import { getPets, addNewPet, getPetById, deletePet, updatePet } from "./controller/Pets/Pet";
 import { getProfile, updateProfile, getProfileNotifications, setProfileNotifications } from "./controller/Profile/Profile";
-import { login, verifyCode } from "./controller/auth/auth";
+import { login, verifyCode, logout } from "./controller/auth/auth";
 import { loginSchema, validate, verifyCodeSchema } from "./middleware/validateAuth";
 import { addStaffSchema, workHouresSchema } from "./middleware/validateStaff";
 import verifyAdmin from "./middleware/verifyAdmin";
@@ -60,6 +60,7 @@ import { getNotifications } from "./controller/notifications/notifications";
 const router = Router();
 
 // auth routers
+router.post("/auth/logout", verifyStaffMember, logout);
 router.post("/auth/login", validate(loginSchema), login);
 router.post("/auth/verify", validate(verifyCodeSchema), verifyCode);
 

@@ -40,8 +40,10 @@ const getOrderItems = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     const items = userWithWishList.itemList.map((x) => {
         const orderItem = x;
         const item = orderItem.item;
+        if (!item)
+            return;
         return { totalPrice: item.price + item.shippingPrice, count: orderItem.count, item };
-    });
+    }).filter(x => x != null);
     return res.status(200).json({ status: 200, data: { items: items } });
 });
 exports.getOrderItems = getOrderItems;

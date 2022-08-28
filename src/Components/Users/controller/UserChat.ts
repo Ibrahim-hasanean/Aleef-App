@@ -36,7 +36,11 @@ export const getConversations = async (req: Request, res: Response, next: NextFu
         .populate({ path: "messages", options: { sort: { createdAt: -1 }, limit: 1 } })
         .populate({ path: "userId", select: ['fullName', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] })
         .populate({ path: "doctorId", select: ['name', 'imageUrl', 'phoneNumber', 'email', 'imageUrl'] });
-    return res.status(200).json({ status: 200, conversations });
+    let receiptionConversation: ConversationsInterface = await Conversations.findOne({ receiptionSupport: true, userId: user._id }) as ConversationsInterface;
+    if (!receiptionConversation) {
+        receiptionConversation = await Conversations.create({ receiptionSupport: true, userId: user._id });
+    }
+    return res.status(200).json({ status: 200, conversations, receiptionConversation });
 }
 
 

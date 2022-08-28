@@ -52,7 +52,7 @@ export const addMedacin = async (req: Request, res: Response, next: NextFunction
     if (!appointment) return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId}  not found` });
     let newMedacin: PetsMedacins = await Medacin.create({ name, duration, pet: petId, repetition, notes, appointment: appointmentId });
     pet.medacins = [...pet.medacins, newMedacin._id];
-    appointment.medacin = newMedacin._id;
+    appointment.medacin.push(newMedacin._id);
     await pet.save();
     await appointment.save();
     return res.status(201).json({

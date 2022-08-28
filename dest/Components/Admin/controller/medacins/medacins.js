@@ -66,7 +66,7 @@ const addMedacin = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         return res.status(400).json({ status: 400, msg: `appointment with id ${appointmentId}  not found` });
     let newMedacin = yield Medacine_1.default.create({ name, duration, pet: petId, repetition, notes, appointment: appointmentId });
     pet.medacins = [...pet.medacins, newMedacin._id];
-    appointment.medacin = newMedacin._id;
+    appointment.medacin.push(newMedacin._id);
     yield pet.save();
     yield appointment.save();
     return res.status(201).json({

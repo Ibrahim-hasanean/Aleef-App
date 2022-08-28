@@ -26,8 +26,9 @@ export const getOrderItems = async (req: Request, res: Response, next: NextFunct
     const items = userWithWishList.itemList.map((x: OrdersItemsInterface | ObjectId) => {
         const orderItem: OrdersItemsInterface = x as OrdersItemsInterface;
         const item: ItemInterface = orderItem.item as ItemInterface;
+        if (!item) return;
         return { totalPrice: item.price + item.shippingPrice, count: orderItem.count, item };
-    })
+    }).filter(x => x != null);
     return res.status(200).json({ status: 200, data: { items: items } });
 }
 

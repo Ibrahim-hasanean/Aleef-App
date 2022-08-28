@@ -127,16 +127,16 @@ const resetPassword = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     const user = yield User_1.default.findOne({ phoneNumber });
     if (!user)
         return res.status(400).json({ status: 400, msg: "user not signed up" });
-    if (!user.code) {
-        return res.status(400).json({ status: 400, msg: "try to resend the code" });
-    }
-    if (code == user.code) {
-        user.password = newPassword;
-        user.code = "";
-        yield user.save();
-        return res.status(200).json({ status: 200, msg: "reset password success" });
-    }
-    return res.status(400).json({ status: 400, msg: "code you entered is wrong" });
+    // if (!user.code) {
+    //     return res.status(400).json({ status: 400, msg: "try to resend the code" });
+    // }
+    // if (code == user.code) {
+    user.password = newPassword;
+    user.code = "";
+    yield user.save();
+    return res.status(200).json({ status: 200, msg: "reset password success" });
+    // }
+    // return res.status(400).json({ status: 400, msg: "code you entered is wrong" });
 });
 exports.resetPassword = resetPassword;
 const verifyCode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyCode = exports.login = void 0;
+exports.logout = exports.verifyCode = exports.login = void 0;
 const Staff_1 = __importDefault(require("../../../../models/Staff"));
 const HealthCare_1 = __importDefault(require("../../../../models/HealthCare"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -33,7 +33,7 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
 exports.login = login;
 const verifyCode = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { phoneNumber, code } = req.body;
+        const { phoneNumber, code, registrationToken } = req.body;
         const staffMember = yield Staff_1.default.findOne({ phoneNumber });
         if (!staffMember)
             return res.status(400).json({ status: 400, msg: `staff member with phonenumber ${phoneNumber} not exist` });
@@ -43,6 +43,8 @@ const verifyCode = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
             const staffMembersToken = process.env.STAF_TOKEN_SECRET;
             let token = jsonwebtoken_1.default.sign({ staffId: staffMember._id, phoneNumber: staffMember.phoneNumber }, staffMembersToken, { expiresIn: "7 days" });
             staffMember.code = '';
+            if (registrationToken)
+                staffMember.registrationTokens.push(registrationToken);
             yield staffMember.save();
             return res.status(200).json({ status: 200, data: { staffMember: staffMember, healthCare: healthCares[0], token } });
         }
@@ -54,3 +56,11 @@ const verifyCode = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
     }
 });
 exports.verifyCode = verifyCode;
+const logout = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const { registrationToken } = req.body;
+    let staffMember = req.staff;
+    staffMember.registrationTokens = staffMember.registrationTokens.filter(x => x !== registrationToken);
+    yield staffMember.save();
+    return res.status(200).json({ status: 200, msg: "logout successfully" });
+});
+exports.logout = logout;

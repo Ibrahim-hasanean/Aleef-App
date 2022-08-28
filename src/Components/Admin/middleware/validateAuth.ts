@@ -11,5 +11,6 @@ export const verifyCodeSchema = {
     [Segments.BODY]: Joi.object().keys({
         phoneNumber: Joi.string().required(),
         code: Joi.string().required(),
+        registrationToken: Joi.string()
     })
 }

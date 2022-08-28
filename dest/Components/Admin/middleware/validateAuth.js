@@ -13,5 +13,6 @@ exports.verifyCodeSchema = {
     [celebrate_1.Segments.BODY]: celebrate_1.Joi.object().keys({
         phoneNumber: celebrate_1.Joi.string().required(),
         code: celebrate_1.Joi.string().required(),
+        registrationToken: celebrate_1.Joi.string()
     })
 };

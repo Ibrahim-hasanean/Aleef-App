@@ -134,16 +134,16 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     const { phoneNumber, code, newPassword } = req.body;
     const user: UserInterface | null = await User.findOne({ phoneNumber });
     if (!user) return res.status(400).json({ status: 400, msg: "user not signed up" });
-    if (!user.code) {
-        return res.status(400).json({ status: 400, msg: "try to resend the code" });
-    }
-    if (code == user.code) {
-        user.password = newPassword;
-        user.code = "";
-        await user.save();
-        return res.status(200).json({ status: 200, msg: "reset password success" });
-    }
-    return res.status(400).json({ status: 400, msg: "code you entered is wrong" });
+    // if (!user.code) {
+    //     return res.status(400).json({ status: 400, msg: "try to resend the code" });
+    // }
+    // if (code == user.code) {
+    user.password = newPassword;
+    user.code = "";
+    await user.save();
+    return res.status(200).json({ status: 200, msg: "reset password success" });
+    // }
+    // return res.status(400).json({ status: 400, msg: "code you entered is wrong" });
 }
 
 export const verifyCode = async (req: Request, res: Response, next: NextFunction) => {
