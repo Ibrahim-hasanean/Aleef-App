@@ -13,7 +13,7 @@ export const getMessages = async (req: Request, res: Response, next: NextFunctio
     let skip = (Number(page || 1) - 1) * numberPageSize;
     let isConversationExist = await Conversations.findOne({ _id: conversationId, userId: user._id });
     if (!isConversationExist) return res.status(400).json({ status: 400, msg: `you do not have conversation with id ${conversationId}` });
-    let messages: MessagesInterface[] = await Message.find({ conversation: isConversationExist._id }).skip(skip).limit(numberPageSize);
+    let messages: MessagesInterface[] = await Message.find({ conversation: isConversationExist._id }).sort({ createdAt: -1 }).skip(skip).limit(numberPageSize);
     let messagesCount = await Message.find({ conversation: isConversationExist._id }).count();
     let pagesNumber = Math.ceil(messagesCount / numberPageSize);
     return res.status(200).json({ status: 200, messages, pagesNumber });

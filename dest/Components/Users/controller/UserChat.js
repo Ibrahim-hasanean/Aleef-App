@@ -25,7 +25,7 @@ const getMessages = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
     let isConversationExist = yield Conversations_1.default.findOne({ _id: conversationId, userId: user._id });
     if (!isConversationExist)
         return res.status(400).json({ status: 400, msg: `you do not have conversation with id ${conversationId}` });
-    let messages = yield Messages_1.default.find({ conversation: isConversationExist._id }).skip(skip).limit(numberPageSize);
+    let messages = yield Messages_1.default.find({ conversation: isConversationExist._id }).sort({ createdAt: -1 }).skip(skip).limit(numberPageSize);
     let messagesCount = yield Messages_1.default.find({ conversation: isConversationExist._id }).count();
     let pagesNumber = Math.ceil(messagesCount / numberPageSize);
     return res.status(200).json({ status: 200, messages, pagesNumber });
