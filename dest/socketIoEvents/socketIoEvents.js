@@ -151,7 +151,7 @@ const socketIoEvents = (io) => {
                     let isOnline = usersArray.find(x => x == String(userId));
                     console.log({ isOnline });
                     if (isOnline)
-                        io.to(String(userId)).emit("new-message", { message, from: staff.name, doctorId: staff._id, conversationId: isConversationExist._id });
+                        io.to(String(userId)).emit("new-message", { message: newMessage, from: staff.name, doctorId: staff._id, conversationId: isConversationExist._id });
                     else {
                         let user = yield User_1.default.findById(userId);
                         let registrationTokens = user.registrationTokens.filter(x => Boolean(x) != false);
@@ -189,7 +189,7 @@ const socketIoEvents = (io) => {
                 //send message to doctor
                 let isOnline = usersArray.find(x => x == String(userId));
                 if (isOnline)
-                    io.to(String(userId)).emit("new-receiption-support-message", { message, conversationId: isConversationExist._id });
+                    io.to(String(userId)).emit("new-receiption-support-message", { message: newMessage, conversationId: isConversationExist._id });
                 else {
                     let user = yield User_1.default.findById(userId);
                     (0, SendNotifications_1.default)(user.registrationTokens, {
@@ -255,7 +255,7 @@ const socketIoEvents = (io) => {
                 //send message to doctor
                 let isOnline = usersArray.find(x => x == String(userId));
                 if (isOnline)
-                    io.to(String(userId)).emit("new-store-support-message", { message, conversationId: isConversationExist._id });
+                    io.to(String(userId)).emit("new-store-support-message", { message: newMessage, conversationId: isConversationExist._id });
                 else {
                     let user = yield User_1.default.findById(userId);
                     (0, SendNotifications_1.default)(user.registrationTokens, {
